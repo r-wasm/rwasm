@@ -1,15 +1,11 @@
 R_VERSION = 4.1
 PACKAGES = brio rlang
 
+.PHONY: repo
 repo:
 	mkdir -p repo/src/contrib
 	R_VERSION=$(R_VERSION) \
-	  Rscript repo-create.R $(PACKAGES)
-
-.PHONY: update
-update: repo
-	R_VERSION=$(R_VERSION) \
-	  Rscript repo-update.R
+	  Rscript repo-update.R $(PACKAGES)
 
 .PHONY: clean
 clean:
