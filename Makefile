@@ -1,5 +1,5 @@
 R_VERSION = 4.1
-PACKAGES = brio rlang
+PACKAGES = R6 cli brio desc glue rlang rprojroot
 
 .PHONY: repo
 repo:
