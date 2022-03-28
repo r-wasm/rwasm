@@ -26,6 +26,7 @@ remotes_deps <- pkgdepends::new_pkg_download_proposal(remotes)
 remotes_deps$resolve()
 remotes_info <- remotes_deps$get_resolution()
 remotes_info <- remotes_info[remotes_info$type == "github", ]
+remotes_packages <- remotes_info[["package"]]
 
 # Download a remote source to src/contrib
 make_remote_tarball <- function(pkg, url, target) {
@@ -57,42 +58,21 @@ make_remote_tarball <- function(pkg, url, target) {
   )
 }
 
-writeLines(sprintf("Processing %d remotes.", nrow(remotes_info)))
-need_update <- FALSE
-
-for (i in seq_len(nrow(remotes_info))) {
-  remote_info <- remotes_info[i, ]
-  remote_target <- remote_info[["target"]]
-
-  if (!file.exists(file.path("repo", remote_target))) {
-    need_update <- TRUE
-
-    make_remote_tarball(
-      remote_info[["package"]],
-      remote_info[["sources"]][[1]],
-      remote_target
-    )
-  }
-}
-
-if (need_update) {
-  tools::write_PACKAGES(webr_contrib_src, verbose = TRUE)
-}
-
-
-# Now that we have all the remotes, process the CRAN sources
-cran_info <- available.packages()
-need_update <- FALSE
-
-packages <- unique(readLines("repo-cran"))
-writeLines(sprintf("Processing %d packages.", length(packages)))
-
 tarball <- function(pkg, ver) {
   paste0(pkg, "_", ver,  ".tar.gz")
 }
 
+cran_info <- available.packages()
+packages <- unique(readLines("repo-packages"))
+writeLines(sprintf("Processing %d packages.", length(packages)))
+
+versions <- cran_info[packages, "Version", drop = TRUE]
+versions[remotes_packages] <- remotes_info[["version"]]
+
+need_update <- FALSE
+
 for (pkg in packages) {
-  new_ver <- as.package_version(cran_info[pkg, "Version"])
+  new_ver <- as.package_version(versions[[pkg]])
 
   if (!is.null(repo_info) && pkg %in% repo_packages) {
     old_ver <- as.package_version(repo_info[pkg, "Version"])
@@ -107,11 +87,29 @@ for (pkg in packages) {
 
   need_update <- TRUE
 
-  tarball_file <- tarball(pkg, new_ver)
-  new_url <- paste0(cran_url, "src/contrib/", tarball_file)
-  tarball_path <- file.path(webr_contrib_src, tarball_file)
+  if (pkg %in% remotes_packages) {
+    remote_info <- remotes_info[match(pkg, remotes_info[["package"]]), ]
+    remote_target <- remote_info[["target"]]
 
-  download.file(new_url, tarball_path)
+    if (!file.exists(file.path("repo", remote_target))) {
+      need_update <- TRUE
+
+      make_remote_tarball(
+        remote_info[["package"]],
+        remote_info[["sources"]][[1]],
+        remote_target
+      )
+    }
+
+    tarball_file <- basename(remote_target)
+    tarball_path <- file.path(webr_contrib_src, tarball_file)
+  } else {
+    tarball_file <- tarball(pkg, new_ver)
+    tarball_path <- file.path(webr_contrib_src, tarball_file)
+    new_url <- paste0(cran_url, "src/contrib/", tarball_file)
+    download.file(new_url, tarball_path)
+  }
+
   system2("./webr-build.sh", tarball_path)
 }
 

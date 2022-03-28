@@ -4,7 +4,8 @@ set -eu
 [[ -z "${1-}" ]] && echo "Error: Must supply tarball" && exit 1
 [[ ! -f "$1" ]] && echo "Error: Must supply a tarball file" && exit 1
 
-[[ $1 =~ /([^/]+)_[-0-9\.]*\.tar\.gz ]]
+PKG_NAME=$(basename $1)
+[[ $PKG_NAME =~ ([^_]+)_ ]]
 PKG_NAME="${BASH_REMATCH[1]-NULL}"
 
 [[ "$PKG_NAME" == "NULL" ]] && echo "Error: File does not conform to a versioned tarball" && exit 1
