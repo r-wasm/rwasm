@@ -9,3 +9,13 @@ repo:
 .PHONY: clean
 clean:
 	rm -rf repo
+
+.PHONY: clean-%
+clean-%:
+	rm -rf repo/src/contrib/$**
+	rm -rf repo/bin/emscripten/contrib/$(R_VERSION)/$**
+
+.PHONY: PACKAGES
+PACKAGES:
+	Rscript -e "tools::write_PACKAGES('repo/src/contrib', verbose = TRUE)"
+	Rscript -e "tools::write_PACKAGES('repo/bin//emscripten/contrib/$(R_VERSION)', type = 'mac.binary', verbose = TRUE)"
