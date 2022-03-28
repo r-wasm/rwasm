@@ -1,6 +1,5 @@
 R6
 brio
-callr
 cli
 desc
 diffobj
@@ -16,8 +15,6 @@ pillar
 pkgconfig
 pkgload
 praise
-processx
-ps
 rematch2
 rlang
 rprojroot
