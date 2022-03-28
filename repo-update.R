@@ -1,6 +1,3 @@
-packages <- unique(readLines("packages-list"))
-writeLines(sprintf("Processing %d packages.", length(packages)))
-
 if (file.exists("repo/src/contrib/PACKAGES")) {
   # Check available packages in the binary folder rather than the
   # source folder so that we retry building failed packages until they
@@ -11,9 +8,7 @@ if (file.exists("repo/src/contrib/PACKAGES")) {
   repo_info <- NULL
 }
 
-cran_info <- available.packages()
 cran_url <- getOption("repos")[["CRAN"]]
-
 r_version <- Sys.getenv("R_VERSION")
 webr_contrib_src <- file.path("repo", "src", "contrib")
 webr_contrib_bin <- file.path("repo", "bin", "emscripten", "contrib", r_version)
@@ -24,11 +19,77 @@ stopifnot(
   nzchar(r_version)
 )
 
+
+# Download all missing or outdated remotes to the repo
+remotes <- unique(readLines("repo-remotes"))
+remotes_deps <- pkgdepends::new_pkg_download_proposal(remotes)
+remotes_deps$resolve()
+remotes_info <- remotes_deps$get_resolution()
+remotes_info <- remotes_info[remotes_info$type == "github", ]
+
+# Download a remote source to src/contrib
+make_remote_tarball <- function(pkg, url, target) {
+  tmp_dir <- tempfile()
+  on.exit(unlink(tmp_dir, recursive = TRUE))
+  dir.create(tmp_dir)
+
+  # Remove all existing tarballs to avoid conflicting versions in case
+  # old remotes have already been downloaded
+  unlink(list.files(webr_contrib_src, paste0(pkg, "_.*\\.tar\\.gz$")))
+
+  source_tarball <- file.path(tmp_dir, "dest.tar.gz")
+  download.file(url, source_tarball)
+
+  # Recreate a new .tar.gz with the directory structure expected from
+  # a source package
+  untar(
+    source_tarball,
+    exdir = file.path(tmp_dir, pkg),
+    extra = "--strip-components=1"
+  )
+  unlink(source_tarball)
+
+  repo_tarball <- file.path(normalizePath("repo"), target)
+
+  withr::with_dir(
+    tmp_dir,
+    tar(repo_tarball, compression = "gzip")
+  )
+}
+
+writeLines(sprintf("Processing %d remotes.", nrow(remotes_info)))
+need_update <- FALSE
+
+for (i in seq_len(nrow(remotes_info))) {
+  remote_info <- remotes_info[i, ]
+  remote_target <- remote_info[["target"]]
+
+  if (!file.exists(file.path("repo", remote_target))) {
+    need_update <- TRUE
+
+    make_remote_tarball(
+      remote_info[["package"]],
+      remote_info[["sources"]][[1]],
+      remote_target
+    )
+  }
+}
+
+if (need_update) {
+  tools::write_PACKAGES(webr_contrib_src, verbose = TRUE)
+}
+
+
+# Now that we have all the remotes, process the CRAN sources
+cran_info <- available.packages()
+need_update <- FALSE
+
+packages <- unique(readLines("repo-cran"))
+writeLines(sprintf("Processing %d packages.", length(packages)))
+
 tarball <- function(pkg, ver) {
   paste0(pkg, "_", ver,  ".tar.gz")
 }
-
-need_update <- FALSE
 
 for (pkg in packages) {
   new_ver <- as.package_version(cran_info[pkg, "Version"])
