@@ -2,7 +2,10 @@ packages <- unique(readLines("packages-list"))
 writeLines(sprintf("Processing %d packages.", length(packages)))
 
 if (file.exists("repo/src/contrib/PACKAGES")) {
-  repo_info <- available.packages(repo = "file:repo")
+  # Check available packages in the binary folder rather than the
+  # source folder so that we retry building failed packages until they
+  # succeed
+  repo_info <- available.packages("file:repo/bin/emscripten/contrib/4.1")
   repo_packages <- rownames(repo_info)
 } else {
   repo_info <- NULL
