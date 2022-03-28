@@ -1,4 +1,5 @@
-packages <- commandArgs(trailingOnly = TRUE)
+packages <- unique(readLines("packages-list"))
+writeLines(sprintf("Processing %d packages.", length(packages)))
 
 if (file.exists("repo/src/contrib/PACKAGES")) {
   repo_info <- available.packages(repo = "file:repo")
