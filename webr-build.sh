@@ -20,11 +20,17 @@ export R_MAKEVARS_USER="${ROOT}/webr-vars.mk"
 cd $TMP
 tar xvf $TARBALL
 
-R CMD INSTALL --build --library="${ROOT}/lib" "${PKG_NAME}" \
+# Need to use an empty library and only then copy to the `lib` folder,
+# otherwise R might try to load wasm packages from the library and fail
+mkdir lib
+
+R CMD INSTALL --build --library="lib" "${PKG_NAME}" \
   --no-docs \
   --no-test-load \
   --no-staged-install \
   --no-byte-compile
+
+mv lib/* ${ROOT}/lib
 
 BIN="${ORIG}/repo/bin/emscripten/contrib/${R_VERSION}/"
 
