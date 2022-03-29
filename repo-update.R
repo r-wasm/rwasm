@@ -96,8 +96,6 @@ for (pkg in packages) {
     unlink(file.path(webr_contrib_bin, old_tarball))
   }
 
-  need_update <- TRUE
-
   if (pkg %in% remotes_packages) {
     remote_info <- remotes_info[match(pkg, remotes_info[["package"]]), ]
     remote_target <- remote_info[["target"]]
@@ -121,7 +119,9 @@ for (pkg in packages) {
     download.file(new_url, tarball_path)
   }
 
-  system2("./webr-build.sh", tarball_path)
+  if (!system2("./webr-build.sh", tarball_path)) {
+    need_update <- TRUE
+  }
 }
 
 if (need_update) {
