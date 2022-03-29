@@ -1,3 +1,16 @@
+args <- commandArgs(trailingOnly = TRUE)
+
+if (length(args)) {
+  packages <- args
+} else {
+  packages <- unique(readLines("repo-packages"))
+}
+
+writeLines(
+  sprintf("Processing %d package(s).", length(packages))
+)
+
+
 if (file.exists("repo/src/contrib/PACKAGES")) {
   # Check available packages in the binary folder rather than the
   # source folder so that we retry building failed packages until they
@@ -63,10 +76,8 @@ tarball <- function(pkg, ver) {
 }
 
 cran_info <- available.packages()
-packages <- unique(readLines("repo-packages"))
-writeLines(sprintf("Processing %d packages.", length(packages)))
-
 versions <- cran_info[packages, "Version", drop = TRUE]
+names(versions) <- packages
 versions[remotes_packages] <- remotes_info[["version"]]
 
 need_update <- FALSE

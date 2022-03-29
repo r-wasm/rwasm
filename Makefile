@@ -6,6 +6,12 @@ repo:
 	R_VERSION=$(R_VERSION) \
 	  Rscript repo-update.R
 
+.PHONY: pkg-%
+pkg-%:
+	mkdir -p repo/src/contrib lib
+	R_VERSION=$(R_VERSION) \
+	  Rscript repo-update.R $*
+
 .PHONY: clean
 clean:
 	rm -rf repo lib
