@@ -2,13 +2,13 @@ R_VERSION = 4.1
 
 .PHONY: repo
 repo:
-	mkdir -p repo/src/contrib
+	mkdir -p repo/src/contrib lib
 	R_VERSION=$(R_VERSION) \
 	  Rscript repo-update.R
 
 .PHONY: clean
 clean:
-	rm -rf repo
+	rm -rf repo lib
 
 .PHONY: clean-%
 clean-%:

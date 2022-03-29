@@ -19,9 +19,8 @@ export R_MAKEVARS_USER="${ROOT}/webr-vars.mk"
 
 cd $TMP
 tar xvf $TARBALL
-mkdir lib
 
-R CMD INSTALL --build --library="lib" "${PKG_NAME}" \
+R CMD INSTALL --build --library="${ROOT}/lib" "${PKG_NAME}" \
   --no-docs \
   --no-test-load \
   --no-staged-install \
