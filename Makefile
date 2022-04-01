@@ -8,6 +8,7 @@ repo:
 
 .PHONY: pkg-%
 pkg-%:
+	make clean-$*
 	mkdir -p repo/src/contrib lib
 	R_VERSION=$(R_VERSION) \
 	  Rscript repo-update.R $*
