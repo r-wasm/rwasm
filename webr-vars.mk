@@ -1,6 +1,11 @@
-# Configure your local environment in this file.  In particular,
-# `R_SOURCE` must be set to the directory where R was build with
-# Emscripten.
+# Configure your local environment in this file. Make sure to set:
+#
+# - `R_SOURCE` to the directory where R was build with Emscripten
+#
+# - `LLVM_BUILD_DIR` to the directory where LLVM was built with
+#   Flang's dev-ir branch
+#
+# - `WEBR_LOCAL` to the installation directory of webR
 -include ~/.webr-vars.mk
 
 R_INCLUDES = -I$(R_SOURCE)/build/include -I$(R_SOURCE)/src/include
@@ -21,7 +26,7 @@ CXX17FLAGS = -std=gnu++17 -D__STRICT_ANSI__ $(R_INCLUDES)
 CXX20FLAGS = -std=gnu++20 -D__STRICT_ANSI__ $(R_INCLUDES)
 LDFLAGS = -s SIDE_MODULE=1 -s WASM_BIGINT -s ASSERTIONS=1
 FC = emfc
-FLIBS =
+FLIBS = -L$(WEBR_LOCAL)/lib -lFortranRuntime
 AR = emar
 ALL_CPPFLAGS = -DNDEBUG $(PKG_CPPFLAGS) $(CLINK_CPPFLAGS) $(CPPFLAGS)
 
