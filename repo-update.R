@@ -83,7 +83,8 @@ versions[remotes_packages] <- remotes_info[["version"]]
 need_update <- FALSE
 
 for (pkg in packages) {
-  new_ver <- as.package_version(versions[[pkg]])
+  new_ver_string <- versions[[pkg]]
+  new_ver <- as.package_version(new_ver_string)
 
   if (!is.null(repo_info) && pkg %in% repo_packages) {
     old_ver <- as.package_version(repo_info[pkg, "Version"])
@@ -113,7 +114,7 @@ for (pkg in packages) {
     tarball_file <- basename(remote_target)
     tarball_path <- file.path(webr_contrib_src, tarball_file)
   } else {
-    tarball_file <- tarball(pkg, new_ver)
+    tarball_file <- tarball(pkg, new_ver_string)
     tarball_path <- file.path(webr_contrib_src, tarball_file)
     new_url <- paste0(cran_url, "src/contrib/", tarball_file)
     download.file(new_url, tarball_path)
