@@ -21,6 +21,7 @@ clean-%:
 	rm -rf repo/src/contrib/$**
 	rm -rf repo/bin/emscripten/contrib/$(R_VERSION)/$**
 	rm -rf lib/$*
+	make PACKAGES
 
 .PHONY: PACKAGES
 PACKAGES:
