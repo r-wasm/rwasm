@@ -1,17 +1,19 @@
+-include ~/.webr-vars.mk
+
 R_VERSION = 4.1
 
 .PHONY: repo
 repo:
 	mkdir -p repo/src/contrib lib
 	R_VERSION=$(R_VERSION) \
-	  Rscript repo-update.R
+	  $(R_HOST)/bin/Rscript repo-update.R
 
 .PHONY: pkg-%
 pkg-%:
 	make clean-$*
 	mkdir -p repo/src/contrib lib
 	R_VERSION=$(R_VERSION) \
-	  Rscript repo-update.R $*
+	  $(R_HOST)/bin/Rscript repo-update.R $*
 
 .PHONY: clean
 clean:
@@ -26,5 +28,5 @@ clean-%:
 
 .PHONY: PACKAGES
 PACKAGES:
-	Rscript -e "tools::write_PACKAGES('repo/src/contrib', verbose = TRUE)"
-	Rscript -e "tools::write_PACKAGES('repo/bin//emscripten/contrib/$(R_VERSION)', type = 'mac.binary', verbose = TRUE)"
+	$(R_HOST)/bin/Rscript -e "tools::write_PACKAGES('repo/src/contrib', verbose = TRUE)"
+	$(R_HOST)/bin/Rscript -e "tools::write_PACKAGES('repo/bin/emscripten/contrib/$(R_VERSION)', type = 'mac.binary', verbose = TRUE)"
