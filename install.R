@@ -22,6 +22,9 @@ webr_install <- function(packages, repos = "file:/repo", lib = NULL) {
     pkg_ver <- info[dep, "Version"]
     path <- file.path(repo, paste0(dep, "_", pkg_ver, ".tgz"))
 
+    tmp <- tempfile()
+    download.file(path, tmp)
+
     untar(
       path,
       exdir = lib,
