@@ -10,6 +10,10 @@
 
 R_INCLUDES = -I$(R_SOURCE)/build/include -I$(R_SOURCE)/src/include
 
+# Needed because Emscripten's `dlopen()` calls seem to ignore the
+# `local` flag?
+C_VISIBILITY = -fvisibility=hidden
+
 CXX98 = em++
 CXX11 = em++
 CXX14 = em++
