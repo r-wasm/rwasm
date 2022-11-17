@@ -1,3 +1,4 @@
+host_packages = installed.packages()
 args <- commandArgs(trailingOnly = TRUE)
 
 if (length(args)) {
@@ -118,6 +119,10 @@ for (pkg in packages) {
     tarball_path <- file.path(webr_contrib_src, tarball_file)
     new_url <- paste0(cran_url, "src/contrib/", tarball_file)
     download.file(new_url, tarball_path)
+  }
+
+  if (!pkg %in% host_packages) {
+    install.packages(pkg)
   }
 
   if (!system2("./webr-build.sh", tarball_path)) {
