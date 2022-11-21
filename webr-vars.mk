@@ -6,6 +6,8 @@
 #   Flang's dev-ir branch
 #
 # - `WEBR_LOCAL` to the installation directory of webR
+#
+# - `R_HOST` to the installation directory of a host R build
 -include ~/.webr-vars.mk
 
 R_INCLUDES = -I$(R_SOURCE)/build/include -I$(R_SOURCE)/src/include
