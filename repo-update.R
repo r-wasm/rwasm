@@ -26,6 +26,12 @@ r_version <- Sys.getenv("R_VERSION")
 webr_contrib_src <- file.path("repo", "src", "contrib")
 webr_contrib_bin <- file.path("repo", "bin", "emscripten", "contrib", r_version)
 
+# Ensure both rlang and pkgdepends can be used
+host_packages = installed.packages()
+if (!"rlang" %in% host_packages || !"pkgdepends" %in% host_packages) {
+    install.packages(c("rlang", "pkgdepends"))
+}
+
 stopifnot(
   rlang::is_string(cran_url),
   dir.exists(webr_contrib_src),
@@ -118,6 +124,10 @@ for (pkg in packages) {
     tarball_path <- file.path(webr_contrib_src, tarball_file)
     new_url <- paste0(cran_url, "src/contrib/", tarball_file)
     download.file(new_url, tarball_path)
+  }
+
+  if (!pkg %in% host_packages) {
+    install.packages(pkg)
   }
 
   if (!system2("./webr-build.sh", tarball_path)) {
