@@ -111,7 +111,7 @@ for (pkg in packages) {
 
       make_remote_tarball(
         remote_info[["package"]],
-        remote_info[["sources"]][[1]],
+        remote_info[["sources"]][[1]][[1]],
         remote_target
       )
     }
