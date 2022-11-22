@@ -1,7 +1,7 @@
-r-wasm/testthat@webr
-r-wasm/cli@webr
-r-wasm/glue@webr
 r-wasm/Matrix@webr
+r-wasm/cli@webr
+r-wasm/data.table@webr
+r-wasm/glue@webr
 r-wasm/mgcv@webr
 r-wasm/svglite@webr
-r-wasm/data.table@webr
+r-wasm/testthat@webr

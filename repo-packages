@@ -1,11 +1,12 @@
-Matrix
 MASS
+Matrix
 R6
 RColorBrewer
 Rcpp
 base64enc
 bit
 bit64
+bitops
 brio
 bslib
 cachem
@@ -16,6 +17,7 @@ commonmark
 cpp11
 crayon
 data.table
+decor
 desc
 diffobj
 digest
@@ -33,6 +35,7 @@ glue
 gtable
 hms
 htmltools
+httr
 isoband
 jquerylib
 jsonlite
@@ -41,8 +44,9 @@ lattice
 lifecycle
 magrittr
 memoise
-mime
 mgcv
+mime
+mockr
 munsell
 nlme
 pillar
@@ -56,6 +60,7 @@ rematch2
 rlang
 rprojroot
 rstudioapi
+sass
 scales
 sourcetools
 stringr
@@ -64,11 +69,14 @@ testthat
 tibble
 tidyr
 tidyselect
+tinytest
 tzdb
+unitizer
 utf8
 vctrs
 viridisLite
 vroom
 waldo
+whoami
 withr
 xtable
