@@ -1,6 +1,7 @@
 -include ~/.webr-vars.mk
 
 R_VERSION = 4.1
+R_HOST ?= /usr/local
 
 .PHONY: repo
 repo:
