@@ -30,6 +30,9 @@ $R_HOST/bin/R CMD INSTALL --build --library="lib" "${PKG_NAME}" \
   --no-staged-install \
   --no-byte-compile
 
+if [ -d "${ROOT}/lib/${PKG_NAME}" ]; then
+  rm -rf "${ROOT}/lib/${PKG_NAME}"
+fi
 mv lib/* ${ROOT}/lib
 
 BIN="${ORIG}/repo/bin/emscripten/contrib/${R_VERSION}/"
