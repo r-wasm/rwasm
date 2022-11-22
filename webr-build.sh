@@ -24,7 +24,6 @@ tar xvf $TARBALL
 # otherwise R might try to load wasm packages from the library and fail
 mkdir lib
 
-source $HOME/.webr-vars.mk
 $R_HOST/bin/R CMD INSTALL --build --library="lib" "${PKG_NAME}" \
   --no-docs \
   --no-test-load \

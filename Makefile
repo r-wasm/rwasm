@@ -7,6 +7,7 @@ R_HOST ?= /usr/local
 repo:
 	mkdir -p repo/src/contrib lib
 	R_VERSION=$(R_VERSION) \
+	R_HOST=$(R_HOST) \
 	  $(R_HOST)/bin/Rscript repo-update.R
 
 .PHONY: pkg-%
@@ -14,6 +15,7 @@ pkg-%:
 	make clean-$*
 	mkdir -p repo/src/contrib lib
 	R_VERSION=$(R_VERSION) \
+	R_HOST=$(R_HOST) \
 	  $(R_HOST)/bin/Rscript repo-update.R $*
 
 .PHONY: clean
