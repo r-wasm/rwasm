@@ -44,6 +44,7 @@ remotes <- unique(readLines("repo-remotes"))
 remotes_deps <- pkgdepends::new_pkg_download_proposal(remotes)
 remotes_deps$resolve()
 remotes_info <- remotes_deps$get_resolution()
+remotes_info <- remotes_info[remotes_info$type != "standard", ]
 remotes_packages <- remotes_info[["package"]]
 
 # Download a remote source to src/contrib
