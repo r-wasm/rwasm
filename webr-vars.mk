@@ -1,14 +1,9 @@
-# Configure your local environment in this file. Make sure to set:
-#
-# - `R_SOURCE` to the directory where R was build with Emscripten
-#
-# - `LLVM_BUILD_DIR` to the directory where LLVM was built with
-#   Flang's dev-ir branch
-#
-# - `WEBR_LOCAL` to the installation directory of webR
-#
-# - `R_HOST` to the installation directory of a host R build
+# Configure your local environment in this file. Make sure to set
+# `WEBR_ROOT` to the root directory of the webR repo
 -include ~/.webr-vars.mk
+
+R_VERSION = $(shell cat $(WEBR_ROOT)/R/R-VERSION)
+R_SOURCE = $(WEBR_ROOT)/R/build/R-$(R_VERSION)
 
 R_INCLUDES = -I$(R_SOURCE)/build/include -I$(R_SOURCE)/src/include
 EM_LIBS = -s USE_LIBPNG=1
@@ -35,8 +30,8 @@ CXX17FLAGS = -std=gnu++17 $(EM_CXX_FIXES) $(EM_LIBS) $(R_INCLUDES)
 CXX20FLAGS = -std=gnu++20 $(EM_CXX_FIXES) $(EM_LIBS) $(R_INCLUDES)
 
 LDFLAGS = -s SIDE_MODULE=1 -s WASM_BIGINT -s ASSERTIONS=1
-FC = $(LLVM_BUILD_DIR)/../emfc
-FLIBS = -L$(WEBR_LOCAL)/../lib -lFortranRuntime
+FC = $(WEBR_ROOT)/tools/flang/emfc
+FLIBS = -L$(WEBR_ROOT)/wasm -lFortranRuntime
 AR = emar
 ALL_CPPFLAGS = -DNDEBUG $(PKG_CPPFLAGS) $(CLINK_CPPFLAGS) $(CPPFLAGS)
 ALL_FFLAGS =
@@ -58,3 +53,8 @@ override ALL_LIBS = $(PKG_LIBS) $(SHLIB_LIBADD) $(LIBR) $(LIBINTL)
 
 override BLAS_LIBS = -L$(WEBR_LOCAL)/lib/R/lib -lRblas
 override LAPACK_LIBS = -L$(WEBR_LOCAL)/lib/R/lib -lRlapack
+
+
+# Print Makefile variable
+.PHONY: print-%
+print-%  : ; @echo $* = $($*)
