@@ -1,3 +1,5 @@
+Formula
+Hmisc
 MASS
 Matrix
 R6
@@ -33,6 +35,7 @@ generics
 ggplot2
 glue
 gtable
+hexbin
 hms
 htmltools
 httr
@@ -41,6 +44,7 @@ jquerylib
 jsonlite
 labeling
 lattice
+latticeExtra
 lifecycle
 magrittr
 memoise
@@ -62,6 +66,7 @@ rprojroot
 rstudioapi
 sass
 scales
+survival
 sourcetools
 stringr
 svglite
