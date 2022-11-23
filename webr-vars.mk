@@ -2,6 +2,9 @@
 # `WEBR_ROOT` to the root directory of the webR repo
 -include ~/.webr-vars.mk
 
+# Select emfc implementation
+-include $(WEBR_ROOT)/tools/fortran.mk
+
 R_VERSION = $(shell cat $(WEBR_ROOT)/R/R-VERSION)
 R_SOURCE = $(WEBR_ROOT)/R/build/R-$(R_VERSION)
 
@@ -33,8 +36,9 @@ CXX20FLAGS = -std=gnu++20 $(EM_CXX_FIXES) $(EM_LIBS) $(WEBR_INCLUDES)
 
 LDFLAGS = -s SIDE_MODULE=1 -s WASM_BIGINT -s ASSERTIONS=1 $(WEBR_LDFLAGS)
 
-FC = $(WEBR_ROOT)/tools/flang/emfc
-FLIBS = -L$(WEBR_ROOT)/wasm -lFortranRuntime
+FC = $(EMFC)
+FLIBS = $(FORTRAN_WASM_LDADD)
+
 AR = emar
 ALL_CPPFLAGS = -DNDEBUG $(PKG_CPPFLAGS) $(CLINK_CPPFLAGS) $(CPPFLAGS)
 ALL_FFLAGS =
