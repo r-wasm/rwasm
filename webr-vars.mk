@@ -1,16 +1,16 @@
-# Configure your local environment in this file. Make sure to set:
-#
-# - `R_SOURCE` to the directory where R was build with Emscripten
-#
-# - `LLVM_BUILD_DIR` to the directory where LLVM was built with
-#   Flang's dev-ir branch
-#
-# - `WEBR_LOCAL` to the installation directory of webR
-#
-# - `R_HOST` to the installation directory of a host R build
+# Configure your local environment in this file. Make sure to set
+# `WEBR_ROOT` to the root directory of the webR repo
 -include ~/.webr-vars.mk
 
-R_INCLUDES = -I$(R_SOURCE)/build/include -I$(R_SOURCE)/src/include
+# Select emfc implementation
+-include $(WEBR_ROOT)/tools/fortran.mk
+
+R_VERSION = $(shell cat $(WEBR_ROOT)/R/R-VERSION)
+R_SOURCE = $(WEBR_ROOT)/R/build/R-$(R_VERSION)
+
+WEBR_INCLUDES = -I$(R_SOURCE)/build/include -I$(R_SOURCE)/src/include
+WEBR_LDFLAGS = -L$(WEBR_ROOT)/wasm/lib -L$(WEBR_ROOT)/wasm/R-$(R_VERSION)/lib/R/lib
+
 EM_LIBS = -s USE_LIBPNG=1
 EM_CXX_FIXES = -DRCPP_DEMANGLER_ENABLED=0 -D__STRICT_ANSI__
 
@@ -26,17 +26,19 @@ CXX17 = em++
 CXX20 = em++
 CC = emcc
 CXX = em++
-CFLAGS = -std=gnu11 $(EM_LIBS) $(R_INCLUDES)
-CXXFLAGS = -std=gnu++11 $(EM_CXX_FIXES) $(EM_LIBS) $(R_INCLUDES)
-CXX98FLAGS = -std=gnu++98 $(EM_CXX_FIXES) $(EM_LIBS) $(R_INCLUDES)
-CXX11FLAGS = -std=gnu++11 $(EM_CXX_FIXES) $(EM_LIBS) $(R_INCLUDES)
-CXX14FLAGS = -std=gnu++14 $(EM_CXX_FIXES) $(EM_LIBS) $(R_INCLUDES)
-CXX17FLAGS = -std=gnu++17 $(EM_CXX_FIXES) $(EM_LIBS) $(R_INCLUDES)
-CXX20FLAGS = -std=gnu++20 $(EM_CXX_FIXES) $(EM_LIBS) $(R_INCLUDES)
+CFLAGS = -std=gnu11 $(EM_LIBS) $(WEBR_INCLUDES)
+CXXFLAGS = -std=gnu++11 $(EM_CXX_FIXES) $(EM_LIBS) $(WEBR_INCLUDES)
+CXX98FLAGS = -std=gnu++98 $(EM_CXX_FIXES) $(EM_LIBS) $(WEBR_INCLUDES)
+CXX11FLAGS = -std=gnu++11 $(EM_CXX_FIXES) $(EM_LIBS) $(WEBR_INCLUDES)
+CXX14FLAGS = -std=gnu++14 $(EM_CXX_FIXES) $(EM_LIBS) $(WEBR_INCLUDES)
+CXX17FLAGS = -std=gnu++17 $(EM_CXX_FIXES) $(EM_LIBS) $(WEBR_INCLUDES)
+CXX20FLAGS = -std=gnu++20 $(EM_CXX_FIXES) $(EM_LIBS) $(WEBR_INCLUDES)
 
-LDFLAGS = -s SIDE_MODULE=1 -s WASM_BIGINT -s ASSERTIONS=1
-FC = $(LLVM_BUILD_DIR)/../emfc
-FLIBS = -L$(WEBR_LOCAL)/../lib -lFortranRuntime
+LDFLAGS = -s SIDE_MODULE=1 -s WASM_BIGINT -s ASSERTIONS=1 $(WEBR_LDFLAGS)
+
+FC = $(EMFC)
+FLIBS = $(FORTRAN_WASM_LDADD)
+
 AR = emar
 ALL_CPPFLAGS = -DNDEBUG $(PKG_CPPFLAGS) $(CLINK_CPPFLAGS) $(CPPFLAGS)
 ALL_FFLAGS =
@@ -58,3 +60,8 @@ override ALL_LIBS = $(PKG_LIBS) $(SHLIB_LIBADD) $(LIBR) $(LIBINTL)
 
 override BLAS_LIBS = -L$(WEBR_LOCAL)/lib/R/lib -lRblas
 override LAPACK_LIBS = -L$(WEBR_LOCAL)/lib/R/lib -lRlapack
+
+
+# Print Makefile variable
+.PHONY: print-%
+print-%  : ; @echo $* = $($*)
