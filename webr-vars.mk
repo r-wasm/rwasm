@@ -45,6 +45,10 @@ ALL_CPPFLAGS = -DNDEBUG $(PKG_CPPFLAGS) $(CLINK_CPPFLAGS) $(CPPFLAGS)
 ALL_FFLAGS =
 ALL_FCFLAGS =
 
+# Uncomment to show emscripten calls to clang for debugging
+# CFLAGS += -v
+# LDFLAGS += -v
+
 # Clear up flags from $(R_HOME)/etc/Makeconf
 override DYLIB_LD = $(CC)
 override DYLIB_LDFLAGS = $(CFLAGS)
