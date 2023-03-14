@@ -10,19 +10,20 @@ writeLines(
   sprintf("Processing %d package(s).", length(packages))
 )
 
-
+r_version <- Sys.getenv("R_VERSION")
 if (file.exists("repo/src/contrib/PACKAGES")) {
   # Check available packages in the binary folder rather than the
   # source folder so that we retry building failed packages until they
   # succeed
-  repo_info <- available.packages("file:repo/bin/emscripten/contrib/4.1")
+  repo_info <- available.packages(
+    paste0("file:repo/bin/emscripten/contrib/", r_version)
+  )
   repo_packages <- rownames(repo_info)
 } else {
   repo_info <- NULL
 }
 
 cran_url <- getOption("repos")[["CRAN"]]
-r_version <- Sys.getenv("R_VERSION")
 webr_contrib_src <- file.path("repo", "src", "contrib")
 webr_contrib_bin <- file.path("repo", "bin", "emscripten", "contrib", r_version)
 
