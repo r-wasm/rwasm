@@ -83,8 +83,9 @@ tarball <- function(pkg, ver) {
 }
 
 cran_info <- available.packages()
-versions <- cran_info[packages, "Version", drop = TRUE]
-names(versions) <- packages
+cran_packages <- packages[!(packages %in% remotes_packages)]
+versions <- cran_info[cran_packages, "Version", drop = TRUE]
+names(versions) <- cran_packages
 versions[remotes_packages] <- remotes_info[["version"]]
 
 need_update <- FALSE
