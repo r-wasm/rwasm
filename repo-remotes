@@ -5,3 +5,4 @@ r-wasm/glue@webr
 r-wasm/mgcv@webr
 r-wasm/svglite@webr
 r-wasm/testthat@webr
+r-wasm/later@webr

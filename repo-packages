@@ -43,6 +43,7 @@ isoband
 jquerylib
 jsonlite
 labeling
+later
 lattice
 latticeExtra
 lifecycle
@@ -57,6 +58,7 @@ pillar
 pkgconfig
 pkgload
 praise
+promises
 purrr
 rappdirs
 readr
