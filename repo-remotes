@@ -1,8 +1,11 @@
 r-wasm/Matrix@webr
 r-wasm/cli@webr
 r-wasm/data.table@webr
+r-wasm/fs@webr
 r-wasm/glue@webr
+r-wasm/httpuv@webr
+r-wasm/later@webr
 r-wasm/mgcv@webr
+r-wasm/shiny@webr-safari
 r-wasm/svglite@webr
 r-wasm/testthat@webr
-r-wasm/later@webr

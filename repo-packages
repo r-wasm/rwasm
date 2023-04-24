@@ -33,6 +33,7 @@ farver
 fastmap
 fontawesome
 forcats
+fs
 generics
 ggplot2
 glue
@@ -40,6 +41,8 @@ gtable
 hexbin
 hms
 htmltools
+htmlwidgets
+httpuv
 httr
 isoband
 jquerylib
@@ -75,6 +78,7 @@ rprojroot
 rstudioapi
 sass
 scales
+shiny
 survival
 sourcetools
 stringi
@@ -97,3 +101,4 @@ whoami
 withr
 writexl
 xtable
+yaml
