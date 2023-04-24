@@ -12,6 +12,7 @@ bitops
 brio
 bslib
 cachem
+cellranger
 cli
 clipr
 colorspace
@@ -58,10 +59,14 @@ pillar
 pkgconfig
 pkgload
 praise
+prettyunits
+progress
 promises
 purrr
 rappdirs
 readr
+readxl
+rematch
 rematch2
 rlang
 rprojroot
@@ -87,4 +92,5 @@ vroom
 waldo
 whoami
 withr
+writexl
 xtable
