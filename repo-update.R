@@ -11,6 +11,7 @@ writeLines(
 )
 
 r_version <- Sys.getenv("R_VERSION")
+
 if (file.exists("repo/src/contrib/PACKAGES")) {
   # Check available packages in the binary folder rather than the
   # source folder so that we retry building failed packages until they
@@ -28,7 +29,7 @@ webr_contrib_src <- file.path("repo", "src", "contrib")
 webr_contrib_bin <- file.path("repo", "bin", "emscripten", "contrib", r_version)
 
 # Ensure both rlang and pkgdepends can be used
-host_packages <- installed.packages()
+host_packages <- row.names(installed.packages())
 if (!"rlang" %in% host_packages || !"pkgdepends" %in% host_packages) {
     install.packages(c("rlang", "pkgdepends"))
 }
