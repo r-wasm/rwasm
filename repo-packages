@@ -5,6 +5,7 @@ Matrix
 R6
 RColorBrewer
 Rcpp
+askpass
 base64enc
 bit
 bit64
@@ -55,6 +56,7 @@ mime
 mockr
 munsell
 nlme
+openssl
 pillar
 pkgconfig
 pkgload
@@ -78,6 +80,7 @@ sourcetools
 stringi
 stringr
 svglite
+sys
 testthat
 tibble
 tidyr
