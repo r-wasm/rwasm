@@ -10,7 +10,7 @@ R_SOURCE = $(WEBR_ROOT)/R/build/R-$(R_VERSION)
 R_HOME = $(WEBR_ROOT)/wasm/R-$(R_VERSION)/lib/R
 
 WASM_OPT ?= -Oz
-WEBR_INCLUDES = -I$(R_SOURCE)/build/include -I$(R_SOURCE)/src/include
+WEBR_INCLUDES = -I$(WEBR_ROOT)/wasm/include -I$(R_SOURCE)/build/include -I$(R_SOURCE)/src/include
 WEBR_LDFLAGS = -L$(WEBR_ROOT)/wasm/lib -L$(WEBR_ROOT)/wasm/R-$(R_VERSION)/lib/R/lib
 
 EM_LIBS = -s USE_LIBPNG=1
