@@ -29,26 +29,27 @@ CXX17 = em++
 CXX20 = em++
 CC = emcc
 CXX = em++
-CFLAGS = -std=gnu11 $(EM_CFLAGS)
-CXXFLAGS = -std=gnu++11 $(EM_CXX_FIXES) $(EM_CFLAGS)
-CXX98FLAGS = -std=gnu++98 $(EM_CXX_FIXES) $(EM_CFLAGS)
-CXX11FLAGS = -std=gnu++11 $(EM_CXX_FIXES) $(EM_CFLAGS)
-CXX14FLAGS = -std=gnu++14 $(EM_CXX_FIXES) $(EM_CFLAGS)
-CXX17FLAGS = -std=gnu++17 $(EM_CXX_FIXES) $(EM_CFLAGS)
-CXX20FLAGS = -std=gnu++20 $(EM_CXX_FIXES) $(EM_CFLAGS)
-LDFLAGS = -s SIDE_MODULE=1 -s WASM_BIGINT -s ASSERTIONS=1 $(WEBR_LDFLAGS) $(WASM_OPT)
+CFLAGS = -std=gnu11 $(EM_LIBS)
+CPPFLAGS = $(WEBR_INCLUDES)
+CXXFLAGS = -std=gnu++11 $(EM_CXX_FIXES) $(EM_LIBS) $(WEBR_INCLUDES)
+CXX98FLAGS = -std=gnu++98 $(EM_CXX_FIXES) $(EM_LIBS) $(WEBR_INCLUDES)
+CXX11FLAGS = -std=gnu++11 $(EM_CXX_FIXES) $(EM_LIBS) $(WEBR_INCLUDES)
+CXX14FLAGS = -std=gnu++14 $(EM_CXX_FIXES) $(EM_LIBS) $(WEBR_INCLUDES)
+CXX17FLAGS = -std=gnu++17 $(EM_CXX_FIXES) $(EM_LIBS) $(WEBR_INCLUDES)
+CXX20FLAGS = -std=gnu++20 $(EM_CXX_FIXES) $(EM_LIBS) $(WEBR_INCLUDES)
+
+LDFLAGS = -s SIDE_MODULE=1 -s WASM_BIGINT -s ASSERTIONS=1 $(WEBR_LDFLAGS)
 
 FC = $(EMFC)
 FLIBS = $(FORTRAN_WASM_LDADD)
 
 AR = emar
-ALL_CPPFLAGS = -DNDEBUG $(PKG_CPPFLAGS) $(CLINK_CPPFLAGS) $(CPPFLAGS)
-ALL_FFLAGS =
-ALL_FCFLAGS =
+
 
 # Uncomment to show emscripten calls to clang for debugging
 # CFLAGS += -v
 # LDFLAGS += -v
+
 
 # Clear up flags from $(R_HOME)/etc/Makeconf
 override DYLIB_LD = $(CC)
@@ -66,6 +67,10 @@ override ALL_LIBS = $(PKG_LIBS) $(SHLIB_LIBADD) $(LIBR) $(LIBINTL)
 
 override BLAS_LIBS = -L$(WEBR_LOCAL)/lib/R/lib -lRblas
 override LAPACK_LIBS = -L$(WEBR_LOCAL)/lib/R/lib -lRlapack
+
+override ALL_CPPFLAGS = -DNDEBUG $(PKG_CPPFLAGS) $(CLINK_CPPFLAGS) $(CPPFLAGS)
+override ALL_FFLAGS =
+override ALL_FCFLAGS =
 
 
 # Print Makefile variable
