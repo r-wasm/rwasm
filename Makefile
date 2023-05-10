@@ -10,6 +10,8 @@ repo:
 	mkdir -p repo/src/contrib lib
 	R_VERSION=$(R_VERSION_SHORT) \
 	R_HOST=$(R_HOST) \
+	PATH="$(WEBR_ROOT)/wasm/bin:${PATH}" \
+	PKG_CONFIG_PATH="$(WEBR_ROOT)/wasm/lib/pkgconfig" \
 	  $(R_HOST)/bin/Rscript repo-update.R
 
 .PHONY: pkg-%
@@ -18,6 +20,8 @@ pkg-%:
 	mkdir -p repo/src/contrib lib
 	R_VERSION=$(R_VERSION_SHORT) \
 	R_HOST=$(R_HOST) \
+	PATH="$(WEBR_ROOT)/wasm/bin:${PATH}" \
+	PKG_CONFIG_PATH="$(WEBR_ROOT)/wasm/lib/pkgconfig" \
 	  $(R_HOST)/bin/Rscript repo-update.R $*
 
 .PHONY: clean
