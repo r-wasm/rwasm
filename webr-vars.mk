@@ -45,6 +45,7 @@ WASM_LDFLAGS += -L$(WASM)/R-$(R_VERSION)/lib/R/lib
 WASM_LDFLAGS += $(EM_LIBS)
 WASM_LDFLAGS += -fwasm-exceptions
 WASM_LDFLAGS += -s SUPPORT_LONGJMP=wasm
+WASM_LDFLAGS += $(WASM_OPT)
 
 # Needed because Emscripten's `dlopen()` calls seem to ignore the
 # `local` flag?
