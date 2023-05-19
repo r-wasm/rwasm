@@ -25,6 +25,7 @@ if (file.exists("repo/src/contrib/PACKAGES")) {
 }
 
 cran_url <- getOption("repos")[["CRAN"]]
+cran_url <- gsub("/$", "", cran_url)
 webr_contrib_src <- file.path("repo", "src", "contrib")
 webr_contrib_bin <- file.path("repo", "bin", "emscripten", "contrib", r_version)
 
@@ -125,7 +126,7 @@ for (pkg in packages) {
   } else {
     tarball_file <- tarball(pkg, new_ver_string)
     tarball_path <- file.path(webr_contrib_src, tarball_file)
-    new_url <- paste0(cran_url, "src/contrib/", tarball_file)
+    new_url <- paste0(cran_url, "/src/contrib/", tarball_file)
     download.file(new_url, tarball_path)
   }
 
