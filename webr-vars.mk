@@ -11,7 +11,8 @@ R_HOME = $(WEBR_ROOT)/wasm/R-$(R_VERSION)/lib/R
 
 WASM = $(WEBR_ROOT)/wasm
 
-EM_LIBS := -s USE_LIBPNG=1
+EM_LIBS := -s USE_BZIP2=1
+EM_LIBS += -s USE_ZLIB=1
 
 WASM_OPT := $(WASM_OPT)
 WASM_OPT += -Oz
