@@ -23,12 +23,16 @@ tar xvf $TARBALL
 R_CMD_OPTS="--no-docs --no-html --no-test-load --no-staged-install --no-byte-compile"
 MKVARS_SRC="${ORIG}/Makevars/${PKG_NAME}.mk"
 MKVARS_DEST="./${PKG_NAME}/src/Makevars"
-# If we provide a Makevars override, use it and skip running `configure`
-if [ -f "${MKVARS_SRC}" ]; then
-  echo "Using Makevars override: ${MKVARS_SRC}"
-  cp ${MKVARS_SRC} ${MKVARS_DEST}
-  R_CMD_OPTS="${R_CMD_OPTS} --no-configure"
-fi
+MKVARS_WEBR="./${PKG_NAME}/src/Makevars.webr"
+# If a Makevars override is provided, use it and skip running `configure`
+for mk in "${MKVARS_SRC}" "${MKVARS_WEBR}"; do
+  if [ -f "$mk" ]; then
+    echo "Using Makevars override: $mk"
+    cp "$mk" "${MKVARS_DEST}"
+    R_CMD_OPTS="${R_CMD_OPTS} --no-configure"
+    break
+  fi
+done
 
 # Need to use an empty library and only then copy to the `lib` folder,
 # otherwise R might try to load wasm packages from the library and fail
