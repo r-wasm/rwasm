@@ -103,6 +103,7 @@ stringi
 stringr
 svglite
 sys
+terra
 testthat
 tibble
 tidyr
