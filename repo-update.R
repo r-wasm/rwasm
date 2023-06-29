@@ -65,18 +65,30 @@ make_remote_tarball <- function(pkg, url, target) {
 
   # Recreate a new .tar.gz with the directory structure expected from
   # a source package
-  untar(
-    source_tarball,
-    exdir = file.path(tmp_dir, pkg),
-    extra = "--strip-components=1"
-  )
+  result_code <- attr(untar(source_tarball, list = TRUE), "status")
+  if (is.null(result_code) || result_code == 0L) {
+    untar(
+      source_tarball,
+      exdir = file.path(tmp_dir, pkg),
+      extra = "--strip-components=1"
+    )
+  } else {
+    # Get root folder name, necessary as it won't unzip as `pkg`
+    folder_name <- unzip(source_tarball, list = TRUE)$Name[[1]]
+    
+    zip::unzip(source_tarball, exdir = file.path(tmp_dir))
+    
+    # rename folder_name to `pkg`
+    file.rename(file.path(tmp_dir, folder_name), file.path(tmp_dir, pkg))
+  }
+  
   unlink(source_tarball)
 
   repo_tarball <- file.path(normalizePath("repo"), target)
 
   withr::with_dir(
     tmp_dir,
-    tar(repo_tarball, compression = "gzip")
+    tar(repo_tarball, files = pkg, compression = "gzip")
   )
 }
 
