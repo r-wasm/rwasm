@@ -31,8 +31,9 @@ webr_contrib_bin <- file.path("repo", "bin", "emscripten", "contrib", r_version)
 
 # Ensure both rlang and pkgdepends can be used
 host_packages <- row.names(installed.packages())
-if (!"rlang" %in% host_packages || !"pkgdepends" %in% host_packages) {
-    install.packages(c("rlang", "pkgdepends"))
+req_packages <- c("rlang", "pkgdepends", "zip")
+if (!all(req_packages %in% host_packages)) {
+    install.packages(req_packages)
 }
 
 stopifnot(
