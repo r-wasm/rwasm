@@ -75,13 +75,13 @@ make_remote_tarball <- function(pkg, url, target) {
   } else {
     # Get root folder name, necessary as it won't unzip as `pkg`
     folder_name <- unzip(source_tarball, list = TRUE)$Name[[1]]
-    
+
     zip::unzip(source_tarball, exdir = file.path(tmp_dir))
-    
+
     # rename folder_name to `pkg`
     file.rename(file.path(tmp_dir, folder_name), file.path(tmp_dir, pkg))
   }
-  
+
   unlink(source_tarball)
 
   repo_tarball <- file.path(normalizePath("repo"), target)
