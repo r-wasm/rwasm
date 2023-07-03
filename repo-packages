@@ -122,6 +122,7 @@ proj4
 promises
 proxy
 purrr
+randomForest
 rappdirs
 readr
 readxl
