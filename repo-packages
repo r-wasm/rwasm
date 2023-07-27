@@ -15,6 +15,7 @@ askpass
 backports
 base64enc
 beeswarm
+bigD
 bit
 bit64
 bitops
@@ -98,6 +99,7 @@ mapdata
 mapproj
 maps
 maptools
+markdown
 mboost
 memoise
 mgcv
@@ -132,6 +134,8 @@ purrr
 quadprog
 randomForest
 rappdirs
+reactable
+reactR
 readr
 readxl
 recipes
@@ -141,6 +145,7 @@ repr
 rgdal
 rgeos
 rlang
+rmarkdown
 rpart
 rprojroot
 rsample
@@ -171,6 +176,7 @@ tidytext
 timechange
 timeDate
 tinytest
+tinytex
 tune
 tzdb
 unitizer
@@ -192,6 +198,7 @@ workflows
 workflowsets
 writexl
 xfun
+xml2
 xtable
 yaml
 yardstick
