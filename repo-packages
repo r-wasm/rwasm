@@ -10,6 +10,7 @@ Matrix
 R6
 RColorBrewer
 Rcpp
+RSQLite
 SQUAREM
 airports
 askpass
@@ -20,6 +21,7 @@ bigD
 bit
 bit64
 bitops
+blob
 brio
 broom
 bslib
@@ -128,6 +130,7 @@ patchwork
 pillar
 pkgconfig
 pkgload
+plogr
 praise
 prettyunits
 prodlim
