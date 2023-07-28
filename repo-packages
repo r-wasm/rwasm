@@ -11,6 +11,7 @@ R6
 RColorBrewer
 Rcpp
 RSQLite
+SnowballC
 SQUAREM
 airports
 askpass
@@ -28,6 +29,7 @@ bslib
 cachem
 cellranger
 censored
+checkmate
 cherryblossom
 class
 classInt
@@ -75,6 +77,7 @@ gridExtra
 gt
 gtable
 hardhat
+haven
 hexbin
 highr
 hms
