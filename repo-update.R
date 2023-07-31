@@ -29,6 +29,13 @@ cran_url <- gsub("/$", "", cran_url)
 webr_contrib_src <- file.path("repo", "src", "contrib")
 webr_contrib_bin <- file.path("repo", "bin", "emscripten", "contrib", r_version)
 
+# Use alternative binary host repo if specified
+host_repo <- if (is.null(getOption("host_binary_repo"))) {
+  cran_url
+} else {
+  getOption("host_binary_repo")
+}
+
 # Ensure both rlang and pkgdepends can be used
 host_packages <- row.names(installed.packages())
 req_packages <- c("rlang", "pkgdepends", "zip")
@@ -144,7 +151,7 @@ for (pkg in packages) {
   }
 
   if (!pkg %in% host_packages || packageVersion(pkg) < new_ver_string) {
-    install.packages(pkg)
+    install.packages(pkg, repos = host_repo)
   }
 
   if (!system2("./webr-build.sh", tarball_path)) {
