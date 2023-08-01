@@ -105,7 +105,13 @@ tarball <- function(pkg, ver) {
 }
 
 cran_info <- available.packages()
+# Check for any packages not found in repo-remotes or CRAN
 cran_packages <- packages[!(packages %in% remotes_packages)]
+if (any(!(cran_packages %in% rownames(cran_info)))) {
+  print(cran_packages[!(cran_packages %in% rownames(cran_info))])
+  stop("The above packages are not included in either repo-remotes nor CRAN.")
+}
+
 versions <- cran_info[cran_packages, "Version", drop = TRUE]
 names(versions) <- cran_packages
 versions[remotes_packages] <- remotes_info[["version"]]
