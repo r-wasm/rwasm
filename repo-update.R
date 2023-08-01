@@ -6,9 +6,14 @@ if (length(args)) {
   packages <- unique(readLines("repo-packages"))
 }
 
-writeLines(
-  sprintf("Processing %d package(s).", length(packages))
-)
+cran_info <- available.packages()
+
+# Build CRAN, rather than specifc packages if requested
+if ("--all-cran" %in% args) {
+  packages <- rownames(cran_info)
+}
+
+writeLines(sprintf("Processing %d package(s).", length(packages)))
 
 r_version <- Sys.getenv("R_VERSION")
 
@@ -48,7 +53,6 @@ stopifnot(
   dir.exists(webr_contrib_src),
   nzchar(r_version)
 )
-
 
 # Download all missing or outdated remotes to the repo
 remotes <- unique(readLines("repo-remotes"))
@@ -104,7 +108,6 @@ tarball <- function(pkg, ver) {
   paste0(pkg, "_", ver,  ".tar.gz")
 }
 
-cran_info <- available.packages()
 # Check for any packages not found in repo-remotes or CRAN
 cran_packages <- packages[!(packages %in% remotes_packages)]
 if (any(!(cran_packages %in% rownames(cran_info)))) {
