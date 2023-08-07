@@ -7,6 +7,7 @@ r-wasm/data.table@webr
 r-wasm/fs@webr
 r-wasm/glue@webr
 r-wasm/gt@webr
+r-wasm/htmlwidgets@webr
 r-wasm/httpuv@webr
 r-wasm/later@webr
 r-wasm/mgcv@webr
