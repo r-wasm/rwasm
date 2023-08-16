@@ -3,6 +3,7 @@ kkholst/lava@9f6d726
 r-lib/vctrs@v0.6.2
 r-wasm/LiblineaR@webr
 r-wasm/Matrix@webr
+r-wasm/RcppArmadillo@webr
 r-wasm/data.table@webr
 r-wasm/fs@webr
 r-wasm/glue@webr
@@ -16,6 +17,7 @@ r-wasm/openssl@webr
 r-wasm/rsample@webr
 r-wasm/shiny@webr-safari
 r-wasm/svglite@webr
+r-wasm/systemfonts@webr
 r-wasm/testthat@webr
 r-wasm/xml2@webr
 tidyverse/dsbox
