@@ -1,14 +1,16 @@
-make_library <- function(repo_dir = "./repo", lib_dir = './lib') {
+make_library <- function(repo_dir = "./repo", lib_dir = "./lib") {
   fs::dir_create(lib_dir)
   r_version <- getOption("rwasm.webr_version")
   contrib_bin <- fs::path(repo_dir, "bin", "emscripten", "contrib", r_version)
 
   pkgs <- fs::dir_ls(path = contrib_bin, glob = "*.tgz", recurse = FALSE)
-  lapply(pkgs, function(pkg) { untar(pkg[[1]], exdir = lib_dir) })
+  lapply(pkgs, function(pkg) {
+    untar(pkg[[1]], exdir = lib_dir)
+  })
   invisible(0)
 }
 
-make_vfs_image <- function(out_dir = './vfs', lib_dir = './lib', ...) {
+make_vfs_image <- function(out_dir = "./vfs", lib_dir = "./lib", ...) {
   make_library(...)
   fs::dir_create(out_dir)
 
@@ -35,7 +37,9 @@ make_vfs_image <- function(out_dir = './vfs', lib_dir = './lib', ...) {
 
   status <- attr(res, "status")
   if (!is.null(status) && status != 0) {
-    stop("An error occurred running `file_packager`:\n",
-         paste(res, collapse = '\n'))
+    stop(
+      "An error occurred running `file_packager`:\n",
+      paste(res, collapse = "\n")
+    )
   }
 }

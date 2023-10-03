@@ -75,11 +75,11 @@ wasm_build <- function(pkg, tarball_path, contrib_bin) {
   )
 
   # Copy to local CRAN-like repo directory
-  pkg_bin_path <- c(
+  bin_path <- c(
     fs::dir_ls(tmp_dir, glob = "*.tgz"),
     fs::dir_ls(tmp_dir, glob = "*.tar.gz")
   )[[1]]
-  pkg_bin_file <- fs::path_file(pkg_bin_path)
-  pkg_bin_dest <- fs::path(contrib_bin,gsub("\\.tar.gz$", ".tgz", pkg_bin_file))
-  fs::file_copy(pkg_bin_path, pkg_bin_dest, overwrite = TRUE)
+  bin_file <- fs::path_file(bin_path)
+  bin_dest <- fs::path(contrib_bin, gsub("\\.tar.gz$", ".tgz", bin_file))
+  fs::file_copy(bin_path, bin_dest, overwrite = TRUE)
 }
