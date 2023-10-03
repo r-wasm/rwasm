@@ -35,7 +35,7 @@ find_emsdk <- function() {
   emsdk_root <- find_emsdk()
   webr_version <- readLines(fs::path(webr_root, "R", "R-VERSION"))
   options(rwasm.webr_root = webr_root)
-  options(rwasm.webr_version = webr_version)
+  options(rwasm.webr_version = R_system_version(webr_version))
   options(rwasm.emsdk_root = emsdk_root)
 }
 

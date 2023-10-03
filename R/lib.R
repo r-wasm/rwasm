@@ -1,7 +1,8 @@
 make_library <- function(repo_dir = "./repo", lib_dir = "./lib", strip = NULL) {
   fs::dir_create(lib_dir)
   r_version <- getOption("rwasm.webr_version")
-  contrib_bin <- fs::path(repo_dir, "bin", "emscripten", "contrib", r_version)
+  contrib_bin <- fs::path(repo_dir, "bin", "emscripten", "contrib",
+                          paste0(r_version$major, ".", r_version$minor))
 
   pkgs <- fs::dir_ls(contrib_bin, glob = "*.tgz", recurse = FALSE)
   lapply(pkgs, function(pkg) {

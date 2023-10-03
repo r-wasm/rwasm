@@ -56,7 +56,8 @@ update_repo <- function(packages, remotes = NULL, repo_dir = "./repo") {
 
   # Create contrib paths
   contrib_src <- fs::path(repo_dir, "src", "contrib")
-  contrib_bin <- fs::path(repo_dir, "bin", "emscripten", "contrib", r_version)
+  contrib_bin <- fs::path(repo_dir, "bin", "emscripten", "contrib",
+                          paste0(r_version$major, ".", r_version$minor))
   fs::dir_create(contrib_src)
   fs::dir_create(contrib_bin)
 
