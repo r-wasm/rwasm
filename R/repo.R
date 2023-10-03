@@ -72,18 +72,23 @@ update_repo <- function(packages, remotes = NULL, repo_dir = "./repo") {
     repo_info <- NULL
   }
 
-  remotes_info <- if (!is.null(remotes)) {
-    remotes <- unique(readLines(remotes))
-    remotes_deps <- pkgdepends::new_pkg_download_proposal(remotes)
-    remotes_deps$resolve()
-    remotes_deps$get_resolution()
-  } else {
-    data.frame(package = character(0), needscompilation = character(0))
+  if (is.null(remotes)) {
+    remotes <- system.file("webr-remotes", package = "rwasm")
   }
+
+  remotes <- unique(readLines(remotes))
+  remotes_deps <- pkgdepends::new_pkg_download_proposal(remotes)
+  remotes_deps$resolve()
+  remotes_info <- remotes_deps$get_resolution()
 
   # Ignore binaries in remotes resolution
   remotes_info <- remotes_info[remotes_info$needscompilation, ]
   remotes_packages <- remotes_info[["package"]]
+
+  # Include all dependencies in build plan
+  deps <- pkgdepends::new_pkg_deps(packages)
+  deps$resolve()
+  packages <- unique(deps$get_resolution()$package)
 
   # Check for any packages not found in repo-remotes or CRAN
   cran_packages <- packages[!(packages %in% remotes_packages)]
