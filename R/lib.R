@@ -6,7 +6,7 @@ make_library <- function(repo_dir = "./repo", lib_dir = "./lib", strip = NULL) {
 
   pkgs <- fs::dir_ls(contrib_bin, glob = "*.tgz", recurse = FALSE)
   lapply(pkgs, function(pkg) {
-    untar(pkg[[1]], exdir = lib_dir)
+    untar(pkg, exdir = lib_dir)
   })
 
   # Strip out directories requested to be removed
@@ -16,6 +16,49 @@ make_library <- function(repo_dir = "./repo", lib_dir = "./lib", strip = NULL) {
         fs::dir_delete(fs::path(dir))
       }
     })
+  })
+
+  invisible(0)
+}
+
+make_vfs_repo <- function(repo_dir = "./repo") {
+  r_version <- getOption("rwasm.webr_version")
+  contrib_bin <- fs::path(repo_dir, "bin", "emscripten", "contrib",
+                          paste0(r_version$major, ".", r_version$minor))
+  pkgs <- fs::dir_ls(contrib_bin, glob = "*.tgz", recurse = FALSE)
+  lapply(pkgs, function(pkg) {
+    # Extract the package contents
+    tmp_dir <- fs::path(tempfile())
+    untar(pkg, exdir = tmp_dir)
+
+    pkg_name <- fs::dir_ls(tmp_dir)[[1]]
+    data_file <- fs::path_ext_set(fs::path_file(pkg), ".data")
+    meta_file <- fs::path_ext_set(fs::path_file(pkg), ".js.metadata")
+    js_file <- fs::path_ext_set(fs::path_file(pkg), ".js")
+
+    file_packager <- fs::path(
+      getOption("rwasm.emsdk_root"),
+      "upstream",
+      "emscripten",
+      "tools",
+      "file_packager"
+    )
+
+    # Pack the package contents with Emscripten file_packager
+    withr::with_dir(
+      tmp_dir,
+      system2(file_packager,
+        args = c(
+          data_file, "--preload", paste0("'", pkg_name, "@/'"),
+          "--separate-metadata", paste0("--js-output='", js_file, "'")
+        ),
+        stdout = TRUE,
+        stderr = TRUE
+      )
+    )
+    fs::file_copy(fs::path(tmp_dir, data_file), fs::path(contrib_bin, data_file), overwrite = TRUE)
+    fs::file_copy(fs::path(tmp_dir, meta_file), fs::path(contrib_bin, meta_file), overwrite = TRUE)
+    unlink(tmp_dir, recursive = TRUE)
   })
 
   invisible(0)
