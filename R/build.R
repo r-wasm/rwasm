@@ -44,9 +44,7 @@ wasm_build <- function(pkg, tarball_path, contrib_bin) {
   dir.create(lib_dir)
 
   # Ensure package dependencies are installed to host R
-  deps <- pkgdepends::new_pkg_download_proposal(paste0("deps::", tarball_path))
-  deps$resolve()
-  deps$download()
+  pak::pkg_install(paste0("deps::", tarball_path))
 
   # Prefer to use system R, if it exists
   host_r_bin <- if (Sys.which("R") != "") {
