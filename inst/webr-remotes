@@ -17,3 +17,4 @@ r-wasm/svglite@webr
 r-wasm/systemfonts@webr
 r-wasm/testthat@webr
 r-wasm/xml2@webr
+r-lib/vctrs
