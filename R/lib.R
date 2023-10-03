@@ -1,12 +1,22 @@
-make_library <- function(repo_dir = "./repo", lib_dir = "./lib") {
+make_library <- function(repo_dir = "./repo", lib_dir = "./lib", strip = NULL) {
   fs::dir_create(lib_dir)
   r_version <- getOption("rwasm.webr_version")
   contrib_bin <- fs::path(repo_dir, "bin", "emscripten", "contrib", r_version)
 
-  pkgs <- fs::dir_ls(path = contrib_bin, glob = "*.tgz", recurse = FALSE)
+  pkgs <- fs::dir_ls(contrib_bin, glob = "*.tgz", recurse = FALSE)
   lapply(pkgs, function(pkg) {
     untar(pkg[[1]], exdir = lib_dir)
   })
+
+  # Strip out directories requested to be removed
+  fs::dir_walk(lib_dir, type = "directory", function(pkg_dir) {
+    fs::dir_walk(pkg_dir, type = "directory", function(dir) {
+      if (fs::path_file(dir) %in% strip) {
+        fs::dir_delete(fs::path(dir))
+      }
+    })
+  })
+
   invisible(0)
 }
 
