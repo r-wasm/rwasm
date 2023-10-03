@@ -77,7 +77,7 @@ wasm_build <- function(pkg, tarball_path, contrib_bin) {
     fs::dir_ls(tmp_dir, glob = "*.tgz"),
     fs::dir_ls(tmp_dir, glob = "*.tar.gz")
   )[[1]]
-  bin_file <- fs::path_file(bin_path)
-  bin_dest <- fs::path(contrib_bin, gsub("\\.tar.gz$", ".tgz", bin_file))
+  bin_ver <- packageDescription(pkg, lib.loc = lib_dir, fields = "Version")
+  bin_dest <- fs::path(contrib_bin, paste0(pkg, "_", bin_ver, ".tgz"))
   fs::file_copy(bin_path, bin_dest, overwrite = TRUE)
 }
