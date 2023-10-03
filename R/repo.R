@@ -49,10 +49,10 @@ update_repo <- function(packages, remotes = NULL, repo_dir = "./repo") {
 
   writeLines(sprintf("Processing %d package(s).", length(packages)))
 
-  cran_url <- getOption("repos")[["CRAN"]]
-  cran_url <- gsub("/$", "", cran_url)
+  # Ensure that we're getting true source packages from PPM
+  ppm_source_url <- "https://packagemanager.posit.co/cran/latest"
   host_packages <- row.names(installed.packages())
-  cran_info <- available.packages()
+  cran_info <- available.packages(repos = ppm_source_url)
 
   # Create contrib paths
   contrib_src <- fs::path(repo_dir, "src", "contrib")
@@ -82,8 +82,10 @@ update_repo <- function(packages, remotes = NULL, repo_dir = "./repo") {
   remotes_deps$resolve()
   remotes_info <- remotes_deps$get_resolution()
 
-  # Ignore binaries in remotes resolution
+  # Ignore binaries and Recommended subdir in remotes resolution
   remotes_info <- remotes_info[remotes_info$needscompilation, ]
+  remotes_info <- remotes_info[remotes_info$direct, ]
+  remotes_info <- remotes_info[!grepl("/Recommended/", remotes_info$target), ]
   remotes_packages <- remotes_info[["package"]]
 
   # Include all dependencies in build plan
@@ -150,8 +152,6 @@ update_repo <- function(packages, remotes = NULL, repo_dir = "./repo") {
       tarball_file <- tarball(pkg, new_ver_string)
       tarball_path <- fs::path(contrib_src, tarball_file)
 
-      # Ensure we're getting true source packages from PPM
-      ppm_source_url <- "https://packagemanager.posit.co/cran/latest"
       new_url <- paste0(ppm_source_url, "/src/contrib/", tarball_file)
       download.file(new_url, tarball_path)
     }
