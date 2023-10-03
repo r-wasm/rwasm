@@ -78,7 +78,7 @@ update_repo <- function(packages, remotes = NULL, repo_dir = "./repo") {
     remotes_deps$resolve()
     remotes_deps$get_resolution()
   } else {
-    list(package = character(0))
+    data.frame(package = character(0), needscompilation = character(0))
   }
 
   # Ignore binaries in remotes resolution
