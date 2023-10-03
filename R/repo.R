@@ -143,7 +143,10 @@ update_repo <- function(packages, remotes = NULL, repo_dir = "./repo") {
     } else {
       tarball_file <- tarball(pkg, new_ver_string)
       tarball_path <- fs::path(contrib_src, tarball_file)
-      new_url <- paste0(cran_url, "/src/contrib/", tarball_file)
+
+      # Ensure we're getting true source packages from PPM
+      ppm_source_url <- "https://packagemanager.posit.co/cran/latest"
+      new_url <- paste0(ppm_source_url, "/src/contrib/", tarball_file)
       download.file(new_url, tarball_path)
     }
 
