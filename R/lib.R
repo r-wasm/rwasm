@@ -10,8 +10,11 @@ make_library <- function(repo_dir = "./repo", lib_dir = "./lib") {
   invisible(0)
 }
 
-make_vfs_image <- function(out_dir = "./vfs", lib_dir = "./lib", ...) {
-  make_library(...)
+make_vfs_image <- function(out_dir = "./vfs", ...) {
+  lib_dir <- fs::path(tempfile())
+  on.exit(unlink(lib_dir, recursive = TRUE), add = TRUE)
+
+  make_library(lib_dir = lib_dir, ...)
   fs::dir_create(out_dir)
 
   file_packager <- fs::path(
