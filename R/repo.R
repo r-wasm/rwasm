@@ -156,8 +156,10 @@ update_repo <- function(packages, remotes = NULL, repo_dir = "./repo") {
       download.file(new_url, tarball_path)
     }
 
-    wasm_build(pkg, tarball_path, contrib_bin)
-    need_update <- TRUE
+    status <- wasm_build(pkg, tarball_path, contrib_bin)
+    if (status == 0) {
+      need_update <- TRUE
+    }
   }
 
   if (need_update) {

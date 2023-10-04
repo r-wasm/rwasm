@@ -60,7 +60,7 @@ wasm_build <- function(pkg, tarball_path, contrib_bin) {
   }
 
   # Build the package
-  withr::with_dir(
+  status <- withr::with_dir(
     tmp_dir,
     system2(host_r_bin,
       args = c(
@@ -71,6 +71,7 @@ wasm_build <- function(pkg, tarball_path, contrib_bin) {
       env = webr_env
     )
   )
+  if (status != 0) return(status)
 
   # Copy to local CRAN-like repo directory
   bin_path <- c(
@@ -80,4 +81,6 @@ wasm_build <- function(pkg, tarball_path, contrib_bin) {
   bin_ver <- packageDescription(pkg, lib.loc = lib_dir, fields = "Version")
   bin_dest <- fs::path(contrib_bin, paste0(pkg, "_", bin_ver, ".tgz"))
   fs::file_copy(bin_path, bin_dest, overwrite = TRUE)
+
+  status
 }
