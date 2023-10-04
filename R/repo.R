@@ -163,8 +163,28 @@ add_pkg <- function(packages, remotes = NULL, repo_dir = "./repo") {
     }
   }
 
+  # Update the PACKAGES files
   if (need_update) {
-    tools::write_PACKAGES(contrib_src, verbose = TRUE)
-    tools::write_PACKAGES(contrib_bin, verbose = TRUE, type = "mac.binary")
+    update_packages(contrib_src, contrib_bin)
   }
+}
+
+rm_pkg <- function(packages, repo_dir = "./repo") {
+  r_version <- R_system_version(getOption("rwasm.webr_version"))
+  contrib_src <- fs::path(repo_dir, "src", "contrib")
+  contrib_bin <- fs::path(repo_dir, "bin", "emscripten", "contrib",
+                          paste0(r_version$major, ".", r_version$minor))
+
+  for (pkg in packages) {
+    src <- fs::dir_ls(contrib_src, glob = paste0(contrib_src, "/", pkg, "_*"))
+    bin <- fs::dir_ls(contrib_bin, glob = paste0(contrib_bin, "/", pkg, "_*"))
+    fs::file_delete(c(src, bin))
+  }
+
+  update_packages(contrib_src, contrib_bin)
+}
+
+update_packages <- function(contrib_src, contrib_bin) {
+  tools::write_PACKAGES(contrib_src, verbose = TRUE)
+  tools::write_PACKAGES(contrib_bin, verbose = TRUE, type = "mac.binary")
 }
