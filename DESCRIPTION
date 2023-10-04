@@ -13,7 +13,9 @@ Description: Utilities to help build R packages compiled for WebAssembly,
 License: MIT + file LICENSE
 Imports: 
     fs,
+    pak,
     pkgdepends,
+    utils,
     withr,
     zip
 Encoding: UTF-8
