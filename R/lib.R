@@ -40,10 +40,12 @@ make_vfs_repo <- function(repo_dir = "./repo") {
     tmp_dir <- fs::path(tempfile())
     untar(pkg, exdir = tmp_dir)
 
-    pkg_name <- fs::dir_ls(tmp_dir)[[1]]
-    data_file <- fs::path_ext_set(fs::path_file(pkg), ".data")
-    meta_file <- fs::path_ext_set(fs::path_file(pkg), ".js.metadata")
-    js_file <- fs::path_ext_set(fs::path_file(pkg), ".js")
+    pkg_path <- fs::dir_ls(tmp_dir)[[1]]
+    message(paste("Packaging:", fs::path_file(pkg_path)))
+    pkg_file <- fs::path_file(pkg)
+    data_file <- fs::path_ext_set(pkg_file, ".data")
+    meta_file <- fs::path_ext_set(pkg_file, ".js.metadata")
+    js_file <- fs::path_ext_set(pkg_file, ".js")
 
     file_packager <- fs::path(
       getOption("rwasm.emsdk_root"),
@@ -58,7 +60,7 @@ make_vfs_repo <- function(repo_dir = "./repo") {
       tmp_dir,
       system2(file_packager,
         args = c(
-          data_file, "--preload", paste0("'", pkg_name, "@/'"),
+          data_file, "--preload", paste0("'", pkg_path, "@/'"),
           "--separate-metadata", paste0("--js-output='", js_file, "'")
         ),
         stdout = TRUE,
