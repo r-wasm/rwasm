@@ -11,7 +11,8 @@ find_webr <- function() {
       }
     }
   }
-  stop("Unable to find webR root directory.")
+  warning("Unable to find webR root directory.")
+  NULL
 }
 
 find_emsdk <- function() {
@@ -27,7 +28,8 @@ find_emsdk <- function() {
       }
     }
   }
-  stop("Unable to find `EMSDK` directory.")
+  warning("Unable to find `EMSDK` directory.")
+  NULL
 }
 
 .onLoad <- function(libname, pkgname) {
