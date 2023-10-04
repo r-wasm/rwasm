@@ -1,22 +1,23 @@
 Package: rwasm
 Title: Build R Packages for WebAssembly
 Version: 0.0.1.9000
-Authors@R: 
-    c(
-        person("George", "Stagg", , "george.stagg@posit.co", role = c("aut", "cre")),
-        person("Lionel", "Henry", , "lionel@posit.co", c("ctb")),
-        person("Posit Software, PBC", role = c("cph", "fnd"))
-    )
+Authors@R: c(
+    person("George", "Stagg", , "george.stagg@posit.co", role = c("aut", "cre")),
+    person("Lionel", "Henry", , "lionel@posit.co", role = "ctb"),
+    person("Posit Software, PBC", role = c("cph", "fnd"))
+  )
 Description: Utilities to help build R packages compiled for WebAssembly,
     manage binary WebAssembly R package libraries and repositories, and
     prepare webR compatible filesystem images for static web hosting of
     selected data files and R packages.
 License: MIT + file LICENSE
-Encoding: UTF-8
-Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.3
 Imports: 
     fs,
     pkgdepends,
     withr,
     zip
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.3
+SystemRequirements: webR development installation
+    (https://webr.r-wasm.org/)
