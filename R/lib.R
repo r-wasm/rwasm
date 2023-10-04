@@ -25,6 +25,15 @@ make_vfs_repo <- function(repo_dir = "./repo") {
   r_version <- R_system_version(getOption("rwasm.webr_version"))
   contrib_bin <- fs::path(repo_dir, "bin", "emscripten", "contrib",
                           paste0(r_version$major, ".", r_version$minor))
+
+  # Clean up any previously created vfs images
+  pkg_data <- fs::dir_ls(contrib_bin, glob = "*.data")
+  pkg_meta <- fs::dir_ls(contrib_bin, glob = "*.metadata")
+  lapply(c(pkg_data, pkg_meta), function(f) {
+    fs::file_delete(f)
+  })
+
+  # Create vfs images for each package
   pkgs <- fs::dir_ls(contrib_bin, glob = "*.tgz", recurse = FALSE)
   lapply(pkgs, function(pkg) {
     # Extract the package contents
