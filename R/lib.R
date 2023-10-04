@@ -1,3 +1,17 @@
+#' Make an R library directory containing all the binary R packages in the given
+#' CRAN-like repository.
+#'
+#' The `strip` argument may be used to strip certain directories from R packages
+#' installed to the library given by `lib_dir`. This can be used to reduce the
+#' total library file size by removing directories that are not strictly
+#' necessary for the R package to run, such as directories containing
+#' documentation and vignettes.
+#'
+#' @param repo_dir The CRAN-like repository directory.
+#' @param lib_dir The library directory. Will be created if it does not exist.
+#' @param strip A character vector of directories to strip from the packages.
+#'
+#' @export
 make_library <- function(repo_dir = "./repo", lib_dir = "./lib", strip = NULL) {
   fs::dir_create(lib_dir)
   r_version <- R_system_version(getOption("rwasm.webr_version"))
@@ -20,9 +34,18 @@ make_library <- function(repo_dir = "./repo", lib_dir = "./lib", strip = NULL) {
     })
   })
 
-  invisible(0)
+  invisible(NULL)
 }
 
+#' Add Emscripten VFS images to a given CRAN-like repo
+#'
+#' Emscripten VFS images may be used by webR to download and install R packages
+#' faster by mounting images to the VFS, rather than decompressing and
+#' extracting `tar` files.
+#'
+#' @param repo_dir  The CRAN-like repository directory.
+#'
+#' @export
 make_vfs_repo <- function(repo_dir = "./repo") {
   r_version <- R_system_version(getOption("rwasm.webr_version"))
   contrib_bin <- fs::path(
@@ -84,9 +107,23 @@ make_vfs_repo <- function(repo_dir = "./repo") {
     unlink(tmp_dir, recursive = TRUE)
   })
 
-  invisible(0)
+  invisible(NULL)
 }
 
+#' Build an Emscripten VFS image containing all the binary R packages in the
+#' given CRAN-like repository.
+#'
+#' This creates a single Emscripten VFS image of an R library that contains all
+#' the binary R packages in the given repository. This image can be statically
+#' hosted on a web server and downloaded at runtime by webR as an efficient way
+#' to provide a pre-configured R library without installing each R package
+#' individually.
+#'
+#' @param out_dir The output directory for the result VFS image files.
+#' @param ... Additional arguments passed to [make_library].
+#'
+#' @return The status code as returned by Emscripten's `file_packager` tool.
+#' @export
 make_vfs_image <- function(out_dir = "./vfs", ...) {
   lib_dir <- fs::path(tempfile())
   on.exit(unlink(lib_dir, recursive = TRUE), add = TRUE)
@@ -122,4 +159,5 @@ make_vfs_image <- function(out_dir = "./vfs", ...) {
       paste(res, collapse = "\n")
     )
   }
+  status
 }

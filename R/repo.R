@@ -21,7 +21,7 @@ make_remote_tarball <- function(pkg, url, target, contrib_src) {
     untar(
       source_tarball,
       exdir = file.path(tmp_dir, pkg),
-      extra = "--strip-components=1"
+      extras = "--strip-components=1"
     )
   } else {
     # Try to unzip if untar fails
@@ -40,11 +40,27 @@ make_remote_tarball <- function(pkg, url, target, contrib_src) {
   )
 }
 
+#' Add one or more packages listed in a text file to a CRAN-like repository
+#'
+#' @param list_file A file path containing a list of R packages, one per line.
+#' @param ... Additional arguments passed to [add_pkg].
+#'
+#' @export
 add_list <- function(list_file, ...) {
   pkgs <- unique(readLines(list_file))
   add_pkg(pkgs)
 }
 
+#' Add packages to a CRAN-like repository
+#'
+#' @param packages A character vector of one or more package names.
+#' @param remotes A character vector of package references to prefer over CRAN.
+#'   If `NULL`, use a built-in list of references to packages
+#'   pre-modified for webR.
+#' @param repo_dir The CRAN-like repository directory. Will be created if it
+#'   does not exist.
+#'
+#' @export
 add_pkg <- function(packages, remotes = NULL, repo_dir = "./repo") {
   r_version <- R_system_version(getOption("rwasm.webr_version"))
 
@@ -78,9 +94,9 @@ add_pkg <- function(packages, remotes = NULL, repo_dir = "./repo") {
 
   if (is.null(remotes)) {
     remotes <- system.file("webr-remotes", package = "rwasm")
+    remotes <- unique(readLines(remotes))
   }
 
-  remotes <- unique(readLines(remotes))
   remotes_deps <- pkgdepends::new_pkg_download_proposal(remotes)
   remotes_deps$resolve()
   remotes_info <- remotes_deps$get_resolution()
@@ -100,7 +116,7 @@ add_pkg <- function(packages, remotes = NULL, repo_dir = "./repo") {
   cran_packages <- packages[!(packages %in% remotes_packages)]
   if (any(!(cran_packages %in% rownames(cran_info)))) {
     not_found <- cran_packages[!(cran_packages %in% rownames(cran_info))]
-    rlang::abort(c(
+    stop(paste(
       "The following packages cannot be found in remotes nor CRAN:",
       paste(not_found, collapse = ", ")
     ))
@@ -171,6 +187,12 @@ add_pkg <- function(packages, remotes = NULL, repo_dir = "./repo") {
   }
 }
 
+#' Remove packages from a CRAN-like repository
+#'
+#' @param packages A character vector of one or more package names.
+#' @param repo_dir The CRAN-like repository directory.
+#'
+#' @export
 rm_pkg <- function(packages, repo_dir = "./repo") {
   r_version <- R_system_version(getOption("rwasm.webr_version"))
   contrib_src <- fs::path(repo_dir, "src", "contrib")
@@ -191,4 +213,5 @@ rm_pkg <- function(packages, repo_dir = "./repo") {
 update_packages <- function(contrib_src, contrib_bin) {
   tools::write_PACKAGES(contrib_src, verbose = TRUE)
   tools::write_PACKAGES(contrib_bin, verbose = TRUE, type = "mac.binary")
+  invisible(NULL)
 }

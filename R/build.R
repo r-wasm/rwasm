@@ -1,3 +1,4 @@
+# Build the given R package for WebAssembly
 wasm_build <- function(pkg, tarball_path, contrib_bin) {
   # Extract package source to a tempdir
   tmp_dir <- fs::path(tempfile())
