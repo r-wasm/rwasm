@@ -42,7 +42,13 @@ find_emsdk <- function() {
 }
 
 .onAttach <- function(libname, pkgname) {
-  packageStartupMessage(paste("Targeting Wasm packages for R", options("rwasm.webr_version")))
-  packageStartupMessage(paste("With `WEBR_ROOT` directory:", options("rwasm.webr_root")))
-  packageStartupMessage(paste("With `EMSDK` directory:", options("rwasm.emsdk_root")))
+  packageStartupMessage(
+    paste("Targeting Wasm packages for R", options("rwasm.webr_version"))
+  )
+  packageStartupMessage(
+    paste("With `WEBR_ROOT` directory:", options("rwasm.webr_root"))
+  )
+  packageStartupMessage(
+    paste("With `EMSDK` directory:", options("rwasm.emsdk_root"))
+  )
 }

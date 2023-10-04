@@ -57,8 +57,10 @@ add_pkg <- function(packages, remotes = NULL, repo_dir = "./repo") {
 
   # Create contrib paths
   contrib_src <- fs::path(repo_dir, "src", "contrib")
-  contrib_bin <- fs::path(repo_dir, "bin", "emscripten", "contrib",
-                          paste0(r_version$major, ".", r_version$minor))
+  contrib_bin <- fs::path(
+    repo_dir, "bin", "emscripten", "contrib",
+    paste0(r_version$major, ".", r_version$minor)
+  )
   fs::dir_create(contrib_src)
   fs::dir_create(contrib_bin)
 
@@ -172,8 +174,10 @@ add_pkg <- function(packages, remotes = NULL, repo_dir = "./repo") {
 rm_pkg <- function(packages, repo_dir = "./repo") {
   r_version <- R_system_version(getOption("rwasm.webr_version"))
   contrib_src <- fs::path(repo_dir, "src", "contrib")
-  contrib_bin <- fs::path(repo_dir, "bin", "emscripten", "contrib",
-                          paste0(r_version$major, ".", r_version$minor))
+  contrib_bin <- fs::path(
+    repo_dir, "bin", "emscripten", "contrib",
+    paste0(r_version$major, ".", r_version$minor)
+  )
 
   for (pkg in packages) {
     src <- fs::dir_ls(contrib_src, glob = paste0(contrib_src, "/", pkg, "_*"))

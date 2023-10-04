@@ -1,8 +1,10 @@
 make_library <- function(repo_dir = "./repo", lib_dir = "./lib", strip = NULL) {
   fs::dir_create(lib_dir)
   r_version <- R_system_version(getOption("rwasm.webr_version"))
-  contrib_bin <- fs::path(repo_dir, "bin", "emscripten", "contrib",
-                          paste0(r_version$major, ".", r_version$minor))
+  contrib_bin <- fs::path(
+    repo_dir, "bin", "emscripten", "contrib",
+    paste0(r_version$major, ".", r_version$minor)
+  )
 
   pkgs <- fs::dir_ls(contrib_bin, glob = "*.tgz", recurse = FALSE)
   lapply(pkgs, function(pkg) {
@@ -23,8 +25,10 @@ make_library <- function(repo_dir = "./repo", lib_dir = "./lib", strip = NULL) {
 
 make_vfs_repo <- function(repo_dir = "./repo") {
   r_version <- R_system_version(getOption("rwasm.webr_version"))
-  contrib_bin <- fs::path(repo_dir, "bin", "emscripten", "contrib",
-                          paste0(r_version$major, ".", r_version$minor))
+  contrib_bin <- fs::path(
+    repo_dir, "bin", "emscripten", "contrib",
+    paste0(r_version$major, ".", r_version$minor)
+  )
 
   # Clean up any previously created vfs images
   pkg_data <- fs::dir_ls(contrib_bin, glob = "*.data")
@@ -67,8 +71,16 @@ make_vfs_repo <- function(repo_dir = "./repo") {
         stderr = TRUE
       )
     )
-    fs::file_copy(fs::path(tmp_dir, data_file), fs::path(contrib_bin, data_file), overwrite = TRUE)
-    fs::file_copy(fs::path(tmp_dir, meta_file), fs::path(contrib_bin, meta_file), overwrite = TRUE)
+    fs::file_copy(
+      fs::path(tmp_dir, data_file),
+      fs::path(contrib_bin, data_file),
+      overwrite = TRUE
+    )
+    fs::file_copy(
+      fs::path(tmp_dir, meta_file),
+      fs::path(contrib_bin, meta_file),
+      overwrite = TRUE
+    )
     unlink(tmp_dir, recursive = TRUE)
   })
 

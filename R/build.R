@@ -71,7 +71,9 @@ wasm_build <- function(pkg, tarball_path, contrib_bin) {
       env = webr_env
     )
   )
-  if (status != 0) return(status)
+  if (status != 0) {
+    return(status)
+  }
 
   # Copy to local CRAN-like repo directory
   bin_path <- c(
