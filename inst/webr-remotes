@@ -8,7 +8,6 @@ r-wasm/gt@webr
 r-wasm/htmlwidgets@webr
 r-wasm/httpuv@webr
 r-wasm/later@webr
-r-wasm/mgcv@webr
 r-wasm/mvtnorm@webr
 r-wasm/openssl@webr
 r-wasm/rsample@webr
