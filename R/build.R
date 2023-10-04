@@ -15,7 +15,7 @@ wasm_build <- function(pkg, tarball_path, contrib_bin) {
   for (mk in mkvars_src) {
     if (fs::is_file(mk)) {
       message(paste("Using Makevars override:", mk))
-      fs::file_copy(mk, mkvars_dest)
+      fs::file_copy(mk, mkvars_dest, overwrite = TRUE)
       configure_flag <- "--no-configure"
       break
     }
