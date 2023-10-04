@@ -1,7 +1,3 @@
-add_pkg <- function(...) {
-  update_repo(...)
-}
-
 # Download a remote source to src/contrib
 make_remote_tarball <- function(pkg, url, target, contrib_src) {
   tmp_dir <- tempfile()
@@ -44,8 +40,13 @@ make_remote_tarball <- function(pkg, url, target, contrib_src) {
   )
 }
 
-update_repo <- function(packages, remotes = NULL, repo_dir = "./repo") {
-  r_version <- getOption("rwasm.webr_version")
+add_list <- function(list_file, ...) {
+  pkgs <- unique(readLines(list_file))
+  add_pkg(pkgs)
+}
+
+add_pkg <- function(packages, remotes = NULL, repo_dir = "./repo") {
+  r_version <- R_system_version(getOption("rwasm.webr_version"))
 
   writeLines(sprintf("Processing %d package(s).", length(packages)))
 
