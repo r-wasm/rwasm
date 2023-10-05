@@ -1,0 +1,16 @@
+# Set R version information to be written to DESCRIPTION
+r_version <- R_system_version(Sys.getenv("WEBR_VERSION"))
+
+base_version <- R.Version()
+base_version$major <- r_version$major
+base_version$minor <- paste(c(r_version$minor, r_version$patch), collapse = ".")
+base_version$platform <- "wasm32-unknown-emscripten"
+base_version$arch <- "wasm32"
+base_version$os <- "emscripten"
+base_version$system <- "wasm32, emscripten"
+
+shim_R.Version <- function() { base_version }
+shim_R.version <- base_version
+
+utils::assignInNamespace("R.version", shim_R.version, ns = "base")
+utils::assignInNamespace("R.Version", shim_R.Version, ns = "base")

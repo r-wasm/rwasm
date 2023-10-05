@@ -24,8 +24,11 @@ wasm_build <- function(pkg, tarball_path, contrib_bin) {
 
   # Setup environment for wasm compilation
   webr_vars <- system.file("webr-vars.mk", package = "rwasm")
+  webr_profile <- system.file("webr-profile", package = "rwasm")
   webr_env <- c(
+    paste0("R_PROFILE_USER=", webr_profile),
     paste0("R_MAKEVARS_USER=", webr_vars),
+    paste0("WEBR_VERSION=", getOption("rwasm.webr_version")),
     paste0("WEBR_ROOT=", getOption("rwasm.webr_root")),
     paste0(
       "PATH=\"", getOption("rwasm.webr_root"),
