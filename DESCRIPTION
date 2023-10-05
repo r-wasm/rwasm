@@ -11,7 +11,8 @@ Description: Utilities to help build R packages compiled for WebAssembly,
     prepare webR compatible filesystem images for static web hosting of
     selected data files and R packages.
 License: MIT + file LICENSE
-Imports: 
+Imports:
+    dplyr,
     fs,
     pak,
     pkgdepends,

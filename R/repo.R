@@ -42,7 +42,8 @@ make_remote_tarball <- function(pkg, url, target, contrib_src) {
 
 #' Add one or more packages listed in a text file to a CRAN-like repository
 #'
-#' @param list_file A file path containing a list of R packages, one per line.
+#' @param list_file A file path containing a list of R package references, one
+#'   per line.
 #' @param ... Additional arguments passed to [add_pkg].
 #'
 #' @export
@@ -53,23 +54,20 @@ add_list <- function(list_file, ...) {
 
 #' Add packages to a CRAN-like repository
 #'
-#' @param packages A character vector of one or more package names.
-#' @param remotes A character vector of package references to prefer over CRAN.
-#'   If `NULL`, use a built-in list of references to packages
-#'   pre-modified for webR.
+#' @param packages A character vector of one or more package references.
+#' @param remotes A character vector of package references to prefer as a given
+#'   package's remote source. If `NULL`, use a built-in list of references to
+#'   packages pre-modified for use with webR.
 #' @param repo_dir The CRAN-like repository directory. Will be created if it
 #'   does not exist.
 #'
+#' @importFrom dplyr rows_update
+#' @importFrom pkgdepends new_pkg_download_proposal
 #' @export
 add_pkg <- function(packages, remotes = NULL, repo_dir = "./repo") {
   r_version <- R_system_version(getOption("rwasm.webr_version"))
 
   writeLines(sprintf("Processing %d package(s).", length(packages)))
-
-  # Ensure that we're getting true source packages from PPM
-  ppm_source_url <- "https://packagemanager.posit.co/cran/latest"
-  host_packages <- row.names(installed.packages())
-  cran_info <- available.packages(repos = ppm_source_url)
 
   # Create contrib paths
   contrib_src <- fs::path(repo_dir, "src", "contrib")
@@ -93,47 +91,49 @@ add_pkg <- function(packages, remotes = NULL, repo_dir = "./repo") {
   }
 
   if (is.null(remotes)) {
-    remotes <- system.file("webr-remotes", package = "rwasm")
-    remotes <- unique(readLines(remotes))
+    remotes <- system.file("webr-remotes", package = "rwasm") |>
+      readLines() |>
+      unique()
   }
 
-  remotes_deps <- pkgdepends::new_pkg_download_proposal(remotes)
-  remotes_deps$resolve()
-  remotes_info <- remotes_deps$get_resolution()
+  # Ensure that we're getting CRAN source packages from PPM
+  ppm_config <- list(
+    cran_mirror = "https://packagemanager.posit.co/cran/latest",
+    platforms = "source"
+  )
 
-  # Ignore binaries and Recommended subdir in remotes resolution
-  remotes_info <- remotes_info[remotes_info$needscompilation, ]
+  # Resolve list of package remotes to prefer
+  remotes_deps <- new_pkg_download_proposal(remotes, config = ppm_config)
+  remotes_deps <- remotes_deps$resolve()
+  remotes_info <- remotes_deps$get_resolution()
   remotes_info <- remotes_info[remotes_info$direct, ]
   remotes_info <- remotes_info[!grepl("/Recommended/", remotes_info$target), ]
-  remotes_packages <- remotes_info[["package"]]
 
-  # Include all dependencies in build plan
-  deps <- pkgdepends::new_pkg_deps(packages)
-  deps$resolve()
-  packages <- unique(deps$get_resolution()$package)
+  # Resolve list of requested packages and dependencies
+  package_deps <- new_pkg_download_proposal(packages, config = ppm_config)
+  package_deps <- package_deps$resolve()
+  package_info <- package_deps$get_resolution()
+  package_info <- package_info[!grepl("/Recommended/", package_info$target), ]
 
-  # Check for any packages not found in repo-remotes or CRAN
-  cran_packages <- packages[!(packages %in% remotes_packages)]
-  if (any(!(cran_packages %in% rownames(cran_info)))) {
-    not_found <- cran_packages[!(cran_packages %in% rownames(cran_info))]
+  # Prefer package remotes given in remotes list
+  packages <- package_info |>
+    rows_update(remotes_info, by = "package", unmatched = "ignore")
+
+  # Check for any packages not found
+  if (any(packages$status == "FAILED")) {
     stop(paste(
-      "The following packages cannot be found in remotes nor CRAN:",
-      paste(not_found, collapse = ", ")
+      "The following package references cannot be found:",
+      paste(packages$ref[packages$status == "FAILED"], collapse = ", ")
     ))
   }
 
-  versions <- cran_info[cran_packages, "Version", drop = TRUE]
-  names(versions) <- cran_packages
-  versions[remotes_packages] <- remotes_info[["version"]]
-
   need_update <- FALSE
-  for (pkg in packages) {
-    tarball <- function(pkg, ver) {
-      paste0(pkg, "_", ver, ".tar.gz")
-    }
+  for (n in 1:nrow(packages)) {
+    pkg_row <- packages[n, ]
+    pkg <- pkg_row$package
 
     # Get version for this version of the package
-    new_ver_string <- versions[[pkg]]
+    new_ver_string <- pkg_row$version
     new_ver <- as.package_version(new_ver_string)
 
     # If the package already exists in the given repo
@@ -145,36 +145,26 @@ add_pkg <- function(packages, remotes = NULL, repo_dir = "./repo") {
       }
 
       # Remove the old package from disk
-      old_tarball <- tarball(pkg, old_ver)
+      old_tarball <- paste0(pkg, "_", old_ver, ".tar.gz")
       unlink(fs::path(contrib_src, old_tarball))
       unlink(fs::path(contrib_bin, old_tarball))
     }
 
-    # Download the new package
-    if (pkg %in% remotes_packages) {
-      remote_info <- remotes_info[match(pkg, remotes_info[["package"]]), ]
-      remote_target <- remote_info[["target"]]
-
-      if (!file.exists(file.path("repo", remote_target))) {
-        need_update <- TRUE
-        make_remote_tarball(
-          remote_info[["package"]],
-          remote_info[["sources"]][[1]][[1]],
-          remote_target,
-          contrib_src
-        )
-      }
-
-      tarball_file <- basename(remote_target)
-      tarball_path <- fs::path(contrib_src, tarball_file)
-    } else {
-      tarball_file <- tarball(pkg, new_ver_string)
-      tarball_path <- fs::path(contrib_src, tarball_file)
-
-      new_url <- paste0(ppm_source_url, "/src/contrib/", tarball_file)
-      download.file(new_url, tarball_path)
+    # Download the new package from remote source
+    if (!fs::file_exists(fs::path("repo", pkg_row$target))) {
+      need_update <- TRUE
+      make_remote_tarball(
+        pkg_row$package,
+        pkg_row$sources[[1]][[1]],
+        pkg_row$target,
+        contrib_src
+      )
     }
 
+    tarball_file <- basename(pkg_row$target)
+    tarball_path <- fs::path(contrib_src, tarball_file)
+
+    # Build the package
     status <- wasm_build(pkg, tarball_path, contrib_bin)
     if (status == 0) {
       need_update <- TRUE

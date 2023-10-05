@@ -7,11 +7,11 @@
 add_pkg(packages, remotes = NULL, repo_dir = "./repo")
 }
 \arguments{
-\item{packages}{A character vector of one or more package names.}
+\item{packages}{A character vector of one or more package references.}
 
-\item{remotes}{A character vector of package references to prefer over CRAN.
-If \code{NULL}, use a built-in list of references to packages
-pre-modified for webR.}
+\item{remotes}{A character vector of package references to prefer as a given
+package's remote source. If \code{NULL}, use a built-in list of references to
+packages pre-modified for use with webR.}
 
 \item{repo_dir}{The CRAN-like repository directory. Will be created if it
 does not exist.}

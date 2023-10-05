@@ -7,7 +7,8 @@
 add_list(list_file, ...)
 }
 \arguments{
-\item{list_file}{A file path containing a list of R packages, one per line.}
+\item{list_file}{A file path containing a list of R package references, one
+per line.}
 
 \item{...}{Additional arguments passed to \link{add_pkg}.}
 }
