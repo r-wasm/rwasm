@@ -23,22 +23,17 @@ wasm_build <- function(pkg, tarball_path, contrib_bin) {
   }
 
   # Setup environment for wasm compilation
+  webr_root <- getOption("rwasm.webr_root")
+  webr_version <- getOption("rwasm.webr_version")
   webr_vars <- system.file("webr-vars.mk", package = "rwasm")
   webr_profile <- system.file("webr-profile", package = "rwasm")
   webr_env <- c(
     paste0("R_PROFILE_USER=", webr_profile),
     paste0("R_MAKEVARS_USER=", webr_vars),
-    paste0("WEBR_VERSION=", getOption("rwasm.webr_version")),
-    paste0("WEBR_ROOT=", getOption("rwasm.webr_root")),
-    paste0(
-      "PATH=\"", getOption("rwasm.webr_root"),
-      "/wasm/bin:", Sys.getenv("PATH"), "\""
-    ),
-    paste0(
-      "PKG_CONFIG_PATH=",
-      getOption("rwasm.webr_root"),
-      "/wasm/lib/pkgconfig"
-    )
+    paste0("WEBR_VERSION=", webr_version),
+    paste0("WEBR_ROOT=", webr_root),
+    sprintf("PATH='%s/wasm/bin:%s'", webr_root, Sys.getenv("PATH")),
+    sprintf("PKG_CONFIG_PATH=%s/wasm/lib/pkgconfig", webr_root)
   )
 
   # Need to use an empty library otherwise R might try to load wasm packages
@@ -57,7 +52,7 @@ wasm_build <- function(pkg, tarball_path, contrib_bin) {
     fs::path(
       getOption("rwasm.webr_root"),
       "host",
-      paste0("R-", getOption("rwasm.webr_version")),
+      paste0("R-", webr_verion),
       "bin",
       "R"
     )

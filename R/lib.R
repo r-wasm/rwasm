@@ -87,8 +87,8 @@ make_vfs_repo <- function(repo_dir = "./repo") {
       tmp_dir,
       system2(file_packager,
         args = c(
-          data_file, "--preload", paste0("'", pkg_path, "@/'"),
-          "--separate-metadata", paste0("--js-output='", js_file, "'")
+          data_file, "--preload", sprintf("'%s@/'", pkg_path),
+          "--separate-metadata", sprintf("--js-output='%s'", js_file)
         ),
         stdout = TRUE,
         stderr = TRUE
@@ -144,7 +144,7 @@ make_vfs_image <- function(out_dir = "./vfs", ...) {
     out_dir,
     system2(file_packager,
       args = c(
-        "library.data", "--preload", paste0("'", lib_abs, "@/'"),
+        "library.data", "--preload", sprintf("'%s@/'", lib_abs),
         "--separate-metadata", "--js-output='library.js'"
       ),
       stdout = TRUE,
