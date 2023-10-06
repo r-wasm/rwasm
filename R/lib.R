@@ -63,47 +63,9 @@ make_vfs_repo <- function(repo_dir = "./repo") {
   # Create vfs images for each package
   pkgs <- fs::dir_ls(contrib_bin, glob = "*.tgz", recurse = FALSE)
   lapply(pkgs, function(pkg) {
-    # Extract the package contents
     tmp_dir <- fs::path(tempfile())
     untar(pkg, exdir = tmp_dir)
-
-    pkg_path <- fs::dir_ls(tmp_dir)[[1]]
-    message(paste("Packaging:", fs::path_file(pkg_path)))
-    pkg_file <- fs::path_file(pkg)
-    data_file <- fs::path_ext_set(pkg_file, ".data")
-    meta_file <- fs::path_ext_set(pkg_file, ".js.metadata")
-    js_file <- fs::path_ext_set(pkg_file, ".js")
-
-    file_packager <- fs::path(
-      getOption("rwasm.emsdk_root"),
-      "upstream",
-      "emscripten",
-      "tools",
-      "file_packager"
-    )
-
-    # Pack the package contents with Emscripten file_packager
-    withr::with_dir(
-      tmp_dir,
-      system2(file_packager,
-        args = c(
-          data_file, "--preload", sprintf("'%s@/'", pkg_path),
-          "--separate-metadata", sprintf("--js-output='%s'", js_file)
-        ),
-        stdout = TRUE,
-        stderr = TRUE
-      )
-    )
-    fs::file_copy(
-      fs::path(tmp_dir, data_file),
-      fs::path(contrib_bin, data_file),
-      overwrite = TRUE
-    )
-    fs::file_copy(
-      fs::path(tmp_dir, meta_file),
-      fs::path(contrib_bin, meta_file),
-      overwrite = TRUE
-    )
+    file_packager(fs::dir_ls(tmp_dir)[[1]], contrib_bin, fs::path_file(pkg))
     unlink(tmp_dir, recursive = TRUE)
   })
 
@@ -122,36 +84,65 @@ make_vfs_repo <- function(repo_dir = "./repo") {
 #' @param out_dir The output directory for the result VFS image files.
 #' @param ... Additional arguments passed to [make_library].
 #'
-#' @return The status code as returned by Emscripten's `file_packager` tool.
 #' @export
-make_vfs_image <- function(out_dir = "./vfs", ...) {
+make_vfs_library <- function(out_dir = "./vfs", ...) {
   lib_dir <- fs::path(tempfile())
+  lib_abs <- fs::path_abs(lib_dir)
   on.exit(unlink(lib_dir, recursive = TRUE), add = TRUE)
 
   make_library(lib_dir = lib_dir, ...)
+  file_packager(lib_abs, out_dir = out_dir, out_name = "library.data")
+}
+
+
+#' Build an Emscripten VFS image
+#' 
+#' Uses Emscripten's `file_packager` tool to build an Emscripten VFS image that
+#' can be mounted by webR. The image may contain arbitrary data that will be
+#' made available for use by the WebAssembly R process once mounted.
+#' 
+#' Outputs two files (named by `out_name`) in the `out_dir` directory: a data
+#' file with extension `".data"`, and a metadata file with extension
+#' `".js.metadata"`. Both files should be hosted on the web so that their URL
+#' can be passed to Emscripten for mounting.
+#'
+#' @param in_dir A directory path to be packaged into the Emscripten VFS image.
+#' @param out_dir A directory path to where the output files will be written.
+#' @param out_name The output Emscripten VFS image file name base. If `NULL`,
+#'   defaults to the final component of the input directory path.
+#'
+#' @export
+file_packager <- function(in_dir, out_dir = "./vfs", out_name = NULL) {
   fs::dir_create(out_dir)
+  
+  if(is.null(out_name)) {
+    out_name <- fs::path_file(in_dir)
+  }
 
-  file_packager <- fs::path(
-    getOption("rwasm.emsdk_root"),
-    "upstream",
-    "emscripten",
-    "tools",
-    "file_packager"
-  )
+  data_file <- fs::path_ext_set(out_name, ".data")
+  meta_file <- fs::path_ext_set(out_name, ".js.metadata")
+  js_file <- fs::path_ext_set(out_name, ".js")
+  message(paste("Packaging:", data_file))
+  
+  file_packager <- fs::path(getOption("rwasm.emsdk_root"), "upstream",
+                            "emscripten", "tools", "file_packager")
 
-  lib_abs <- fs::path_abs(lib_dir)
+  # Pack the contents of in_dir with Emscripten's `file_packager`
+  # Capture stdout/stderr to silence an Emscripten developer warning
   res <- withr::with_dir(
     out_dir,
-    system2(file_packager,
+    system2(
+      file_packager,
       args = c(
-        "library.data", "--preload", sprintf("'%s@/'", lib_abs),
-        "--separate-metadata", "--js-output='library.js'"
+        data_file, "--preload", sprintf("'%s@/'", in_dir),
+        "--separate-metadata", sprintf("--js-output='%s'", js_file)
       ),
       stdout = TRUE,
       stderr = TRUE
     )
   )
 
+  # If there is some problem, print the output of `file_packager` and stop
   status <- attr(res, "status")
   if (!is.null(status) && status != 0) {
     stop(
@@ -159,5 +150,8 @@ make_vfs_image <- function(out_dir = "./vfs", ...) {
       paste(res, collapse = "\n")
     )
   }
-  status
+  
+  # Remove the .js file, we don't need it when using Emscripten's FS.mount()
+  unlink(fs::path(out_dir, js_file))
+  invisible(NULL)
 }

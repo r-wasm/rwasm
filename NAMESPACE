@@ -2,8 +2,9 @@
 
 export(add_list)
 export(add_pkg)
+export(file_packager)
 export(make_library)
-export(make_vfs_image)
+export(make_vfs_library)
 export(make_vfs_repo)
 export(rm_pkg)
 import(utils)
