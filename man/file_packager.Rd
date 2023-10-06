@@ -11,7 +11,7 @@ file_packager(in_dir, out_dir = "./vfs", out_name = NULL)
 
 \item{out_dir}{A directory path to where the output files will be written.}
 
-\item{out_name}{The output Emscripten VFS image file name. If \code{NULL},
+\item{out_name}{The output Emscripten VFS image file name base. If \code{NULL},
 defaults to the final component of the input directory path.}
 }
 \description{
@@ -22,6 +22,6 @@ made available for use by the WebAssembly R process once mounted.
 \details{
 Outputs two files (named by \code{out_name}) in the \code{out_dir} directory: a data
 file with extension \code{".data"}, and a metadata file with extension
-\code{".metadata"}. Both files should be statically hosted on the web so that
-their URL can be passed to Emscripten for mounting.
+\code{".js.metadata"}. Both files should be hosted on the web so that their URL
+can be passed to Emscripten for mounting.
 }

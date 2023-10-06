@@ -96,11 +96,11 @@ make_vfs_library <- function(out_dir = "./vfs", ...) {
 
 
 #' Build an Emscripten VFS image
-#' 
+#'
 #' Uses Emscripten's `file_packager` tool to build an Emscripten VFS image that
 #' can be mounted by webR. The image may contain arbitrary data that will be
 #' made available for use by the WebAssembly R process once mounted.
-#' 
+#'
 #' Outputs two files (named by `out_name`) in the `out_dir` directory: a data
 #' file with extension `".data"`, and a metadata file with extension
 #' `".js.metadata"`. Both files should be hosted on the web so that their URL
@@ -114,8 +114,8 @@ make_vfs_library <- function(out_dir = "./vfs", ...) {
 #' @export
 file_packager <- function(in_dir, out_dir = "./vfs", out_name = NULL) {
   fs::dir_create(out_dir)
-  
-  if(is.null(out_name)) {
+
+  if (is.null(out_name)) {
     out_name <- fs::path_file(in_dir)
   }
 
@@ -123,9 +123,11 @@ file_packager <- function(in_dir, out_dir = "./vfs", out_name = NULL) {
   meta_file <- fs::path_ext_set(out_name, ".js.metadata")
   js_file <- fs::path_ext_set(out_name, ".js")
   message(paste("Packaging:", data_file))
-  
-  file_packager <- fs::path(getOption("rwasm.emsdk_root"), "upstream",
-                            "emscripten", "tools", "file_packager")
+
+  file_packager <- fs::path(
+    getOption("rwasm.emsdk_root"), "upstream",
+    "emscripten", "tools", "file_packager"
+  )
 
   # Pack the contents of in_dir with Emscripten's `file_packager`
   # Capture stdout/stderr to silence an Emscripten developer warning
@@ -150,7 +152,7 @@ file_packager <- function(in_dir, out_dir = "./vfs", out_name = NULL) {
       paste(res, collapse = "\n")
     )
   }
-  
+
   # Remove the .js file, we don't need it when using Emscripten's FS.mount()
   unlink(fs::path(out_dir, js_file))
   invisible(NULL)

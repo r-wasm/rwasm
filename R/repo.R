@@ -1,3 +1,88 @@
+# Ensure that we're getting CRAN source packages from PPM
+ppm_config <- list(
+  cran_mirror = "https://packagemanager.posit.co/cran/latest",
+  platforms = "source"
+)
+
+#' Add all available packages from a CRAN-like repository to a Wasm repository
+#'
+#' @param repos The base URL(s) of the repositories to search for packages.
+#' @inheritDotParams add_pkg -packages
+#'
+#' @importFrom dplyr select rename mutate
+#' @export
+add_repo <- function(repos = getOption("repos"), ...) {
+  # Avoid running pkgdepends on all of CRAN. Instead, build our own info
+  pkgs <- as.data.frame(available.packages(repos = repos))
+  package_info <- pkgs |>
+    select(Package, Version, Repository) |>
+    rename(package = Package, version = Version) |>
+    mutate(
+      sources = as.list(sprintf("%s/%s_%s.tar.gz", Repository, package, version)),
+      target = sprintf("src/contrib/%s_%s.tar.gz", package, version),
+      ref = package,
+      status = "OK"
+    )
+  update_repo(package_info, ...)
+}
+
+#' Add one or more packages listed in a text file to a Wasm repository
+#'
+#' @param list_file A file path containing a list of R package references, one
+#'   per line.
+#' @inheritDotParams add_pkg -packages
+#'
+#' @export
+add_list <- function(list_file, ...) {
+  pkgs <- unique(readLines(list_file))
+  add_pkg(pkgs, ...)
+}
+
+#' Add packages to a Wasm repository
+#'
+#' @param packages A character vector of one or more package references.
+#' @param remotes A character vector of package references to prefer as a given
+#'   package's remote source. If `NULL`, use a built-in list of references to
+#'   packages pre-modified for use with webR.
+#' @param repo_dir The Wasm repository directory. Will be created if it does
+#'   not exist.
+#'
+#' @importFrom dplyr rows_update select
+#' @importFrom pkgdepends new_pkg_download_proposal
+#' @export
+add_pkg <- function(packages, remotes = NULL, repo_dir = "./repo") {
+  # Resolve list of requested packages and dependencies
+  package_deps <- new_pkg_download_proposal(packages, config = ppm_config)
+  package_deps <- package_deps$resolve()
+  package_info <- package_deps$get_resolution()
+  package_info <- package_info[!grepl("/Recommended/", package_info$target), ]
+
+  update_repo(package_info, remotes, repo_dir)
+}
+
+#' Remove packages from a Wasm repository
+#'
+#' @param packages A character vector of one or more package names.
+#' @param repo_dir The Wasm repository directory.
+#'
+#' @export
+rm_pkg <- function(packages, repo_dir = "./repo") {
+  r_version <- R_system_version(getOption("rwasm.webr_version"))
+  contrib_src <- fs::path(repo_dir, "src", "contrib")
+  contrib_bin <- fs::path(
+    repo_dir, "bin", "emscripten", "contrib",
+    paste0(r_version$major, ".", r_version$minor)
+  )
+
+  for (pkg in packages) {
+    src <- fs::dir_ls(contrib_src, glob = paste0(contrib_src, "/", pkg, "_*"))
+    bin <- fs::dir_ls(contrib_bin, glob = paste0(contrib_bin, "/", pkg, "_*"))
+    fs::file_delete(c(src, bin))
+  }
+
+  update_packages(contrib_src, contrib_bin)
+}
+
 # Download a remote source to src/contrib
 make_remote_tarball <- function(pkg, url, target, contrib_src) {
   tmp_dir <- tempfile()
@@ -40,34 +125,11 @@ make_remote_tarball <- function(pkg, url, target, contrib_src) {
   )
 }
 
-#' Add one or more packages listed in a text file to a CRAN-like repository
-#'
-#' @param list_file A file path containing a list of R package references, one
-#'   per line.
-#' @param ... Additional arguments passed to [add_pkg].
-#'
-#' @export
-add_list <- function(list_file, ...) {
-  pkgs <- unique(readLines(list_file))
-  add_pkg(pkgs)
-}
-
-#' Add packages to a CRAN-like repository
-#'
-#' @param packages A character vector of one or more package references.
-#' @param remotes A character vector of package references to prefer as a given
-#'   package's remote source. If `NULL`, use a built-in list of references to
-#'   packages pre-modified for use with webR.
-#' @param repo_dir The CRAN-like repository directory. Will be created if it
-#'   does not exist.
-#'
-#' @importFrom dplyr rows_update
-#' @importFrom pkgdepends new_pkg_download_proposal
-#' @export
-add_pkg <- function(packages, remotes = NULL, repo_dir = "./repo") {
+# Build wasm packages and update a CRAN-like repo on disk
+update_repo <- function(package_info, remotes = NULL, repo_dir = "./repo") {
   r_version <- R_system_version(getOption("rwasm.webr_version"))
 
-  writeLines(sprintf("Processing %d package(s).", length(packages)))
+  writeLines(sprintf("Processing %d package(s).", nrow(package_info)))
 
   # Create contrib paths
   contrib_src <- fs::path(repo_dir, "src", "contrib")
@@ -96,12 +158,6 @@ add_pkg <- function(packages, remotes = NULL, repo_dir = "./repo") {
       unique()
   }
 
-  # Ensure that we're getting CRAN source packages from PPM
-  ppm_config <- list(
-    cran_mirror = "https://packagemanager.posit.co/cran/latest",
-    platforms = "source"
-  )
-
   # Resolve list of package remotes to prefer
   remotes_deps <- new_pkg_download_proposal(remotes, config = ppm_config)
   remotes_deps <- remotes_deps$resolve()
@@ -109,13 +165,8 @@ add_pkg <- function(packages, remotes = NULL, repo_dir = "./repo") {
   remotes_info <- remotes_info[remotes_info$direct, ]
   remotes_info <- remotes_info[!grepl("/Recommended/", remotes_info$target), ]
 
-  # Resolve list of requested packages and dependencies
-  package_deps <- new_pkg_download_proposal(packages, config = ppm_config)
-  package_deps <- package_deps$resolve()
-  package_info <- package_deps$get_resolution()
-  package_info <- package_info[!grepl("/Recommended/", package_info$target), ]
-
   # Prefer package remotes given in remotes list
+  remotes_info <- remotes_info |> select(package, sources, target, ref, status)
   packages <- package_info |>
     rows_update(remotes_info, by = "package", unmatched = "ignore")
 
@@ -175,29 +226,6 @@ add_pkg <- function(packages, remotes = NULL, repo_dir = "./repo") {
   if (need_update) {
     update_packages(contrib_src, contrib_bin)
   }
-}
-
-#' Remove packages from a CRAN-like repository
-#'
-#' @param packages A character vector of one or more package names.
-#' @param repo_dir The CRAN-like repository directory.
-#'
-#' @export
-rm_pkg <- function(packages, repo_dir = "./repo") {
-  r_version <- R_system_version(getOption("rwasm.webr_version"))
-  contrib_src <- fs::path(repo_dir, "src", "contrib")
-  contrib_bin <- fs::path(
-    repo_dir, "bin", "emscripten", "contrib",
-    paste0(r_version$major, ".", r_version$minor)
-  )
-
-  for (pkg in packages) {
-    src <- fs::dir_ls(contrib_src, glob = paste0(contrib_src, "/", pkg, "_*"))
-    bin <- fs::dir_ls(contrib_bin, glob = paste0(contrib_bin, "/", pkg, "_*"))
-    fs::file_delete(c(src, bin))
-  }
-
-  update_packages(contrib_src, contrib_bin)
 }
 
 update_packages <- function(contrib_src, contrib_bin) {

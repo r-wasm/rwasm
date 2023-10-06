@@ -2,7 +2,7 @@
 % Please edit documentation in R/repo.R
 \name{add_pkg}
 \alias{add_pkg}
-\title{Add packages to a CRAN-like repository}
+\title{Add packages to a Wasm repository}
 \usage{
 add_pkg(packages, remotes = NULL, repo_dir = "./repo")
 }
@@ -13,9 +13,9 @@ add_pkg(packages, remotes = NULL, repo_dir = "./repo")
 package's remote source. If \code{NULL}, use a built-in list of references to
 packages pre-modified for use with webR.}
 
-\item{repo_dir}{The CRAN-like repository directory. Will be created if it
-does not exist.}
+\item{repo_dir}{The Wasm repository directory. Will be created if it does
+not exist.}
 }
 \description{
-Add packages to a CRAN-like repository
+Add packages to a Wasm repository
 }
