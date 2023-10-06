@@ -52,7 +52,7 @@ wasm_build <- function(pkg, tarball_path, contrib_bin) {
     fs::path(
       getOption("rwasm.webr_root"),
       "host",
-      paste0("R-", webr_verion),
+      paste0("R-", webr_version),
       "bin",
       "R"
     )

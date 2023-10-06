@@ -10,17 +10,23 @@ ppm_config <- list(
 #' @inheritDotParams add_pkg -packages
 #'
 #' @importFrom dplyr select rename mutate
+#' @importFrom rlang .data
 #' @export
 add_repo <- function(repos = getOption("repos"), ...) {
   # Avoid running pkgdepends on all of CRAN. Instead, build our own info
   pkgs <- as.data.frame(available.packages(repos = repos))
   package_info <- pkgs |>
-    select(Package, Version, Repository) |>
-    rename(package = Package, version = Version) |>
+    select(.data$Package, .data$Version, .data$Repository) |>
+    rename(package = .data$Package, version = .data$Version) |>
     mutate(
-      sources = as.list(sprintf("%s/%s_%s.tar.gz", Repository, package, version)),
-      target = sprintf("src/contrib/%s_%s.tar.gz", package, version),
-      ref = package,
+      sources = as.list(sprintf(
+        "%s/%s_%s.tar.gz",
+        .data$Repository, .data$package, .data$version
+      )),
+      target = sprintf(
+        "src/contrib/%s_%s.tar.gz", .data$package, .data$version
+      ),
+      ref = .data$package,
       status = "OK"
     )
   update_repo(package_info, ...)
@@ -126,6 +132,7 @@ make_remote_tarball <- function(pkg, url, target, contrib_src) {
 }
 
 # Build wasm packages and update a CRAN-like repo on disk
+#' @importFrom rlang .data
 update_repo <- function(package_info, remotes = NULL, repo_dir = "./repo") {
   r_version <- R_system_version(getOption("rwasm.webr_version"))
 
@@ -166,7 +173,8 @@ update_repo <- function(package_info, remotes = NULL, repo_dir = "./repo") {
   remotes_info <- remotes_info[!grepl("/Recommended/", remotes_info$target), ]
 
   # Prefer package remotes given in remotes list
-  remotes_info <- remotes_info |> select(package, sources, target, ref, status)
+  remotes_info <- remotes_info |>
+    select(.data$package, .data$sources, .data$target, .data$ref, .data$status)
   packages <- package_info |>
     rows_update(remotes_info, by = "package", unmatched = "ignore")
 

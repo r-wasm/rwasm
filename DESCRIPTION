@@ -16,6 +16,7 @@ Imports:
     fs,
     pak,
     pkgdepends,
+    rlang,
     utils,
     withr,
     zip
