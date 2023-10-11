@@ -2,21 +2,26 @@
 % Please edit documentation in R/lib.R
 \name{make_library}
 \alias{make_library}
-\title{Make an R library directory containing all the binary R packages in the given
-CRAN-like repository.}
+\title{Create an R package library}
 \usage{
 make_library(repo_dir = "./repo", lib_dir = "./lib", strip = NULL)
 }
 \arguments{
-\item{repo_dir}{The CRAN-like repository directory.}
+\item{repo_dir}{The package repository directory. Defaults to \code{"./repo"}.}
 
-\item{lib_dir}{The library directory. Will be created if it does not exist.}
+\item{lib_dir}{Package library output directory. Defaults to \code{"./lib"}.}
 
-\item{strip}{A character vector of directories to strip from the packages.}
+\item{strip}{A character vector of directories to strip from each R package.}
 }
 \description{
-The \code{strip} argument may be used to strip certain directories from R packages
-installed to the library given by \code{lib_dir}. This can be used to reduce the
+Extracts all R packages contained in the repository directory \code{repo_dir} and
+writes them to a library directory \code{lib_dir}.
+}
+\details{
+The \code{lib_dir} directory will be created if it does not already exist.
+
+The \code{strip} argument may be used to strip certain directories from packages
+installed to the library directory \code{lib_dir}. This can be used to reduce the
 total library file size by removing directories that are not strictly
 necessary for the R package to run, such as directories containing
 documentation and vignettes.

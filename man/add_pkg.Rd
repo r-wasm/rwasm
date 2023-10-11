@@ -2,20 +2,23 @@
 % Please edit documentation in R/repo.R
 \name{add_pkg}
 \alias{add_pkg}
-\title{Add packages to a Wasm repository}
+\title{Add R package reference(s) to a package repository}
 \usage{
 add_pkg(packages, remotes = NULL, repo_dir = "./repo")
 }
 \arguments{
 \item{packages}{A character vector of one or more package references.}
 
-\item{remotes}{A character vector of package references to prefer as a given
-package's remote source. If \code{NULL}, use a built-in list of references to
-packages pre-modified for use with webR.}
+\item{remotes}{A character vector of package references to prefer as a remote
+source. If \code{NULL}, use a built-in list of references to packages
+pre-modified for use with webR.}
 
-\item{repo_dir}{The Wasm repository directory. Will be created if it does
-not exist.}
+\item{repo_dir}{The package repository directory. Defaults to \code{"./repo"}.}
 }
 \description{
-Add packages to a Wasm repository
+Downloads and builds the \link[pkgdepends:pkg_refs]{R package references} given
+by \code{packages}, compiling each package for use with WebAssembly and webR. The
+resulting WebAssembly binary packages are added to the repository directory
+\code{repo_dir}. The repository directory will be created if it does not already
+exist.
 }

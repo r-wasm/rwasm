@@ -1,15 +1,19 @@
-#' Make an R library directory containing all the binary R packages in the given
-#' CRAN-like repository.
+#' Create an R package library
 #'
-#' The `strip` argument may be used to strip certain directories from R packages
-#' installed to the library given by `lib_dir`. This can be used to reduce the
+#' Extracts all R packages contained in the repository directory `repo_dir` and
+#' writes them to a library directory `lib_dir`.
+#'
+#' The `lib_dir` directory will be created if it does not already exist.
+#'
+#' The `strip` argument may be used to strip certain directories from packages
+#' installed to the library directory `lib_dir`. This can be used to reduce the
 #' total library file size by removing directories that are not strictly
 #' necessary for the R package to run, such as directories containing
 #' documentation and vignettes.
 #'
-#' @param repo_dir The CRAN-like repository directory.
-#' @param lib_dir The library directory. Will be created if it does not exist.
-#' @param strip A character vector of directories to strip from the packages.
+#' @inheritParams add_pkg
+#' @param lib_dir Package library output directory. Defaults to `"./lib"`.
+#' @param strip A character vector of directories to strip from each R package.
 #'
 #' @export
 make_library <- function(repo_dir = "./repo", lib_dir = "./lib", strip = NULL) {
@@ -37,13 +41,22 @@ make_library <- function(repo_dir = "./repo", lib_dir = "./lib", strip = NULL) {
   invisible(NULL)
 }
 
-#' Add Emscripten VFS images to a given CRAN-like repo
+#' Add Emscripten filesystem images to an R package repository
 #'
-#' Emscripten VFS images may be used by webR to download and install R packages
-#' faster by mounting images to the VFS, rather than decompressing and
-#' extracting `tar` files.
+#' Creates an Emscripten filesystem image for each R package that exists in the
+#' package repository directory `repo_dir`.
 #'
-#' @param repo_dir  The CRAN-like repository directory.
+#' Each filesystem image is generated using Emscripten's [file_packager()] tool
+#' and the output `.data` and `.js.metadata` filesystem image files are written
+#' to the repository in the same directory as the package binary `.tar.gz`
+#' files.
+#'
+#' The resulting filesystem images may then be used by webR to download and
+#' install R packages faster by mounting the `.data` images to the Emscripten
+#' virtual filesystem, rather than decompressing and extracting the equivalent
+#' `.tar.gz` files.
+#'
+#' @inheritParams add_pkg
 #'
 #' @export
 make_vfs_repo <- function(repo_dir = "./repo") {
@@ -72,44 +85,52 @@ make_vfs_repo <- function(repo_dir = "./repo") {
   invisible(NULL)
 }
 
-#' Build an Emscripten VFS image containing all the binary R packages in the
-#' given CRAN-like repository.
+#' Create an Emscripten filesystem image of an R package library
 #'
-#' This creates a single Emscripten VFS image of an R library that contains all
-#' the binary R packages in the given repository. This image can be statically
-#' hosted on a web server and downloaded at runtime by webR as an efficient way
-#' to provide a pre-configured R library without installing each R package
-#' individually.
+#' Extracts all binary R packages contained in the repository directory
+#' `repo_dir` and creates an Emscripten filesystem image containing the
+#' resulting package library.
 #'
-#' @param out_dir The output directory for the result VFS image files.
-#' @param ... Additional arguments passed to [make_library].
+#' A single filesystem image is generated using Emscripten's [file_packager()]
+#' tool and the output `.data` and `.js.metadata` filesystem image files are
+#' written to the directory `out_dir`.
+#'
+#' The resulting image can be downloaded by webR and mounted on the Emscripten
+#' virtual filesystem as an efficient way to provide a pre-configured R library,
+#' without installing each R package individually.
+#'
+#' @inherit add_pkg
+#' @inherit file_packager
+#' @inheritDotParams make_library strip
 #'
 #' @export
-make_vfs_library <- function(out_dir = "./vfs", ...) {
+make_vfs_library <- function(repo_dir = "./repo", out_dir = "./vfs", ...) {
   lib_dir <- fs::path(tempfile())
   lib_abs <- fs::path_abs(lib_dir)
   on.exit(unlink(lib_dir, recursive = TRUE), add = TRUE)
 
-  make_library(lib_dir = lib_dir, ...)
+  make_library(repo_dir, lib_dir = lib_dir, ...)
   file_packager(lib_abs, out_dir = out_dir, out_name = "library.data")
 }
 
 
-#' Build an Emscripten VFS image
+#' Create an Emscripten filesystem image
 #'
-#' Uses Emscripten's `file_packager` tool to build an Emscripten VFS image that
-#' can be mounted by webR. The image may contain arbitrary data that will be
-#' made available for use by the WebAssembly R process once mounted.
+#' Uses Emscripten's `file_packager` tool to build an Emscripten filesystem
+#' image that can be mounted by webR. The filesystem image may contain arbitrary
+#' data that will be made available for use by the WebAssembly R process once
+#' mounted.
 #'
 #' Outputs two files (named by `out_name`) in the `out_dir` directory: a data
 #' file with extension `".data"`, and a metadata file with extension
-#' `".js.metadata"`. Both files should be hosted on the web so that their URL
-#' can be passed to Emscripten for mounting.
+#' `".js.metadata"`. Both files should be hosted online so that their URL can be
+#' provided to webR for mounting on the Emscripten virtual filesystem.
 #'
-#' @param in_dir A directory path to be packaged into the Emscripten VFS image.
-#' @param out_dir A directory path to where the output files will be written.
-#' @param out_name The output Emscripten VFS image file name base. If `NULL`,
-#'   defaults to the final component of the input directory path.
+#' @param in_dir Directory to be packaged into the filesystem image.
+#' @param out_dir Directory in which to write the output image files. Defaults
+#'   to `"./vfs"`.
+#' @param out_name A character string for the output image base filename. If
+#'   `NULL`, defaults to the final component of the input directory path.
 #'
 #' @export
 file_packager <- function(in_dir, out_dir = "./vfs", out_name = NULL) {

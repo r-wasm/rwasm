@@ -2,20 +2,33 @@
 % Please edit documentation in R/lib.R
 \name{make_vfs_library}
 \alias{make_vfs_library}
-\title{Build an Emscripten VFS image containing all the binary R packages in the
-given CRAN-like repository.}
+\title{Create an Emscripten filesystem image of an R package library}
 \usage{
-make_vfs_library(out_dir = "./vfs", ...)
+make_vfs_library(repo_dir = "./repo", out_dir = "./vfs", ...)
 }
 \arguments{
-\item{out_dir}{The output directory for the result VFS image files.}
+\item{repo_dir}{The package repository directory. Defaults to \code{"./repo"}.}
 
-\item{...}{Additional arguments passed to \link{make_library}.}
+\item{out_dir}{Directory in which to write the output image files. Defaults
+to \code{"./vfs"}.}
+
+\item{...}{
+  Arguments passed on to \code{\link[=make_library]{make_library}}
+  \describe{
+    \item{\code{strip}}{A character vector of directories to strip from each R package.}
+  }}
 }
 \description{
-This creates a single Emscripten VFS image of an R library that contains all
-the binary R packages in the given repository. This image can be statically
-hosted on a web server and downloaded at runtime by webR as an efficient way
-to provide a pre-configured R library without installing each R package
-individually.
+Extracts all binary R packages contained in the repository directory
+\code{repo_dir} and creates an Emscripten filesystem image containing the
+resulting package library.
+}
+\details{
+A single filesystem image is generated using Emscripten's \code{\link[=file_packager]{file_packager()}}
+tool and the output \code{.data} and \code{.js.metadata} filesystem image files are
+written to the directory \code{out_dir}.
+
+The resulting image can be downloaded by webR and mounted on the Emscripten
+virtual filesystem as an efficient way to provide a pre-configured R library,
+without installing each R package individually.
 }

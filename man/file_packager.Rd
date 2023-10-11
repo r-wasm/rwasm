@@ -2,26 +2,28 @@
 % Please edit documentation in R/lib.R
 \name{file_packager}
 \alias{file_packager}
-\title{Build an Emscripten VFS image}
+\title{Create an Emscripten filesystem image}
 \usage{
 file_packager(in_dir, out_dir = "./vfs", out_name = NULL)
 }
 \arguments{
-\item{in_dir}{A directory path to be packaged into the Emscripten VFS image.}
+\item{in_dir}{Directory to be packaged into the filesystem image.}
 
-\item{out_dir}{A directory path to where the output files will be written.}
+\item{out_dir}{Directory in which to write the output image files. Defaults
+to \code{"./vfs"}.}
 
-\item{out_name}{The output Emscripten VFS image file name base. If \code{NULL},
-defaults to the final component of the input directory path.}
+\item{out_name}{A character string for the output image base filename. If
+\code{NULL}, defaults to the final component of the input directory path.}
 }
 \description{
-Uses Emscripten's \code{file_packager} tool to build an Emscripten VFS image that
-can be mounted by webR. The image may contain arbitrary data that will be
-made available for use by the WebAssembly R process once mounted.
+Uses Emscripten's \code{file_packager} tool to build an Emscripten filesystem
+image that can be mounted by webR. The filesystem image may contain arbitrary
+data that will be made available for use by the WebAssembly R process once
+mounted.
 }
 \details{
 Outputs two files (named by \code{out_name}) in the \code{out_dir} directory: a data
 file with extension \code{".data"}, and a metadata file with extension
-\code{".js.metadata"}. Both files should be hosted on the web so that their URL
-can be passed to Emscripten for mounting.
+\code{".js.metadata"}. Both files should be hosted online so that their URL can be
+provided to webR for mounting on the Emscripten virtual filesystem.
 }

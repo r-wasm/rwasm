@@ -2,15 +2,15 @@
 % Please edit documentation in R/repo.R
 \name{rm_pkg}
 \alias{rm_pkg}
-\title{Remove packages from a Wasm repository}
+\title{Remove R package(s) from a package repository}
 \usage{
 rm_pkg(packages, repo_dir = "./repo")
 }
 \arguments{
 \item{packages}{A character vector of one or more package names.}
 
-\item{repo_dir}{The Wasm repository directory.}
+\item{repo_dir}{The package repository directory. Defaults to \code{"./repo"}.}
 }
 \description{
-Remove packages from a Wasm repository
+Remove R package(s) from a package repository
 }

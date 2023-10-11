@@ -2,24 +2,30 @@
 % Please edit documentation in R/repo.R
 \name{add_list}
 \alias{add_list}
-\title{Add one or more packages listed in a text file to a Wasm repository}
+\title{Add one or more packages from a file}
 \usage{
 add_list(list_file, ...)
 }
 \arguments{
-\item{list_file}{A file path containing a list of R package references, one
-per line.}
+\item{list_file}{Path to a file containing a list of R package references.}
 
 \item{...}{
   Arguments passed on to \code{\link[=add_pkg]{add_pkg}}
   \describe{
-    \item{\code{remotes}}{A character vector of package references to prefer as a given
-package's remote source. If \code{NULL}, use a built-in list of references to
-packages pre-modified for use with webR.}
-    \item{\code{repo_dir}}{The Wasm repository directory. Will be created if it does
-not exist.}
+    \item{\code{remotes}}{A character vector of package references to prefer as a remote
+source. If \code{NULL}, use a built-in list of references to packages
+pre-modified for use with webR.}
+    \item{\code{repo_dir}}{The package repository directory. Defaults to \code{"./repo"}.}
   }}
 }
 \description{
-Add one or more packages listed in a text file to a Wasm repository
+Downloads and builds the list of \link[pkgdepends:pkg_refs]{R package references}
+in the file \code{list_file}, compiling each package for use with WebAssembly and
+webR. The resulting WebAssembly binary packages are added to the repository
+directory \code{repo_dir}. The repository directory will be created if it does not
+already exist.
+}
+\details{
+The R package references should be listed in the file \code{list_file}, one line
+per package reference.
 }

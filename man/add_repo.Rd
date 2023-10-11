@@ -2,23 +2,27 @@
 % Please edit documentation in R/repo.R
 \name{add_repo}
 \alias{add_repo}
-\title{Add all available packages from a CRAN-like repository to a Wasm repository}
+\title{Add all packages from a CRAN-like repository to a package repository}
 \usage{
 add_repo(repos = getOption("repos"), ...)
 }
 \arguments{
-\item{repos}{The base URL(s) of the repositories to search for packages.}
+\item{repos}{A character vector containing the base URL(s) of CRAN-like R
+package repositories.}
 
 \item{...}{
   Arguments passed on to \code{\link[=add_pkg]{add_pkg}}
   \describe{
-    \item{\code{remotes}}{A character vector of package references to prefer as a given
-package's remote source. If \code{NULL}, use a built-in list of references to
-packages pre-modified for use with webR.}
-    \item{\code{repo_dir}}{The Wasm repository directory. Will be created if it does
-not exist.}
+    \item{\code{remotes}}{A character vector of package references to prefer as a remote
+source. If \code{NULL}, use a built-in list of references to packages
+pre-modified for use with webR.}
+    \item{\code{repo_dir}}{The package repository directory. Defaults to \code{"./repo"}.}
   }}
 }
 \description{
-Add all available packages from a CRAN-like repository to a Wasm repository
+Downloads and builds all available source R packages from the R package
+repositories given by \code{repos}, compiling each package for use with
+WebAssembly and webR. The resulting WebAssembly binary packages are added to
+the repository directory \code{repo_dir}. The repository directory will be created
+if it does not already exist.
 }

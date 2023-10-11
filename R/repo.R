@@ -1,12 +1,19 @@
-# Ensure that we're getting CRAN source packages from PPM
+# Ensure that we're getting CRAN source packages from PPM, rather than binaries
 ppm_config <- list(
   cran_mirror = "https://packagemanager.posit.co/cran/latest",
   platforms = "source"
 )
 
-#' Add all available packages from a CRAN-like repository to a Wasm repository
+#' Add all packages from a CRAN-like repository to a package repository
 #'
-#' @param repos The base URL(s) of the repositories to search for packages.
+#' Downloads and builds all available source R packages from the R package
+#' repositories given by `repos`, compiling each package for use with
+#' WebAssembly and webR. The resulting WebAssembly binary packages are added to
+#' the repository directory `repo_dir`. The repository directory will be created
+#' if it does not already exist.
+#'
+#' @param repos A character vector containing the base URL(s) of CRAN-like R
+#'   package repositories.
 #' @inheritDotParams add_pkg -packages
 #'
 #' @importFrom dplyr select rename mutate
@@ -32,10 +39,18 @@ add_repo <- function(repos = getOption("repos"), ...) {
   update_repo(package_info, ...)
 }
 
-#' Add one or more packages listed in a text file to a Wasm repository
+#' Add one or more packages from a file
 #'
-#' @param list_file A file path containing a list of R package references, one
-#'   per line.
+#' Downloads and builds the list of [R package references][pkgdepends::pkg_refs]
+#' in the file `list_file`, compiling each package for use with WebAssembly and
+#' webR. The resulting WebAssembly binary packages are added to the repository
+#' directory `repo_dir`. The repository directory will be created if it does not
+#' already exist.
+#'
+#' The R package references should be listed in the file `list_file`, one line
+#' per package reference.
+#'
+#' @param list_file Path to a file containing a list of R package references.
 #' @inheritDotParams add_pkg -packages
 #'
 #' @export
@@ -44,14 +59,19 @@ add_list <- function(list_file, ...) {
   add_pkg(pkgs, ...)
 }
 
-#' Add packages to a Wasm repository
+#' Add R package reference(s) to a package repository
+#'
+#' Downloads and builds the [R package references][pkgdepends::pkg_refs] given
+#' by `packages`, compiling each package for use with WebAssembly and webR. The
+#' resulting WebAssembly binary packages are added to the repository directory
+#' `repo_dir`. The repository directory will be created if it does not already
+#' exist.
 #'
 #' @param packages A character vector of one or more package references.
-#' @param remotes A character vector of package references to prefer as a given
-#'   package's remote source. If `NULL`, use a built-in list of references to
-#'   packages pre-modified for use with webR.
-#' @param repo_dir The Wasm repository directory. Will be created if it does
-#'   not exist.
+#' @param remotes A character vector of package references to prefer as a remote
+#'   source. If `NULL`, use a built-in list of references to packages
+#'   pre-modified for use with webR.
+#' @param repo_dir The package repository directory. Defaults to `"./repo"`.
 #'
 #' @importFrom dplyr rows_update select
 #' @importFrom pkgdepends new_pkg_download_proposal
@@ -66,10 +86,10 @@ add_pkg <- function(packages, remotes = NULL, repo_dir = "./repo") {
   update_repo(package_info, remotes, repo_dir)
 }
 
-#' Remove packages from a Wasm repository
+#' Remove R package(s) from a package repository
 #'
 #' @param packages A character vector of one or more package names.
-#' @param repo_dir The Wasm repository directory.
+#' @inheritParams add_pkg
 #'
 #' @export
 rm_pkg <- function(packages, repo_dir = "./repo") {
@@ -131,7 +151,7 @@ make_remote_tarball <- function(pkg, url, target, contrib_src) {
   )
 }
 
-# Build wasm packages and update a CRAN-like repo on disk
+# Build packages and update a CRAN-like repo on disk
 #' @importFrom rlang .data
 update_repo <- function(package_info, remotes = NULL, repo_dir = "./repo") {
   r_version <- R_system_version(getOption("rwasm.webr_version"))

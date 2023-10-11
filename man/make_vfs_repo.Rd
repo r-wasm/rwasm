@@ -2,15 +2,25 @@
 % Please edit documentation in R/lib.R
 \name{make_vfs_repo}
 \alias{make_vfs_repo}
-\title{Add Emscripten VFS images to a given CRAN-like repo}
+\title{Add Emscripten filesystem images to an R package repository}
 \usage{
 make_vfs_repo(repo_dir = "./repo")
 }
 \arguments{
-\item{repo_dir}{The CRAN-like repository directory.}
+\item{repo_dir}{The package repository directory. Defaults to \code{"./repo"}.}
 }
 \description{
-Emscripten VFS images may be used by webR to download and install R packages
-faster by mounting images to the VFS, rather than decompressing and
-extracting \code{tar} files.
+Creates an Emscripten filesystem image for each R package that exists in the
+package repository directory \code{repo_dir}.
+}
+\details{
+Each filesystem image is generated using Emscripten's \code{\link[=file_packager]{file_packager()}} tool
+and the output \code{.data} and \code{.js.metadata} filesystem image files are written
+to the repository in the same directory as the package binary \code{.tar.gz}
+files.
+
+The resulting filesystem images may then be used by webR to download and
+install R packages faster by mounting the \code{.data} images to the Emscripten
+virtual filesystem, rather than decompressing and extracting the equivalent
+\code{.tar.gz} files.
 }
