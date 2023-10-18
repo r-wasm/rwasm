@@ -270,6 +270,8 @@ update_repo <- function(package_info, remotes = NULL, repo_dir = "./repo") {
     status <- wasm_build(pkg, tarball_path, contrib_bin)
     if (status == 0) {
       need_update <- TRUE
+    } else {
+      warning(paste0("Building wasm binary for package '", pkg, "' failed."))
     }
   }
 
