@@ -109,6 +109,20 @@ rm_pkg <- function(packages, repo_dir = "./repo") {
   update_packages(contrib_src, contrib_bin)
 }
 
+#' Write the `PACKAGES` file for a package repository
+#'
+#' @inheritParams add_pkg
+#' @export
+write_packages <- function(repo_dir = "./repo") {
+  r_version <- R_system_version(getOption("rwasm.webr_version"))
+  contrib_src <- fs::path(repo_dir, "src", "contrib")
+  contrib_bin <- fs::path(
+    repo_dir, "bin", "emscripten", "contrib",
+    paste0(r_version$major, ".", r_version$minor)
+  )
+  update_packages(contrib_src, contrib_bin)
+}
+
 # Download a remote source to src/contrib
 make_remote_tarball <- function(pkg, url, target, contrib_src) {
   tmp_dir <- tempfile()
