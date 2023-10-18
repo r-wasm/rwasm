@@ -17,6 +17,10 @@ package repositories.}
 source. If \code{NULL}, use a built-in list of references to packages
 pre-modified for use with webR.}
     \item{\code{repo_dir}}{The package repository directory. Defaults to \code{"./repo"}.}
+    \item{\code{dependencies}}{Dependency specification for packages to additionally
+add to the repository. Defaults to \code{NA}, meaning add only the required
+dependencies. If \code{FALSE}, adds no additional packages. See
+\link[pkgdepends:as_pkg_dependencies]{pkgdepends::as_pkg_dependencies} for details.}
   }}
 }
 \description{

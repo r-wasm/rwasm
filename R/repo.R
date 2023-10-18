@@ -72,13 +72,22 @@ add_list <- function(list_file, ...) {
 #'   source. If `NULL`, use a built-in list of references to packages
 #'   pre-modified for use with webR.
 #' @param repo_dir The package repository directory. Defaults to `"./repo"`.
+#' @param dependencies Dependency specification for packages to additionally
+#' add to the repository. Defaults to `NA`, meaning add only the required
+#' dependencies. If `FALSE`, adds no additional packages. See
+#' [pkgdepends::as_pkg_dependencies] for details.
 #'
 #' @importFrom dplyr rows_update select
 #' @importFrom pkgdepends new_pkg_download_proposal
 #' @export
-add_pkg <- function(packages, remotes = NULL, repo_dir = "./repo") {
-  # Resolve list of requested packages and dependencies
-  package_deps <- new_pkg_download_proposal(packages, config = ppm_config)
+add_pkg <- function(packages, remotes = NULL, repo_dir = "./repo",
+                    dependencies = NA) {
+  # Set up pkgdepends configuration
+  config <- ppm_config
+  config$dependencies <- dependencies
+
+  # Resolve list of requested packages
+  package_deps <- new_pkg_download_proposal(packages, config = config)
   package_deps <- package_deps$resolve()
   package_info <- package_deps$get_resolution()
   package_info <- package_info[!grepl("/Recommended/", package_info$target), ]
