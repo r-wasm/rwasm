@@ -190,7 +190,7 @@ update_repo <- function(package_info, remotes = NULL, repo_dir = "./repo") {
   fs::dir_create(contrib_src)
   fs::dir_create(contrib_bin)
 
-  if (fs::is_file(fs::path(contrib_src, "PACKAGES"))) {
+  if (fs::is_file(fs::path(contrib_bin, "PACKAGES"))) {
     # Check available packages in the binary folder rather than the
     # source folder so that we retry building failed packages until they
     # succeed
