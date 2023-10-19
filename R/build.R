@@ -44,7 +44,7 @@ wasm_build <- function(pkg, tarball_path, contrib_bin) {
 
   # Try to ensure that package dependencies are installed in host R
   try({
-    pak::pkg_install(paste0("deps::", tarball_path))
+    pak::pkg_install(paste0("deps::", tarball_path), ask = FALSE)
   })
 
   # Prefer to use system R, if it exists
