@@ -15,30 +15,38 @@ find_webr <- function() {
   NULL
 }
 
-find_emsdk <- function() {
+find_emscripten <- function() {
   emsdk_env <- Sys.getenv("EMSDK")
   if (emsdk_env != "" && fs::dir_exists(emsdk_env)) {
-    return(emsdk_env)
+    return(fs::path(emsdk_env, "upstream", "emscripten"))
   }
+
+  emscripten_env <- Sys.getenv("EMSCRIPTEN_ROOT")
+  if (emscripten_env != "" && fs::dir_exists(emscripten_env)) {
+    return(emscripten_env)
+  }
+
   webr_config <- fs::path_expand("~/.webr-vars.mk")
   if (fs::is_file(webr_config)) {
     for (entry in strsplit(readLines(webr_config), split = "=")) {
       if (entry[1] == "EMSDK") {
+        return(fs::path(entry[2], "upstream", "emscripten"))
+      } else if (entry[1] == "EMSCRIPTEN_ROOT") {
         return(entry[2])
       }
     }
   }
-  warning("Unable to find `EMSDK` directory.")
+  warning("Unable to find Emscripten root directory.")
   NULL
 }
 
 .onLoad <- function(libname, pkgname) {
   webr_root <- find_webr()
-  emsdk_root <- find_emsdk()
+  emscripten_root <- find_emscripten()
   webr_version <- readLines(fs::path(webr_root, "R", "R-VERSION"))
   options(rwasm.webr_root = webr_root)
   options(rwasm.webr_version = webr_version)
-  options(rwasm.emsdk_root = emsdk_root)
+  options(rwasm.emscripten_root = emscripten_root)
 }
 
 .onAttach <- function(libname, pkgname) {
@@ -49,6 +57,6 @@ find_emsdk <- function() {
     paste("With `WEBR_ROOT` directory:", options("rwasm.webr_root"))
   )
   packageStartupMessage(
-    paste("With `EMSDK` directory:", options("rwasm.emsdk_root"))
+    paste("With `EMSCRIPTEN_ROOT` directory:", options("rwasm.emscripten_root"))
   )
 }

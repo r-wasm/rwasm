@@ -146,8 +146,7 @@ file_packager <- function(in_dir, out_dir = "./vfs", out_name = NULL) {
   message(paste("Packaging:", data_file))
 
   file_packager <- fs::path(
-    getOption("rwasm.emsdk_root"), "upstream",
-    "emscripten", "tools", "file_packager"
+    getOption("rwasm.emscripten_root"), "tools", "file_packager"
   )
 
   # Pack the contents of in_dir with Emscripten's `file_packager`
