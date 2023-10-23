@@ -99,18 +99,20 @@ make_vfs_repo <- function(repo_dir = "./repo") {
 #' virtual filesystem as an efficient way to provide a pre-configured R library,
 #' without installing each R package individually.
 #'
+#' @param out_name A character string for the output library image filename.
 #' @inherit add_pkg
 #' @inherit file_packager
 #' @inheritDotParams make_library strip
 #'
 #' @export
-make_vfs_library <- function(repo_dir = "./repo", out_dir = "./vfs", ...) {
+make_vfs_library <- function(out_dir = "./vfs", out_name = "library.data",
+                             repo_dir = "./repo", ...) {
   lib_dir <- fs::path(tempfile())
   lib_abs <- fs::path_abs(lib_dir)
   on.exit(unlink(lib_dir, recursive = TRUE), add = TRUE)
 
   make_library(repo_dir, lib_dir = lib_dir, ...)
-  file_packager(lib_abs, out_dir = out_dir, out_name = "library.data")
+  file_packager(lib_abs, out_dir, out_name = out_name)
 }
 
 
@@ -131,7 +133,6 @@ make_vfs_library <- function(repo_dir = "./repo", out_dir = "./vfs", ...) {
 #'   to `"./vfs"`.
 #' @param out_name A character string for the output image base filename. If
 #'   `NULL`, defaults to the final component of the input directory path.
-#'
 #' @export
 file_packager <- function(in_dir, out_dir = "./vfs", out_name = NULL) {
   fs::dir_create(out_dir)

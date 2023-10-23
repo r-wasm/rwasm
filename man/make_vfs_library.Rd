@@ -4,13 +4,20 @@
 \alias{make_vfs_library}
 \title{Create an Emscripten filesystem image of an R package library}
 \usage{
-make_vfs_library(repo_dir = "./repo", out_dir = "./vfs", ...)
+make_vfs_library(
+  out_dir = "./vfs",
+  out_name = "library.data",
+  repo_dir = "./repo",
+  ...
+)
 }
 \arguments{
-\item{repo_dir}{The package repository directory. Defaults to \code{"./repo"}.}
-
 \item{out_dir}{Directory in which to write the output image files. Defaults
 to \code{"./vfs"}.}
+
+\item{out_name}{A character string for the output library image filename.}
+
+\item{repo_dir}{The package repository directory. Defaults to \code{"./repo"}.}
 
 \item{...}{
   Arguments passed on to \code{\link[=make_library]{make_library}}
