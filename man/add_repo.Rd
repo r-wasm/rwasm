@@ -4,11 +4,14 @@
 \alias{add_repo}
 \title{Add all packages from a CRAN-like repository to a package repository}
 \usage{
-add_repo(repos = getOption("repos"), ...)
+add_repo(repos = ppm_config$cran_mirror, skip = FALSE, ...)
 }
 \arguments{
 \item{repos}{A character vector containing the base URL(s) of CRAN-like R
-package repositories.}
+package repositories. Defaults to the Posit Package Manager CRAN mirror.}
+
+\item{skip}{A character string containing a regular expression matching names
+of packages to skip. Defaults to \code{FALSE}, meaning keep all packages.}
 
 \item{...}{
   Arguments passed on to \code{\link[=add_pkg]{add_pkg}}

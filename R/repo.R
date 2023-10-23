@@ -13,18 +13,21 @@ ppm_config <- list(
 #' if it does not already exist.
 #'
 #' @param repos A character vector containing the base URL(s) of CRAN-like R
-#'   package repositories.
+#'   package repositories. Defaults to the Posit Package Manager CRAN mirror.
+#' @param skip A character string containing a regular expression matching names
+#'   of packages to skip. Defaults to `FALSE`, meaning keep all packages.
 #' @inheritDotParams add_pkg -packages
 #'
-#' @importFrom dplyr select rename mutate
+#' @importFrom dplyr select rename mutate filter
 #' @importFrom rlang .data
 #' @export
-add_repo <- function(repos = getOption("repos"), ...) {
+add_repo <- function(repos = ppm_config$cran_mirror, skip = FALSE, ...) {
   # Avoid running pkgdepends on all of CRAN. Instead, build our own info
   pkgs <- as.data.frame(available.packages(repos = repos))
   package_info <- pkgs |>
     select(.data$Package, .data$Version, .data$Repository) |>
     rename(package = .data$Package, version = .data$Version) |>
+    filter(!grepl(skip, .data$package)) |>
     mutate(
       sources = as.list(sprintf(
         "%s/%s_%s.tar.gz",
