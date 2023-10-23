@@ -5,13 +5,15 @@ wasm_build <- function(pkg, tarball_path, contrib_bin) {
   on.exit(unlink(tmp_dir, recursive = TRUE), add = TRUE)
   dir.create(tmp_dir)
   untar(tarball_path, exdir = tmp_dir)
-  
+
   # Ensure this package is a source package
   desc <- packageDescription(pkg, lib.loc = tmp_dir, fields = "Built")
   if (!is.na(desc)) {
-    warning(paste0("Unable to build Wasm package: '", pkg,
-                   "'. Source tarball at '", tarball_path , "' is a binary."))
-    return(1);
+    warning(paste0(
+      "Unable to build Wasm package: '", pkg,
+      "'. Source tarball at '", tarball_path, "' is a binary."
+    ))
+    return(1)
   }
 
   # Setup optional Makevars overrides
@@ -26,7 +28,7 @@ wasm_build <- function(pkg, tarball_path, contrib_bin) {
   for (mk in mkvars_src) {
     if (fs::is_file(mk)) {
       message(paste("Using Makevars override:", mk))
-      if (!grepl("\\.in\\.", mk)){
+      if (!grepl("\\.in\\.", mk)) {
         mkvars_dest <- fs::path(mkvars_dest, "Makevars")
         fs::file_copy(mk, mkvars_dest, overwrite = TRUE)
         configure_flag <- "--no-configure"
