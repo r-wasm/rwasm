@@ -29,3 +29,5 @@ Suggests:
     knitr,
     rmarkdown
 VignetteBuilder: knitr
+URL: https://r-wasm.github.io/webr-repo/
+Config/Needs/website: tidyverse/tidytemplate

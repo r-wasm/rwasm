@@ -43,10 +43,12 @@ find_emscripten <- function() {
 .onLoad <- function(libname, pkgname) {
   webr_root <- find_webr()
   emscripten_root <- find_emscripten()
-  webr_version <- readLines(fs::path(webr_root, "R", "R-VERSION"))
-  options(rwasm.webr_root = webr_root)
-  options(rwasm.webr_version = webr_version)
-  options(rwasm.emscripten_root = emscripten_root)
+  if (!is.null(webr_root) && !is.null(emscripten_root)) {
+    webr_version <- readLines(fs::path(webr_root, "R", "R-VERSION"))
+    options(rwasm.webr_root = webr_root)
+    options(rwasm.webr_version = webr_version)
+    options(rwasm.emscripten_root = emscripten_root)
+  }
 }
 
 .onAttach <- function(libname, pkgname) {
