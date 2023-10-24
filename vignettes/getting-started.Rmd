@@ -1,0 +1,114 @@
+---
+title: "Getting Started"
+output: rmarkdown::html_document
+vignette: >
+  %\VignetteIndexEntry{Getting Started}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+## Compiling R package sources for WebAssembly
+
+At the moment, building binary R packages for WebAssembly (Wasm) requires cross-compiling packages with C/C++/Fortran source code using a native version of R and a WebAssembly compiler toolchain. As such, the machine building the package must have access to the [Emscripten](https://emscripten.org) C/C++ toolchain, a [version of LLVM `flang`](https://github.com/lionel-/f18-llvm-project/tree/fix-webr) patched to output Wasm, and a fully configured [development build of webR](https://github.com/r-wasm/webr).
+
+There are two supported ways to ensure that this environment is available for building R packages. You can either install and build a local development version of webR, or build Wasm R packages inside a pre-prepared Docker container. The fastest way to get up and running is probably using the Docker container approach.
+
+## Setting up the WebAssembly toolchain {.tabset}
+
+### Using Docker
+
+First, ensure that [Docker](https://www.docker.com) is installed on your machine^[For macOS machines with Apple Silicon processors, ensure that "Use Rosetta for x86/amd64 emulation on Apple Silicon" is disabled in the Docker Desktop settings.]. Then, in a terminal, pull the latest version of the [webR development container](https://github.com/r-wasm/webr/pkgs/container/webr):
+
+```console
+$ docker pull ghcr.io/r-wasm/webr:v0.2.1
+```
+
+Next, create a new directory named `output` to store the built R packages,
+
+```console
+$ mkdir -p output
+```
+
+Then start R in the Docker container, mounting the new `output` directory into place and setting it as the working directory^[If you see an error along the lines of `The path [...]/output is not shared from the host and is not known to Docker`, follow the instructions given in the rest of the error output to ensure that the `output` directory is shared with Docker.]:
+
+```console
+$ docker run -it --rm -v $(PWD)/output:/root -w /output ghcr.io/r-wasm/webr:v0.2.1 R
+```
+
+You may now continue by working in this R session. The Docker container will provide the required development environment and tools for building binary R packages for Wasm. R packages and repositories built in this way will be written in the `output` directory.
+
+
+### WebR development installation
+
+Building webR from source requires a long time and a lot of disk space, mostly due to the requirement of building LLVM `flang` from source. Ensure that you have both before continuing.
+
+Follow [the webR build instructions](https://github.com/r-wasm/webr#building-webr-from-source) to download and build webR from source. If you are planning to build R packages that depend on system libraries, ensure that you also perform the optional step to additionally build all WebAssembly libraries.
+
+Once webR has been built, we need to configure your environment so that the native R process can find your webR development installation. Make a note of your webR development directory and your Emscripten installation directory^[If you are using [emsdk](https://github.com/emscripten-core/emsdk) to manage your Emscripten installation the `EMSDK` environment variable should already be in place. In that case you may skip setting `EMSCRIPTEN_ROOT`.].
+
+Edit or create the file `~/.webr-vars.mk`, and ensure it contains the following lines, replacing the values with your own installation directories:
+
+```Makefile
+WEBR_ROOT=/home/username/some/directory/webr
+EMSCRIPTEN_ROOT=/home/username/some/directory/emscripten
+```
+
+The settings above can also be made available by exporting them as environment variables.
+
+## Installing and using the `rwasm` package
+
+The `rwasm` package builds R binary packages for WebAssembly, organising the output into CRAN-like repositories. The [pak](https://pak.r-lib.org) package can be used to install `rwasm` from GitHub.
+
+```{r eval=FALSE}
+install.packages("pak")
+pak::pak("georgestagg/rwasm")
+```
+
+### Adding an R package to the repository
+
+Use `add_pkg()` to build an R package for Wasm and add it to a repository. A new directory `./repo` will be created for the repository if it does not already exist, otherwise the existing repository will be updated to include the new package. By default, hard package dependencies will also be built for Wasm and added to the repository.
+
+```{r eval=FALSE}
+rwasm::add_pkg("cli")
+```
+ 
+See the `?pkgdepends::pkg_refs` article to see what kinds of packages can be added to the repository in this way.
+
+### Managing and using the repository
+
+The output files in `./repo` form a CRAN-like R package repository. These files should be served so that they are available at some URL. That URL can then be passed to `webr::install()` as a repository from which to install Wasm R packages.
+
+##### Local testing
+
+A local web server can be used to serve your package repository for testing. The following command starts a HTTP web server powered by the Node.js module `http-server`^[You might need to run `npm install -g http-server` to ensure that the server software is available.]. This particular server software is useful because it easily supports [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) out-of-the-box, required for cross-origin package loading.
+
+```console
+npx http-server --cors='*' -p 9090
+```
+
+Once the web server is running, start webR session in your browser such as <https://webr.r-wasm.org/latest/>. Install a package from your local repository using your test server URL as the `repos` argument^[You might need to adjust the path portion of the URL, depending on your set up. If it does not work, you could also try `"http://127.0.0.1:9090"` or `"http://127.0.0.1:9090/output/repo"`]:
+
+
+```{r eval=FALSE}
+webr::install("cli", repos = "http://127.0.0.1:9090/repo")
+```
+
+If successful, you should be able to load the `{cli}` package within webR.
+
+```{r eval=FALSE}
+library(cli)
+```
+
+##### Deploying
+
+Once you are happy that your R package repository is working and sufficient, it should be deployed to the web via the static file hosting service of your choice. ee the following article for an example of how to use GitHub Pages for this purpose.
+
+* TODO: Deploying an R package repository to GitHub Pages
+
+### Mounting an Emscripten virtual filesystem image
+
+TODO
+
+### Mounting a host R library directory with Node.js
+
+TODO
