@@ -1,21 +1,21 @@
 ---
-title: "Getting Started"
+title: "Getting Started with rwasm"
 output: rmarkdown::html_document
 vignette: >
-  %\VignetteIndexEntry{Getting Started}
+  %\VignetteIndexEntry{Getting Started with rwasm}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
-## Compiling R package sources for WebAssembly
+## Compiling R packages for WebAssembly
 
-At the moment, building binary R packages for WebAssembly (Wasm) requires cross-compiling packages with C/C++/Fortran source code using a native version of R and a WebAssembly compiler toolchain. As such, the machine building the package must have access to the [Emscripten](https://emscripten.org) C/C++ toolchain, a [version of LLVM `flang`](https://github.com/lionel-/f18-llvm-project/tree/fix-webr) patched to output Wasm, and a fully configured [development build of webR](https://github.com/r-wasm/webr).
+Building binary R packages for WebAssembly (Wasm) requires cross-compiling packages containing C/C++/Fortran source code using a Wasm development toolchain. As such, the [Emscripten](https://emscripten.org) C/C++ toolchain and a [version of LLVM `flang` configured to output Wasm](https://github.com/lionel-/f18-llvm-project/tree/fix-webr) must be available in the environment for the `rwasm` package to function.
 
-There are two supported ways to ensure that this environment is available for building R packages. You can either install and build a local development version of webR, or build Wasm R packages inside a pre-prepared Docker container. The fastest way to get up and running is probably using the Docker container approach.
+There are two supported ways to ensure that the required environment and toolchain is available. Either install and build a local [development build of webR](https://github.com/r-wasm/webr), or use the `rwasm` package inside a pre-prepared Docker container to build Wasm R packages.
 
 ## Setting up the WebAssembly toolchain {.tabset}
 
-### Using Docker
+### Using the webR Docker container
 
 First, ensure that [Docker](https://www.docker.com) is installed on your machine^[For macOS machines with Apple Silicon processors, ensure that "Use Rosetta for x86/amd64 emulation on Apple Silicon" is disabled in the Docker Desktop settings.]. Then, in a terminal, pull the latest version of the [webR development container](https://github.com/r-wasm/webr/pkgs/container/webr):
 

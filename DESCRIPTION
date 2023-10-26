@@ -6,11 +6,12 @@ Authors@R: c(
     person("Lionel", "Henry", , "lionel@posit.co", role = "ctb"),
     person("Posit Software, PBC", role = c("cph", "fnd"))
   )
-Description: Utilities to help build R packages compiled for WebAssembly,
-    manage binary WebAssembly R package libraries and repositories, and
-    prepare webR compatible filesystem images for static web hosting of
-    selected data files and R packages.
+Description: Utility functions to help build R packages compiled for
+    WebAssembly (Wasm), manage Wasm binary R package libraries and
+    repositories, and prepare webR compatible filesystem images for static
+    web hosting of data files and R packages.
 License: MIT + file LICENSE
+URL: https://r-wasm.github.io/webr-repo/
 Imports:
     dplyr,
     fs,
@@ -20,14 +21,14 @@ Imports:
     utils,
     withr,
     zip
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: 
+    knitr
+Config/Needs/website: tidyverse/tidytemplate
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
 SystemRequirements: webR development installation
     (https://webr.r-wasm.org/)
-Suggests: 
-    knitr,
-    rmarkdown
-VignetteBuilder: knitr
-URL: https://r-wasm.github.io/webr-repo/
-Config/Needs/website: tidyverse/tidytemplate
