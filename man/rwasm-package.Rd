@@ -6,7 +6,14 @@
 \alias{rwasm-package}
 \title{rwasm: Build R Packages for WebAssembly}
 \description{
-Utilities to help build R packages compiled for WebAssembly, manage binary WebAssembly R package libraries and repositories, and prepare webR compatible filesystem images for static web hosting of selected data files and R packages.
+Utility functions to help build R packages compiled for WebAssembly (Wasm), manage Wasm binary R package libraries and repositories, and prepare webR compatible filesystem images for static web hosting of data files and R packages.
+}
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://r-wasm.github.io/webr-repo/}
+}
+
 }
 \author{
 \strong{Maintainer}: George Stagg \email{george.stagg@posit.co}

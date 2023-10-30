@@ -83,7 +83,9 @@ add_list <- function(list_file, ...) {
 #' @importFrom dplyr rows_update select
 #' @importFrom pkgdepends new_pkg_download_proposal
 #' @export
-add_pkg <- function(packages, remotes = NULL, repo_dir = "./repo",
+add_pkg <- function(packages,
+                    remotes = NULL,
+                    repo_dir = "./repo",
                     dependencies = NA) {
   # Set up pkgdepends configuration
   config <- ppm_config
@@ -179,7 +181,9 @@ make_remote_tarball <- function(pkg, url, target, contrib_src) {
 
 # Build packages and update a CRAN-like repo on disk
 #' @importFrom rlang .data
-update_repo <- function(package_info, remotes = NULL, repo_dir = "./repo") {
+update_repo <- function(package_info,
+                        remotes = NULL,
+                        repo_dir = "./repo") {
   r_version <- R_system_version(getOption("rwasm.webr_version"))
 
   writeLines(sprintf("Processing %d package(s).", nrow(package_info)))

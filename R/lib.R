@@ -105,8 +105,10 @@ make_vfs_repo <- function(repo_dir = "./repo") {
 #' @inheritDotParams make_library strip
 #'
 #' @export
-make_vfs_library <- function(out_dir = "./vfs", out_name = "library.data",
-                             repo_dir = "./repo", ...) {
+make_vfs_library <- function(out_dir = "./vfs",
+                             out_name = "library.data",
+                             repo_dir = "./repo",
+                             ...) {
   lib_dir <- fs::path(tempfile())
   lib_abs <- fs::path_abs(lib_dir)
   on.exit(unlink(lib_dir, recursive = TRUE), add = TRUE)
