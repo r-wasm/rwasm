@@ -102,5 +102,15 @@ wasm_build <- function(pkg, tarball_path, contrib_bin) {
   bin_dest <- fs::path(contrib_bin, paste0(pkg, "_", bin_ver, ".tgz"))
   fs::file_copy(bin_path, bin_dest, overwrite = TRUE)
 
-  status
+  # Build an Emscripten filesystem image for the package
+  tmp_bin_dir <- fs::path(tempfile())
+  on.exit(unlink(tmp_bin_dir, recursive = TRUE), add = TRUE)
+  untar(bin_dest, exdir = tmp_bin_dir)
+  file_packager(
+    fs::dir_ls(tmp_bin_dir)[[1]],
+    contrib_bin,
+    fs::path_file(bin_dest)
+  )
+
+  invisible(NULL)
 }
