@@ -249,32 +249,49 @@ update_repo <- function(package_info, remotes = NULL, repo_dir = "./repo") {
         next
       }
 
-      # Remove the old package from disk
+      #  # Remove the old package from disk
       old_tarball <- paste0(pkg, "_", old_ver, ".tar.gz")
       unlink(fs::path(contrib_src, old_tarball))
       unlink(fs::path(contrib_bin, old_tarball))
     }
 
     # Download the new package from remote source
-    if (!fs::file_exists(fs::path("repo", pkg_row$target))) {
-      need_update <- TRUE
-      make_remote_tarball(
-        pkg_row$package,
-        pkg_row$sources[[1]][[1]],
-        pkg_row$target,
-        contrib_src
-      )
+    status <- tryCatch(
+      {
+        if (!fs::file_exists(fs::path("repo", pkg_row$target))) {
+          need_update <- TRUE
+          make_remote_tarball(
+            pkg_row$package,
+            pkg_row$sources[[1]][[1]],
+            pkg_row$target,
+            contrib_src
+          )
+        }
+      },
+      error = function(cnd) cnd
+    )
+
+    # Skip to next package if source download failed
+    if (inherits(status, "error")) {
+      warning(status)
+      next
     }
 
     tarball_file <- basename(pkg_row$target)
     tarball_path <- fs::path(contrib_src, tarball_file)
 
     # Build the package
-    status <- wasm_build(pkg, tarball_path, contrib_bin)
-    if (status == 0) {
-      need_update <- TRUE
-    } else {
-      warning(paste0("Building wasm binary for package '", pkg, "' failed."))
+    status <- tryCatch(
+      {
+        wasm_build(pkg, tarball_path, contrib_bin)
+      },
+      error = function(cnd) cnd
+    )
+
+    # Skip to next package if building failed
+    if (inherits(status, "error")) {
+      warning(status)
+      next
     }
   }
 

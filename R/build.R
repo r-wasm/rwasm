@@ -9,11 +9,10 @@ wasm_build <- function(pkg, tarball_path, contrib_bin) {
   # Ensure this package is a source package
   desc <- packageDescription(pkg, lib.loc = tmp_dir, fields = "Built")
   if (!is.na(desc)) {
-    warning(paste0(
+    stop(paste0(
       "Unable to build Wasm package: '", pkg,
       "'. Source tarball at '", tarball_path, "' is a binary."
     ))
-    return(1)
   }
 
   # Setup optional Makevars overrides
@@ -91,7 +90,7 @@ wasm_build <- function(pkg, tarball_path, contrib_bin) {
     )
   )
   if (status != 0) {
-    return(status)
+    stop(paste0("Building wasm binary for package '", pkg, "' failed."))
   }
 
   # Copy to local CRAN-like repo directory
