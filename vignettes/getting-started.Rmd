@@ -1,8 +1,8 @@
 ---
-title: "Getting Started with rwasm"
+title: "Getting started with rwasm"
 output: rmarkdown::html_document
 vignette: >
-  %\VignetteIndexEntry{Getting Started with rwasm}
+  %\VignetteIndexEntry{Getting started with rwasm}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -35,12 +35,12 @@ Then start R in the Docker container, mounting the new `output` directory into p
 $ docker run -it --rm -v $(PWD)/output:/root -w /output ghcr.io/r-wasm/webr:v0.2.1 R
 ```
 
-You may now continue by working in this R session. The Docker container will provide the required development environment and tools for building binary R packages for Wasm. R packages and repositories built in this way will be written in the `output` directory.
+You may now continue by working in this R session. The Docker container will provide the required development environment and tools for building binary R packages for Wasm. R packages and repositories built in this way will be written in the directory `output`.
 
 
 ### WebR development installation
 
-Building webR from source requires a long time and a lot of disk space, mostly due to the requirement of building LLVM `flang` from source. Ensure that you have both before continuing.
+Note that building webR from source takes a long time and a lot of disk space, mostly due to the requirement of building LLVM `flang` from source.
 
 Follow [the webR build instructions](https://github.com/r-wasm/webr#building-webr-from-source) to download and build webR from source. If you are planning to build R packages that depend on system libraries, ensure that you also perform the optional step to additionally build all WebAssembly libraries.
 
@@ -49,66 +49,105 @@ Once webR has been built, we need to configure your environment so that the nati
 Edit or create the file `~/.webr-vars.mk`, and ensure it contains the following lines, replacing the values with your own installation directories:
 
 ```Makefile
-WEBR_ROOT=/home/username/some/directory/webr
-EMSCRIPTEN_ROOT=/home/username/some/directory/emscripten
+WEBR_ROOT=/home/username/webr
+EMSCRIPTEN_ROOT=/home/username/emsdk/upstream/emscripten
 ```
 
-The settings above can also be made available by exporting them as environment variables.
+The settings above can also be made available to R by exporting them as environment variables.
 
-## Installing and using the `rwasm` package
+## Installing the `rwasm` package
 
 The `rwasm` package builds R binary packages for WebAssembly, organising the output into CRAN-like repositories. The [pak](https://pak.r-lib.org) package can be used to install `rwasm` from GitHub.
 
 ```{r eval=FALSE}
 install.packages("pak")
-pak::pak("georgestagg/rwasm")
+pak::pak("r-wasm/webr-repo@pkg")
 ```
 
-### Adding an R package to the repository
-
-Use `add_pkg()` to build an R package for Wasm and add it to a repository. A new directory `./repo` will be created for the repository if it does not already exist, otherwise the existing repository will be updated to include the new package. By default, hard package dependencies will also be built for Wasm and added to the repository.
+Once installed, load the `rwasm` package. If `rwasm` is able to find the Wasm development environment, it will print the directories it discovered and the version of webR that it is targeting. This might be different to the version of R installed on your native system.
 
 ```{r eval=FALSE}
-rwasm::add_pkg("cli")
+library(rwasm)
+#> Targeting Wasm packages for R 4.3.0
+#> With `WEBR_ROOT` directory: /home/username/webr
+#> With `EMSCRIPTEN_ROOT` directory: /home/username/emsdk/upstream/emscripten
+```
+
+## Adding an R package to the repository
+
+Use `add_pkg()` to build an R package for Wasm and add it to a repository. A new directory named `repo` will be created for the repository if it does not already exist, otherwise the existing repository will be updated to include the new package. By default, hard package dependencies will also be built for Wasm and added to the repository.
+
+```{r eval=FALSE}
+add_pkg("cli")
 ```
  
-See the `?pkgdepends::pkg_refs` article to see what kinds of packages can be added to the repository in this way.
+See the `?pkgdepends::pkg_refs` article to see which kind of package references can be used to add packages to the repository.
 
-### Managing and using the repository
+## Managing and using the repository
 
-The output files in `./repo` form a CRAN-like R package repository. These files should be served so that they are available at some URL. That URL can then be passed to `webr::install()` as a repository from which to install Wasm R packages.
+The CRAN-like R package repository in the output directory `repo` should be hosted by a web server so that it is available at some URL. Such a URL can then be passed to `webr::install()` as a repository from which to install Wasm R packages.
 
-##### Local testing
+### Local testing
 
-A local web server can be used to serve your package repository for testing. The following command starts a HTTP web server powered by the Node.js module `http-server`^[You might need to run `npm install -g http-server` to ensure that the server software is available.]. This particular server software is useful because it easily supports [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) out-of-the-box, required for cross-origin package loading.
+The following R command starts a local web server to serve your package repository for testing^[Ensure that the latest version of the `httpuv` package is installed so that the `?httpuv::runStaticServer` function is available.]. When serving your repository locally, be sure to include the `Access-Control-Allow-Origin: *` HTTP header, required for loading R packages from a cross-origin server by the [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) mechanism.
 
-```console
-npx http-server --cors='*' -p 9090
+```r
+httpuv::runStaticServer(
+  dir = ".",
+  port = 9090,
+  browse = FALSE,
+  headers = list("Access-Control-Allow-Origin" =  "*")
+)
 ```
 
-Once the web server is running, start webR session in your browser such as <https://webr.r-wasm.org/latest/>. Install a package from your local repository using your test server URL as the `repos` argument^[You might need to adjust the path portion of the URL, depending on your set up. If it does not work, you could also try `"http://127.0.0.1:9090"` or `"http://127.0.0.1:9090/output/repo"`]:
+Once the web server is running start a webR session in your browser, such as the console at <https://webr.r-wasm.org/latest/>. Install a package from your local repository using your test server URL as the `repos` argument^[You might need to adjust the path portion of the URL, depending on your set-up. If it does not work, you could also try `"http://127.0.0.1:9090"` or `"http://127.0.0.1:9090/output/repo"`]:
 
 
 ```{r eval=FALSE}
 webr::install("cli", repos = "http://127.0.0.1:9090/repo")
+#> Downloading webR package: cli
 ```
 
-If successful, you should be able to load the `{cli}` package within webR.
+### Deployment to static hosting
+
+Once you are happy that your R package repository is working and sufficient, it should be deployed to the web via a static file hosting service of your choice. In this example we will use GitHub Pages.
+
+First, create a new directory for your GitHub repository and copy your webR binary repo into place.
+
+```
+$ mkdir -p my-wasm-repo
+$ cp -r ./path/to/output/repo my-wasm-repo/repo
+$ cd my-wasm-repo
+```
+
+Next, initialise a new GitHub repository to host your binary R packages, and run the commands given by GitHub to initialise and push an initial commit of your Wasm binary packages.
+
+```
+$ git init
+$ git add repo
+$ git commit -m "First commit"
+$ git branch -M main
+$ git remote add origin https://github.com/username/my-wasm-repo.git
+$ git push -u origin main
+```
+
+Now, in your web browser, refresh your GitHub project and click **Settings**. If you cannot see the "Settings" tab, click the dropdown menu, then click **Settings**.
+
+![](images/settings.png)
+
+In the "Code and automation" section of the sidebar, click **Pages**.
+
+Under "Build and deployment", under "Source", select **Deploy from a branch**.
+
+Under "Branch", use the branch dropdown menu and select **main** as the publishing source, then click **Save**.
+
+![](images/deploy.png)
+
+GitHub will then start to prepare your GitHub Pages site to contain your CRAN-like Wasm package repository.
+
+After a little while^[You should be able to see progress of the website build step in the **Actions** section of your GitHub project.], your GitHub Pages website will be ready and webR should be able to install your package from the GitHub Pages repo URL.
 
 ```{r eval=FALSE}
-library(cli)
+webr::install("cli", repos = "http://username.github.io/my-wasm-repo/repo")
+#> Downloading webR package: cli
 ```
-
-##### Deploying
-
-Once you are happy that your R package repository is working and sufficient, it should be deployed to the web via the static file hosting service of your choice. ee the following article for an example of how to use GitHub Pages for this purpose.
-
-* TODO: Deploying an R package repository to GitHub Pages
-
-### Mounting an Emscripten virtual filesystem image
-
-TODO
-
-### Mounting a host R library directory with Node.js
-
-TODO

@@ -1,0 +1,65 @@
+---
+title: "Mounting host directories in node"
+output: rmarkdown::html_document
+vignette: >
+  %\VignetteIndexEntry{Mounting host directories in node}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+## Introduction
+
+When running under Node.js, the Emscripten WebAssembly environment can make available the contents of a directory on the host filesystem. In addition to providing webR access to external data files, a pre-prepared R package library can be mounted from the host filesystem. This avoids the need to download potentially large R packages or filesystem images over the network.
+
+## Building an R package library
+
+Similarly to the `vignette("getting-started")` article, to build an R package library we must first build one or more Wasm R packages using `add_pkg()`. As an example, let's build a package with a few hard dependencies. Ensure that you are running R in an environment with access to Wasm development tools^[See the "Setting up the WebAssembly toolchain" section in `vignette("getting-started")` for further details.], then run:
+
+```{r eval=FALSE}
+rwasm::add_pkg("dplyr")
+```
+
+After the build process has completed, the new `repo` directory contains a CRAN-like package repository with R packages build for Wasm.
+
+Next, run the following to build an R package library:
+
+```{r eval=FALSE}
+rwasm::make_library()
+```
+
+By default, this function will create a new directory named `lib` if it does not already exist. This directory will contain an R package library consisting of all the packages previously added to the CRAN-like repository in `repo` using `add_pkg()`.
+
+## Mounting host directories
+
+In your node application, use the webR JS API to create a new directory on the VFS and mount the host directory containing your R packages:
+
+```js
+await webR.init();
+await webR.FS.mkdir("/my-library");
+await webR.FS.mount('NODEFS', { root: '/path/to/lib' }, "/my-library");
+```
+
+Once mounted, the contents of your host R library directory are available at `/my-library` in the virtual filesystem.
+
+```{r eval=FALSE}
+list.files("/my-library")
+#>  [1] "R6"         "cli"        "dplyr"      "fansi"      "generics"   "glue"
+#>  [7] "lifecycle"  "magrittr"   "pillar"     "pkgconfig"  "rlang"      "tibble"
+#> [13] "tidyselect" "utf8"       "vctrs"      "withr"
+```
+
+This new directory should be added to R's `.libPaths()`, so that R packages may be loaded from the new library.
+
+```{r eval=FALSE}
+.libPaths(c(.libPaths(), "/my-library"))
+library(dplyr)
+#> Attaching package: ‘dplyr’
+#> 
+#> The following objects are masked from ‘package:stats’:
+#> 
+#>     filter, lag
+#> 
+#> The following objects are masked from ‘package:base’:
+#> 
+#>     intersect, setdiff, setequal, union
+```

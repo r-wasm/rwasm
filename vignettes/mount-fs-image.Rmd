@@ -1,0 +1,86 @@
+---
+title: "Mounting filesystem images"
+output: rmarkdown::html_document
+vignette: >
+  %\VignetteIndexEntry{Mounting filesystem images}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+## Introduction
+
+The Emscripten WebAssembly environment provides a virtual filesystem (VFS) which supports the concept of *mounting*. With this, an entire file and directory structure can be packaged into a filesystem image to be loaded and mounted at runtime by WebAssembly (Wasm) applications. We can take advantage of this interface to efficiently mount R package libraries, pre-packaged and containing potentially many related R packages, in the VFS accessible to webR.
+
+## Building an R package library
+
+Similarly to the `vignette("getting-started")` article, to build an R package library image we must first build one or more Wasm R packages using `add_pkg()`. As an example, let's build a package with a few hard dependencies. Ensure that you are running R in an environment with access to Wasm development tools^[See the "Setting up the WebAssembly toolchain" section in `vignette("getting-started")` for further details.], then run:
+
+```{r eval=FALSE}
+rwasm::add_pkg("dplyr")
+```
+
+After the build process has completed, the new `repo` directory contains a CRAN-like package repository with R packages build for Wasm.
+
+Next, run the following to build an Emscripten VFS image:
+
+```{r eval=FALSE}
+rwasm::make_vfs_library()
+```
+
+By default, this function will create a new directory named `vfs` if it does not exist. The files `vfs/library.data` and `vfs/library.js.metadata` together form an Emscripten filesystem image containing an R package library consisting of all the packages previously added to the CRAN-like repository in `repo` using `add_pkg()`.
+
+## Mounting filesystem images
+
+The filesystem image should now be hosted by a web server so that it is available at some URL. Such a URL can then be passed to `webr::mount()` to be made available somewhere on the virtual filesystem for the Wasm R process.
+
+### Local testing
+
+The following R command starts a local web server to serve your filesystem image for testing^[Ensure that the latest version of the `httpuv` package is installed so that the `?httpuv::runStaticServer` function is available.]. When serving your files locally, be sure to include the `Access-Control-Allow-Origin: *` HTTP header, required for downloading files from a cross-origin server by the [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) mechanism.
+
+```r
+httpuv::runStaticServer(
+  dir = ".",
+  port = 9090,
+  browse = FALSE,
+  headers = list("Access-Control-Allow-Origin" =  "*")
+)
+```
+
+Once the web server is running start a webR session in your browser, such as the console at <https://webr.r-wasm.org/latest/>. Use `webr::mount()` to make the R library image available somewhere on the VFS^[You might need to adjust the path portion of the URL, depending on your set-up. If it does not work, you could also try `"http://127.0.0.1:9090"` or `"http://127.0.0.1:9090/output/vfs"`]:
+
+```{r eval=FALSE}
+webr::mount("/my-library", "http://127.0.0.1:9090/vfs/library.data")
+```
+
+Once mounted, the contents of the filesystem image are available at `/my-library` in the virtual filesystem.
+
+```{r eval=FALSE}
+list.files("/my-library")
+#>  [1] "R6"         "cli"        "dplyr"      "fansi"      "generics"   "glue"
+#>  [7] "lifecycle"  "magrittr"   "pillar"     "pkgconfig"  "rlang"      "tibble"
+#> [13] "tidyselect" "utf8"       "vctrs"      "withr"
+```
+
+This new directory should be added to R's `.libPaths()`, so that R packages may be loaded from the new library.
+
+```{r eval=FALSE}
+.libPaths(c(.libPaths(), "/my-library"))
+library(dplyr)
+#> Attaching package: ‘dplyr’
+#> 
+#> The following objects are masked from ‘package:stats’:
+#> 
+#>     filter, lag
+#> 
+#> The following objects are masked from ‘package:base’:
+#> 
+#>     intersect, setdiff, setequal, union
+```
+
+### Deployment
+
+The filesystem image files should be deployed to the static file hosting service of your choice, so that they are available for download anywhere. See the "Deployment to static hosting" section in `vignette("getting-started")` for an example of how to host static files with GitHub pages, substituting the `repo` directory for the `vfs` directory in the example.
+
+### Packaging other data
+
+Other arbitrary data in the form of files and directories can be packaged for mounting using the same method described above with the `rwasm::file_packager()` function.
