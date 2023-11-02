@@ -61,7 +61,7 @@ The `rwasm` package builds R binary packages for WebAssembly, organising the out
 
 ```{r eval=FALSE}
 install.packages("pak")
-pak::pak("r-wasm/webr-repo@pkg")
+pak::pak("r-wasm/rwasm")
 ```
 
 Once installed, load the `rwasm` package. If `rwasm` is able to find the Wasm development environment, it will print the directories it discovered and the version of webR that it is targeting. This might be different to the version of R installed on your native system.

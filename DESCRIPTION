@@ -11,7 +11,7 @@ Description: Utility functions to help build R packages compiled for
     repositories, and prepare webR compatible filesystem images for static
     web hosting of data files and R packages.
 License: MIT + file LICENSE
-URL: https://r-wasm.github.io/webr-repo/, https://github.com/r-wasm/webr-repo
+URL: https://r-wasm.github.io/rwasm/, https://github.com/r-wasm/rwasm
 Imports:
     dplyr,
     fs,

@@ -6,12 +6,15 @@
 \alias{rwasm-package}
 \title{rwasm: Build R Packages for WebAssembly}
 \description{
+\if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
+
 Utility functions to help build R packages compiled for WebAssembly (Wasm), manage Wasm binary R package libraries and repositories, and prepare webR compatible filesystem images for static web hosting of data files and R packages.
 }
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://r-wasm.github.io/webr-repo/}
+  \item \url{https://r-wasm.github.io/rwasm/}
+  \item \url{https://github.com/r-wasm/rwasm}
 }
 
 }

@@ -3,7 +3,7 @@
 
 <!-- badges: start -->
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
-[![R-CMD-check](https://github.com/r-wasm/webr-repo/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/r-wasm/webr-repo/actions/workflows/R-CMD-check.yaml)
+[![R-CMD-check](https://github.com/r-wasm/rwasm/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/r-wasm/rwasm/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 ## Build R Packages for WebAssembly
@@ -21,7 +21,7 @@ The `rwasm` package is not yet on CRAN. You can install the development version 
 
 ```r
 # install.packages("pak")
-pak::pak("r-wasm/webr-repo")
+pak::pak("r-wasm/rwasm")
 ```
 
 Further information explaining how to set up the Wasm development environment and build R packages can be found in `vignette("getting-started")`.
