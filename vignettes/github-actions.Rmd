@@ -1,0 +1,114 @@
+---
+title: "Build R packages using GitHub Actions"
+output: rmarkdown::html_document
+vignette: >
+  %\VignetteIndexEntry{Build R packages using GitHub Actions}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+## Introduction
+
+Using the set of GitHub Actions provided by [r-wasm/actions](https://github.com/r-wasm/actions), it is possible to build a list of Wasm R packages and automatically deploy the resulting package repository or library image to a GitHub Pages URL. This workflow simplifies the process of deploying a set of R packages for use with webR, and enables continuous integration.
+
+## Setting up the GitHub repository
+
+First, create a new GitHub repository [following GitHub's instructions](https://docs.github.com/en/get-started/quickstart/create-a-repo#) to intialise a new empty git repo.
+
+Create a file named `packages`, containing a list of [R package references](https://r-lib.github.io/pkgdepends/reference/pkg_refs.html). Add one R package per line, and custom R packages hosted on GitHub may also be included here. For example:
+
+```
+cli
+dplyr
+tidyverse/ggplot2@v3.4.4
+```
+
+Next, create a new GitHub Actions workflow file at `.github/workflows/build.yml`, with contents:
+
+```yaml
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+name: Build wasm R package repository
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: ghcr.io/r-wasm/webr:main
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build wasm packages
+      uses: r-wasm/actions/build-wasm-packages@v1
+  deploy:
+    name: Deploy to GitHub pages
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Download wasm R package repository artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: wasm-repo
+          path: _site
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v2
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v2
+```
+
+Commit the changes above, then push your repository to GitHub.
+
+
+## The GitHub Actions build process
+
+The GitHub Actions workflow should automatically start to run and build your list of packages. You should be able to see progress of the website build step in the **Actions** section of your GitHub project.
+
+After a little while, your GitHub Pages website will be ready and webR should be able to install your package from a GitHub Pages URL:
+
+```{r eval=FALSE}
+webr::install("cli", repos = "http://username.github.io/my-wasm-repo/")
+#> Downloading webR package: cli
+```
+
+Further usage details for `r-wasm/actions/build-wasm-packages` can be found in the [GitHub documentation](https://github.com/r-wasm/actions/tree/v1/build-wasm-packages).
+
+## Using an R package library image
+
+An Emscripten filesystem image containing an R package library may also be built and uploaded to GitHub pages. If you'd prefer to mount a package library image, rather than install R packages from a CRAN-like repo, upload the `wasm-image` artifact to your GitHub Pages site:
+
+```yaml
+- name: Download wasm R package repository artifact
+  uses: actions/download-artifact@v3
+  with:
+    name: wasm-image
+    path: _site
+```
+
+Then, in webR, mount the filesystem image and set the `.libPaths()` to load a package from the package library:
+
+```{r eval=FALSE}
+webr::mount("/my-library", "http://username.github.io/my-wasm-repo/library.data")
+.libPaths(c(.libPaths(), "/my-library"))
+library(dplyr)
+#> Attaching package: ‘dplyr’
+#> 
+#> The following objects are masked from ‘package:stats’:
+#> 
+#>     filter, lag
+#> 
+#> The following objects are masked from ‘package:base’:
+#> 
+#>     intersect, setdiff, setequal, union
+```
+
+Further information about Emscripten filesystem images can be found in the `vignette("mount-fs-image.Rmd")` article.
