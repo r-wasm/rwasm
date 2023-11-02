@@ -29,9 +29,19 @@ rwasm::make_vfs_library()
 
 By default, this function will create a new directory named `vfs` if it does not exist. The files `vfs/library.data` and `vfs/library.js.metadata` together form an Emscripten filesystem image containing an R package library consisting of all the packages previously added to the CRAN-like repository in `repo` using `add_pkg()`.
 
+### Packaging arbitrary data
+
+It is also possible to package an arbitrary data directory as an Emscripten filesystem image using the `file_packager()` function:
+
+```{r eval=FALSE}
+rwasm::file_packager("./some/data/directory", out_name = "output_image.data")
+```
+
+Again, this function writes output filesystem images to the `vfs` directory by default.
+
 ## Mounting filesystem images
 
-The filesystem image should now be hosted by a web server so that it is available at some URL. Such a URL can then be passed to `webr::mount()` to be made available somewhere on the virtual filesystem for the Wasm R process.
+The filesystem image(s) should now be hosted by a web server so that it is available at some URL. Such a URL can then be passed to `webr::mount()` to be made available on the virtual filesystem for the Wasm R process.
 
 ### Local testing
 
@@ -79,8 +89,4 @@ library(dplyr)
 
 ### Deployment
 
-The filesystem image files should be deployed to the static file hosting service of your choice, so that they are available for download anywhere. See the "Deployment to static hosting" section in `vignette("rwasm")` for an example of how to host static files with GitHub pages, substituting the `repo` directory for the `vfs` directory in the example.
-
-### Packaging other data
-
-Other arbitrary data in the form of files and directories can be packaged for mounting using the same method described above with the `rwasm::file_packager()` function.
+The filesystem image files should be deployed to the static file hosting service of your choice, so that they are available for download anywhere. See the "Deployment to static hosting" section in `vignette("rwasm")` for an example of how to host static files with GitHub pages, substituting the `repo` directory for the `vfs` directory containing Emscripten filesystem images.
