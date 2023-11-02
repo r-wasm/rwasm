@@ -20,19 +20,19 @@ There are two supported ways to ensure that the required environment and toolcha
 First, ensure that [Docker](https://www.docker.com) is installed on your machine^[For macOS machines with Apple Silicon processors, ensure that "Use Rosetta for x86/amd64 emulation on Apple Silicon" is disabled in the Docker Desktop settings.]. Then, in a terminal, pull the latest version of the [webR development container](https://github.com/r-wasm/webr/pkgs/container/webr):
 
 ```console
-$ docker pull ghcr.io/r-wasm/webr:v0.2.1
+docker pull ghcr.io/r-wasm/webr:main
 ```
 
 Next, create a new directory named `output` to store the built R packages,
 
 ```console
-$ mkdir -p output
+mkdir -p output
 ```
 
 Then start R in the Docker container, mounting the new `output` directory into place and setting it as the working directory^[If you see an error along the lines of `The path [...]/output is not shared from the host and is not known to Docker`, follow the instructions given in the rest of the error output to ensure that the `output` directory is shared with Docker.]:
 
 ```console
-$ docker run -it --rm -v $(PWD)/output:/root -w /output ghcr.io/r-wasm/webr:v0.2.1 R
+docker run -it --rm -v $(PWD)/output:/output -w /output ghcr.io/r-wasm/webr:main R
 ```
 
 You may now continue by working in this R session. The Docker container will provide the required development environment and tools for building binary R packages for Wasm. R packages and repositories built in this way will be written in the directory `output`.
@@ -69,8 +69,8 @@ Once installed, load the `rwasm` package. If `rwasm` is able to find the Wasm de
 ```{r eval=FALSE}
 library(rwasm)
 #> Targeting Wasm packages for R 4.3.0
-#> With `WEBR_ROOT` directory: /home/username/webr
-#> With `EMSCRIPTEN_ROOT` directory: /home/username/emsdk/upstream/emscripten
+#> With `WEBR_ROOT` directory: /opt/webr
+#> With `EMSCRIPTEN_ROOT` directory: /opt/emsdk/upstream/emscripten
 ```
 
 ## Adding an R package to the repository
@@ -89,7 +89,9 @@ The CRAN-like R package repository in the output directory `repo` should be host
 
 ### Local testing
 
-The following R command starts a local web server to serve your package repository for testing^[Ensure that the latest version of the `httpuv` package is installed so that the `?httpuv::runStaticServer` function is available.]. When serving your repository locally, be sure to include the `Access-Control-Allow-Origin: *` HTTP header, required for loading R packages from a cross-origin server by the [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) mechanism.
+The R command given below starts a local web server to serve your package repository for testing^[Ensure that the latest version of the `httpuv` package is installed so that the `?httpuv::runStaticServer` function is available.]. The `Access-Control-Allow-Origin: *` HTTP header is included, required for loading R packages from a cross-origin server through the [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) mechanism.
+
+If you are using a Docker container to build Wasm R packages, be sure to run the following command in a new R session outside Docker so that the web server is accessible to the host machine. You might also want to set `dir = "./output"` to serve the contents of the `output` directory mounted in the Docker container.
 
 ```r
 httpuv::runStaticServer(
@@ -115,20 +117,20 @@ Once you are happy that your R package repository is working and sufficient, it 
 First, create a new directory for your GitHub repository and copy your webR binary repo into place.
 
 ```
-$ mkdir -p my-wasm-repo
-$ cp -r ./path/to/output/repo my-wasm-repo/repo
-$ cd my-wasm-repo
+mkdir -p my-wasm-repo
+cp -r ./path/to/output/repo my-wasm-repo/repo
+cd my-wasm-repo
 ```
 
 Next, initialise a new GitHub repository to host your binary R packages, and run the commands given by GitHub to initialise and push an initial commit of your Wasm binary packages.
 
 ```
-$ git init
-$ git add repo
-$ git commit -m "First commit"
-$ git branch -M main
-$ git remote add origin https://github.com/username/my-wasm-repo.git
-$ git push -u origin main
+git init
+git add repo
+git commit -m "First commit"
+git branch -M main
+git remote add origin https://github.com/username/my-wasm-repo.git
+git push -u origin main
 ```
 
 Now, in your web browser, refresh your GitHub project and click **Settings**. If you cannot see the "Settings" tab, click the dropdown menu, then click **Settings**.
