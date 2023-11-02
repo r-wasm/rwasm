@@ -13,7 +13,7 @@ The Emscripten WebAssembly environment provides a virtual filesystem (VFS) which
 
 ## Building an R package library
 
-Similarly to the `vignette("getting-started")` article, to build an R package library image we must first build one or more Wasm R packages using `add_pkg()`. As an example, let's build a package with a few hard dependencies. Ensure that you are running R in an environment with access to Wasm development tools^[See the "Setting up the WebAssembly toolchain" section in `vignette("getting-started")` for further details.], then run:
+To build an R package library image we must first build one or more Wasm R packages using `add_pkg()`. As an example, let's build a package with a few hard dependencies. Ensure that you are running R in an environment with access to Wasm development tools^[See the "Setting up the WebAssembly toolchain" section in `vignette("rwasm")` for further details.], then run:
 
 ```{r eval=FALSE}
 rwasm::add_pkg("dplyr")
@@ -79,7 +79,7 @@ library(dplyr)
 
 ### Deployment
 
-The filesystem image files should be deployed to the static file hosting service of your choice, so that they are available for download anywhere. See the "Deployment to static hosting" section in `vignette("getting-started")` for an example of how to host static files with GitHub pages, substituting the `repo` directory for the `vfs` directory in the example.
+The filesystem image files should be deployed to the static file hosting service of your choice, so that they are available for download anywhere. See the "Deployment to static hosting" section in `vignette("rwasm")` for an example of how to host static files with GitHub pages, substituting the `repo` directory for the `vfs` directory in the example.
 
 ### Packaging other data
 

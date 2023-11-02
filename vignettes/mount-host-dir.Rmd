@@ -13,7 +13,7 @@ When running under Node.js, the Emscripten WebAssembly environment can make avai
 
 ## Building an R package library
 
-Similarly to the `vignette("getting-started")` article, to build an R package library we must first build one or more Wasm R packages using `add_pkg()`. As an example, let's build a package with a few hard dependencies. Ensure that you are running R in an environment with access to Wasm development tools^[See the "Setting up the WebAssembly toolchain" section in `vignette("getting-started")` for further details.], then run:
+To build an R package library, we must first build one or more Wasm R packages using `add_pkg()`. As an example, let's build a package with a few hard dependencies. Ensure that you are running R in an environment with access to Wasm development tools^[See the "Setting up the WebAssembly toolchain" section in `vignette("rwasm")` for further details.], then run:
 
 ```{r eval=FALSE}
 rwasm::add_pkg("dplyr")

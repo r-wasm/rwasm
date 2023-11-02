@@ -24,4 +24,4 @@ The `rwasm` package is not yet on CRAN. You can install the development version 
 pak::pak("r-wasm/rwasm")
 ```
 
-Further information explaining how to set up the Wasm development environment and build R packages can be found in `vignette("getting-started")`.
+Further information explaining how to set up the Wasm development environment and build R packages can be found in `vignette("rwasm")`.
