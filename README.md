@@ -1,10 +1,12 @@
 
-# rwasm - Build R Packages for WebAssembly
+# rwasm <img src="man/figures/logo.png" align="right" alt="rwasm logo" />
 
 <!-- badges: start -->
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 [![R-CMD-check](https://github.com/r-wasm/webr-repo/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/r-wasm/webr-repo/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
+
+## Build R Packages for WebAssembly
 
 This package provides functions to help build R packages compiled for WebAssembly (Wasm), manage Wasm binary R package libraries and repositories, and prepare webR compatible filesystem images for static web hosting of data files and R packages.
 

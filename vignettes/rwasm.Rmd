@@ -1,8 +1,8 @@
 ---
-title: "Getting started with rwasm"
+title: "Get started with rwasm"
 output: rmarkdown::html_document
 vignette: >
-  %\VignetteIndexEntry{Getting started with rwasm}
+  %\VignetteIndexEntry{Get started with rwasm}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
