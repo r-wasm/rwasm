@@ -96,6 +96,7 @@ add_pkg <- function(packages,
   package_deps <- package_deps$resolve()
   package_info <- package_deps$get_resolution()
   package_info <- package_info[!grepl("/Recommended/", package_info$target), ]
+  package_info <- package_info[grepl("^source$", package_info$platform), ]
 
   update_repo(package_info, remotes, repo_dir)
 }
