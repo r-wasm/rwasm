@@ -55,11 +55,10 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v3
-      - name: Download wasm R package repository artifact
-        uses: actions/download-artifact@v3
+      - name: Download wasm artifacts
+        uses: r-wasm/actions/download-wasm-artifacts@v1
         with:
-          name: wasm-repo
-          path: _site
+          repo-path: _site
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v2
       - name: Deploy to GitHub Pages
@@ -88,11 +87,10 @@ Further usage details for `r-wasm/actions/build-wasm-packages` can be found in t
 An Emscripten filesystem image containing an R package library may also be built and uploaded to GitHub pages. If you'd prefer to mount a package library image, rather than install R packages from a CRAN-like repo, upload the `wasm-image` artifact to your GitHub Pages site:
 
 ```yaml
-- name: Download wasm R package repository artifact
-  uses: actions/download-artifact@v3
+- name: Download wasm artifacts
+  uses: r-wasm/actions/download-wasm-artifacts@v1
   with:
-    name: wasm-image
-    path: _site
+    image-path: _site
 ```
 
 Then, in webR, mount the filesystem image and set the `.libPaths()` to load a package from the package library:
