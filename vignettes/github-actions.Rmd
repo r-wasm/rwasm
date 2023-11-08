@@ -84,7 +84,7 @@ Further usage details for `r-wasm/actions/build-wasm-packages` can be found in t
 
 ## Using an R package library image
 
-An Emscripten filesystem image containing an R package library may also be built and uploaded to GitHub pages. If you'd prefer to mount a package library image, rather than install R packages from a CRAN-like repo, upload the `wasm-image` artifact to your GitHub Pages site:
+An Emscripten filesystem image containing an R package library may also be built and uploaded to GitHub Pages. If you'd prefer to mount an R package library, rather than install packages from a CRAN-like repo, use the `image-path` parameter to prepare the Emscripten filesystem image for upload to your GitHub Pages site:
 
 ```yaml
 - name: Download wasm artifacts
