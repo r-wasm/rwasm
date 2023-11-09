@@ -23,7 +23,18 @@ dplyr
 tidyverse/ggplot2@v3.4.4
 ```
 
-Next, create a new GitHub Actions workflow file at `.github/workflows/build.yml`, with contents:
+Next, create a new GitHub Actions workflow file at `.github/workflows/deploy.yml`, by running
+
+```r
+usethis::use_github_action(
+  url = "https://raw.githubusercontent.com/r-wasm/actions/v1/examples/deploy-wasm-repo.yml",
+  save_as = "deploy.yml"
+)
+```
+
+The workflow contents will have two workflow jobs. The first job builds the list of R packages into a package repository and uploads it as an artifact file. The second job downloads and deploys the package repository to GitHub Pages.
+
+The workflow file should look like this:
 
 ```yaml
 on:
@@ -37,12 +48,7 @@ name: Build wasm R package repository
 
 jobs:
   build:
-    runs-on: ubuntu-latest
-    container: ghcr.io/r-wasm/webr:main
-    steps:
-    - uses: actions/checkout@v3
-    - name: Build wasm packages
-      uses: r-wasm/actions/build-wasm-packages@v1
+    uses: r-wasm/actions/.github/workflows/build.yml@v1
   deploy:
     name: Deploy to GitHub pages
     needs: build
@@ -66,7 +72,7 @@ jobs:
         uses: actions/deploy-pages@v2
 ```
 
-Commit the changes above, then push your repository to GitHub.
+Commit the new GitHub Actions file changes, then push the commit to GitHub.
 
 
 ## The GitHub Actions build process
@@ -100,13 +106,13 @@ webr::mount("/my-library", "http://username.github.io/my-wasm-repo/library.data"
 .libPaths(c(.libPaths(), "/my-library"))
 library(dplyr)
 #> Attaching package: ‘dplyr’
-#> 
+#>
 #> The following objects are masked from ‘package:stats’:
-#> 
+#>
 #>     filter, lag
-#> 
+#>
 #> The following objects are masked from ‘package:base’:
-#> 
+#>
 #>     intersect, setdiff, setequal, union
 ```
 
