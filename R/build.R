@@ -15,6 +15,15 @@ wasm_build <- function(pkg, tarball_path, contrib_bin) {
     ))
   }
 
+  # Setup emconfigure wrapper
+  configure_src <- system.file("configure", package = "rwasm")
+  configure_orig <- fs::path(tmp_dir, pkg, "configure")
+  configure_copy <- fs::path(tmp_dir, pkg, "configure.orig")
+  if (fs::is_file(configure_orig)) {
+    fs::file_copy(configure_orig, configure_copy)
+    fs::file_copy(configure_src, configure_orig, overwrite = TRUE)
+  }
+
   # Setup optional Makevars overrides
   configure_flag <- ""
   mkvars_dest <- fs::path(tmp_dir, pkg, "src")
@@ -50,7 +59,8 @@ wasm_build <- function(pkg, tarball_path, contrib_bin) {
     paste0("WEBR_VERSION=", webr_version),
     paste0("WEBR_ROOT=", webr_root),
     sprintf("PATH='%s/wasm/bin:%s'", webr_root, Sys.getenv("PATH")),
-    sprintf("PKG_CONFIG_PATH=%s/wasm/lib/pkgconfig", webr_root)
+    sprintf("PKG_CONFIG_PATH=%s/wasm/lib/pkgconfig", webr_root),
+    sprintf("EM_PKG_CONFIG_PATH=%s/wasm/lib/pkgconfig", webr_root)
   )
 
   # Need to use an empty library otherwise R might try to load wasm packages
