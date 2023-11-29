@@ -54,12 +54,12 @@ This new directory should be added to R's `.libPaths()`, so that R packages may 
 .libPaths(c(.libPaths(), "/my-library"))
 library(dplyr)
 #> Attaching package: ‘dplyr’
-#> 
+#>
 #> The following objects are masked from ‘package:stats’:
-#> 
+#>
 #>     filter, lag
-#> 
+#>
 #> The following objects are masked from ‘package:base’:
-#> 
+#>
 #>     intersect, setdiff, setequal, union
 ```

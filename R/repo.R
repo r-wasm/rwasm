@@ -138,50 +138,43 @@ write_packages <- function(repo_dir = "./repo") {
   update_packages(contrib_src, contrib_bin)
 }
 
-# Download a remote source to src/contrib
-make_remote_tarball <- function(pkg, url, target, contrib_src) {
-  tmp_dir <- tempfile()
-  on.exit(unlink(tmp_dir, recursive = TRUE))
-  dir.create(tmp_dir)
-
-  # Remove all existing tarballs to avoid conflicting versions in case
-  # old remotes have already been downloaded
-  unlink(list.files(contrib_src, paste0(pkg, "_.*\\.tar\\.gz$")))
-
-  source_tarball <- file.path(tmp_dir, "dest.tar.gz")
-  download.file(url, source_tarball)
-
-  # Recreate a new .tar.gz with the directory structure expected from
-  # a source package
-  result_code <- attr(
-    suppressWarnings(untar(source_tarball, list = TRUE)),
-    "status"
-  )
-  if (is.null(result_code) || result_code == 0L) {
-    untar(
-      source_tarball,
-      exdir = file.path(tmp_dir, pkg),
-      extras = "--strip-components=1"
-    )
-  } else {
-    # Try to unzip if untar fails
-    # Get root folder name, necessary as it won't unzip as `pkg`
-    folder_name <- unzip(source_tarball, list = TRUE)$Name[[1]]
-    zip::unzip(source_tarball, exdir = file.path(tmp_dir))
-    # rename folder_name to `pkg`
-    file.rename(file.path(tmp_dir, folder_name), file.path(tmp_dir, pkg))
+# For a given pkgdepends resolution, take a list of remotes and prefer those
+# remotes over the default location for named packages. This allows rwasm to
+# override some packages so that they are downloaded from r-wasm/[...] by
+# default, rather than CRAN.
+#' @importFrom rlang .data
+prefer_remotes <- function(package_info, remotes = NULL) {
+  if (is.null(remotes)) {
+    remotes <- system.file("webr-remotes", package = "rwasm") |>
+      readLines() |>
+      unique()
   }
-  unlink(source_tarball)
 
-  repo_tarball <- file.path(normalizePath("repo"), target)
-  withr::with_dir(
-    tmp_dir,
-    tar(repo_tarball, files = pkg, compression = "gzip")
-  )
+  # Resolve list of package remotes to prefer
+  remotes_deps <- new_pkg_download_proposal(remotes, config = ppm_config)
+  remotes_deps <- remotes_deps$resolve()
+  remotes_info <- remotes_deps$get_resolution()
+  remotes_info <- remotes_info[remotes_info$direct, ]
+  remotes_info <- remotes_info[!grepl("/Recommended/", remotes_info$target), ]
+
+  # Prefer package remotes given in remotes list
+  remotes_info <- remotes_info |>
+    select(.data$package, .data$sources, .data$target, .data$ref, .data$status)
+  packages <- package_info |>
+    rows_update(remotes_info, by = "package", unmatched = "ignore")
+
+  # Check for any packages not found
+  if (any(packages$status == "FAILED")) {
+    stop(paste(
+      "The following package references cannot be found:",
+      paste(packages$ref[packages$status == "FAILED"], collapse = ", ")
+    ))
+  }
+
+  packages
 }
 
 # Build packages and update a CRAN-like repo on disk
-#' @importFrom rlang .data
 update_repo <- function(package_info,
                         remotes = NULL,
                         repo_dir = "./repo") {
@@ -210,32 +203,7 @@ update_repo <- function(package_info,
     repo_info <- NULL
   }
 
-  if (is.null(remotes)) {
-    remotes <- system.file("webr-remotes", package = "rwasm") |>
-      readLines() |>
-      unique()
-  }
-
-  # Resolve list of package remotes to prefer
-  remotes_deps <- new_pkg_download_proposal(remotes, config = ppm_config)
-  remotes_deps <- remotes_deps$resolve()
-  remotes_info <- remotes_deps$get_resolution()
-  remotes_info <- remotes_info[remotes_info$direct, ]
-  remotes_info <- remotes_info[!grepl("/Recommended/", remotes_info$target), ]
-
-  # Prefer package remotes given in remotes list
-  remotes_info <- remotes_info |>
-    select(.data$package, .data$sources, .data$target, .data$ref, .data$status)
-  packages <- package_info |>
-    rows_update(remotes_info, by = "package", unmatched = "ignore")
-
-  # Check for any packages not found
-  if (any(packages$status == "FAILED")) {
-    stop(paste(
-      "The following package references cannot be found:",
-      paste(packages$ref[packages$status == "FAILED"], collapse = ", ")
-    ))
-  }
+  packages <- prefer_remotes(package_info, remotes)
 
   need_update <- FALSE
   for (n in 1:nrow(packages)) {
@@ -254,22 +222,23 @@ update_repo <- function(package_info,
         next
       }
 
-      #  # Remove the old package from disk
+      # Remove the old package from disk
       old_tarball <- paste0(pkg, "_", old_ver, ".tar.gz")
       unlink(fs::path(contrib_src, old_tarball))
       unlink(fs::path(contrib_bin, old_tarball))
     }
 
     # Download the new package from remote source
+    tarball_file <- basename(pkg_row$target)
+    tarball_path <- fs::path(contrib_src, tarball_file)
     status <- tryCatch(
       {
-        if (!fs::file_exists(fs::path("repo", pkg_row$target))) {
+        if (!fs::file_exists(tarball_path)) {
           need_update <- TRUE
           make_remote_tarball(
             pkg_row$package,
             pkg_row$sources[[1]][[1]],
-            pkg_row$target,
-            contrib_src
+            tarball_path
           )
         }
       },
@@ -281,9 +250,6 @@ update_repo <- function(package_info,
       warning(status)
       next
     }
-
-    tarball_file <- basename(pkg_row$target)
-    tarball_path <- fs::path(contrib_src, tarball_file)
 
     # Build the package
     status <- tryCatch(

@@ -73,9 +73,19 @@ library(rwasm)
 #> With `EMSCRIPTEN_ROOT` directory: /opt/emsdk/upstream/emscripten
 ```
 
-## Adding an R package to the repository
+## Building an R package
 
-Use `add_pkg()` to build an R package for Wasm and add it to a repository. A new directory named `repo` will be created for the repository if it does not already exist, otherwise the existing repository will be updated to include the new package. By default, hard package dependencies will also be built for Wasm and added to the repository.
+R package binaries can be built for WebAssembly using the `build()` function. The resulting Wasm R package binary and an Emscripten filesystem image containing the R package are written to the directory given by the `out_dir` argument, defaulting to the current working directory.
+
+```{r eval=FALSE}
+build("cli")
+```
+
+Wasm R package binaries must be made available to the webR filesystem in some way before they can be used. Read on for more details on how to build an R package library for static web hosting of Wasm R packages. Alternatively, see `vignette("mount-fs-image.Rmd")` for details on how to mount Emscripten filesystem images.
+
+## Adding an R package to a package repository
+
+Use `add_pkg()` to build an R package (along with its dependencies) for Wasm and add it to an R package repository. A new directory named `repo` will be created for the repository if it does not already exist, otherwise the existing repository will be updated to include the new package. By default, hard package dependencies will also be built for Wasm and added to the repository.
 
 ```{r eval=FALSE}
 add_pkg("cli")
