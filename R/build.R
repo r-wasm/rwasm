@@ -54,38 +54,49 @@ build <- function(packages,
 }
 
 # Download a remote source to a source tarball on disk
-make_remote_tarball <- function(pkg, url, target) {
-  tmp_dir <- tempfile()
-  on.exit(unlink(tmp_dir, recursive = TRUE))
-  dir.create(tmp_dir)
+make_remote_tarball <- function(pkg, src, target) {
+  is_local <- grepl("^file://", src)
+  target <- fs::path_abs(target)
 
-  source_tarball <- file.path(tmp_dir, "dest.tar.gz")
-  download.file(url, source_tarball)
+  parent_dir <- if (is_local && fs::is_dir(gsub("^file://", "", src))) {
+    # Use local source directory directly
+    fs::path(gsub("^file://", "", src), "..")
+  } else {
+    # Obtain a copy of the R source and extract to a temporary directory
+    tmp_dir <- tempfile()
+    on.exit(unlink(tmp_dir, recursive = TRUE))
+    dir.create(tmp_dir)
+
+    source_tarball <- file.path(tmp_dir, "dest.tar.gz")
+    download.file(src, source_tarball)
+
+    result_code <- attr(
+      suppressWarnings(untar(source_tarball, list = TRUE)),
+      "status"
+    )
+    if (is.null(result_code) || result_code == 0L) {
+      untar(
+        source_tarball,
+        exdir = file.path(tmp_dir, pkg),
+        extras = "--strip-components=1"
+      )
+    } else {
+      # Try to unzip if untar fails
+      # Get root folder name, necessary as it won't unzip as `pkg`
+      folder_name <- unzip(source_tarball, list = TRUE)$Name[[1]]
+      zip::unzip(source_tarball, exdir = file.path(tmp_dir))
+      # rename folder_name to `pkg`
+      file.rename(file.path(tmp_dir, folder_name), file.path(tmp_dir, pkg))
+    }
+    unlink(source_tarball)
+
+    tmp_dir
+  }
 
   # Recreate a new .tar.gz with the directory structure expected from
   # a source package
-  result_code <- attr(
-    suppressWarnings(untar(source_tarball, list = TRUE)),
-    "status"
-  )
-  if (is.null(result_code) || result_code == 0L) {
-    untar(
-      source_tarball,
-      exdir = file.path(tmp_dir, pkg),
-      extras = "--strip-components=1"
-    )
-  } else {
-    # Try to unzip if untar fails
-    # Get root folder name, necessary as it won't unzip as `pkg`
-    folder_name <- unzip(source_tarball, list = TRUE)$Name[[1]]
-    zip::unzip(source_tarball, exdir = file.path(tmp_dir))
-    # rename folder_name to `pkg`
-    file.rename(file.path(tmp_dir, folder_name), file.path(tmp_dir, pkg))
-  }
-  unlink(source_tarball)
-
   withr::with_dir(
-    tmp_dir,
+    parent_dir,
     tar(target, files = pkg, compression = "gzip")
   )
 }
