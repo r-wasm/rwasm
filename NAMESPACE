@@ -3,6 +3,7 @@
 export(add_list)
 export(add_pkg)
 export(add_repo)
+export(build)
 export(file_packager)
 export(make_library)
 export(make_vfs_library)
