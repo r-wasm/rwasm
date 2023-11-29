@@ -55,18 +55,17 @@ build <- function(packages,
 
 # Download a remote source to a source tarball on disk
 make_remote_tarball <- function(pkg, src, target) {
+  tmp_dir <- tempfile()
+  on.exit(unlink(tmp_dir, recursive = TRUE))
+  dir.create(tmp_dir)
+
   is_local <- grepl("^file://", src)
   target <- fs::path_abs(target)
 
-  parent_dir <- if (is_local && fs::is_dir(gsub("^file://", "", src))) {
-    # Use local source directory directly
-    fs::path(gsub("^file://", "", src), "..")
+  # Obtain a copy of the R source and extract to a temporary directory
+  if (is_local && fs::is_dir(gsub("^file://", "", src))) {
+    fs::dir_copy(gsub("^file://", "", src), fs::path(tmp_dir, pkg))
   } else {
-    # Obtain a copy of the R source and extract to a temporary directory
-    tmp_dir <- tempfile()
-    on.exit(unlink(tmp_dir, recursive = TRUE))
-    dir.create(tmp_dir)
-
     source_tarball <- file.path(tmp_dir, "dest.tar.gz")
     download.file(src, source_tarball)
 
@@ -89,14 +88,12 @@ make_remote_tarball <- function(pkg, src, target) {
       file.rename(file.path(tmp_dir, folder_name), file.path(tmp_dir, pkg))
     }
     unlink(source_tarball)
-
-    tmp_dir
   }
 
   # Recreate a new .tar.gz with the directory structure expected from
   # a source package
   withr::with_dir(
-    parent_dir,
+    tmp_dir,
     tar(target, files = pkg, compression = "gzip")
   )
 }
