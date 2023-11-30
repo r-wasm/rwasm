@@ -1,6 +1,5 @@
 r-wasm/LiblineaR@webr
 r-wasm/Matrix@webr
-r-wasm/RcppArmadillo@webr
 r-wasm/data.table@webr
 r-wasm/fs@webr
 r-wasm/glue@webr

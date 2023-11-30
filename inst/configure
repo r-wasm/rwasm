@@ -1,2 +1,4 @@
 #!/bin/sh
-emconfigure ./configure.orig
+
+# TODO: Handle non-Autoconf configure scripts that might not support --host
+emconfigure ./configure.orig --host=wasm32-unknown-emscripten
