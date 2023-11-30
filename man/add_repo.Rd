@@ -17,8 +17,8 @@ of packages to skip. Defaults to \code{FALSE}, meaning keep all packages.}
   Arguments passed on to \code{\link[=add_pkg]{add_pkg}}
   \describe{
     \item{\code{remotes}}{A character vector of package references to prefer as a remote
-source. If \code{NULL}, use a built-in list of references to packages
-pre-modified for use with webR.}
+source. Defaults to \code{NA}, meaning prefer a built-in list of references to
+packages pre-modified for use with webR.}
     \item{\code{repo_dir}}{The package repository directory. Defaults to \code{"./repo"}.}
     \item{\code{dependencies}}{Dependency specification for packages to additionally
 add to the repository. Defaults to \code{NA}, meaning add only the required

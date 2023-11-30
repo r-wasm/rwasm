@@ -10,8 +10,9 @@ build(packages, remotes = NULL, out_dir = ".", dependencies = FALSE)
 \item{packages}{A character vector of one or more package references.}
 
 \item{remotes}{A character vector of package references to prefer as a remote
-source. If \code{NULL}, use a built-in list of references to packages
-pre-modified for use with webR.}
+source. If \code{NA}, use a built-in list of references to packages pre-modified
+for use with webR. Defaults to \code{NULL}, meaning no preference over the usual
+remote sources.}
 
 \item{out_dir}{The output directory. Defaults to \code{"."}.}
 
