@@ -2,14 +2,16 @@
 # `WEBR_ROOT` to the root directory of the webR repo
 -include ~/.webr-vars.mk
 
+WASM = $(WEBR_ROOT)/wasm
+HOST = $(WEBR_ROOT)/host
+TOOLS = $(WEBR_ROOT)/tools
+
 # Select emfc implementation
 -include $(WEBR_ROOT)/tools/fortran.mk
 
 R_VERSION = $(shell cat $(WEBR_ROOT)/R/R-VERSION)
 R_SOURCE = $(WEBR_ROOT)/R/build/R-$(R_VERSION)
 R_HOME = $(WEBR_ROOT)/wasm/R-$(R_VERSION)/lib/R
-
-WASM = $(WEBR_ROOT)/wasm
 
 EM_LIBS := -s USE_BZIP2=1
 EM_LIBS += -s USE_ZLIB=1
