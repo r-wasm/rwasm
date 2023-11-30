@@ -71,10 +71,10 @@ add_list <- function(list_file, ...) {
 #' exist.
 #'
 #' @param packages A character vector of one or more package references.
+#' @param repo_dir The package repository directory. Defaults to `"./repo"`.
 #' @param remotes A character vector of package references to prefer as a remote
 #'   source. Defaults to `NA`, meaning prefer a built-in list of references to
 #'   packages pre-modified for use with webR.
-#' @param repo_dir The package repository directory. Defaults to `"./repo"`.
 #' @param dependencies Dependency specification for packages to additionally
 #' add to the repository. Defaults to `NA`, meaning add only the required
 #' dependencies. If `FALSE`, adds no additional packages. See
@@ -84,8 +84,8 @@ add_list <- function(list_file, ...) {
 #' @importFrom pkgdepends new_pkg_download_proposal
 #' @export
 add_pkg <- function(packages,
-                    remotes = NA,
                     repo_dir = "./repo",
+                    remotes = NA,
                     dependencies = NA) {
   # Set up pkgdepends configuration
   config <- ppm_config

@@ -5,11 +5,11 @@
 #' resulting WebAssembly binary packages are written to `out_dir`.
 #'
 #' @param packages A character vector of one or more package references.
+#' @param out_dir The output directory. Defaults to `"."`.
 #' @param remotes A character vector of package references to prefer as a remote
 #'   source. If `NA`, use a built-in list of references to packages pre-modified
 #'   for use with webR. Defaults to `NULL`, meaning no preference over the usual
 #'   remote sources.
-#' @param out_dir The output directory. Defaults to `"."`.
 #' @param dependencies Dependency specification for packages to additionally
 #' build. Defaults to `FALSE`, meaning no additional packages. See
 #' [pkgdepends::as_pkg_dependencies] for details.
@@ -17,8 +17,8 @@
 #' @importFrom pkgdepends new_pkg_download_proposal
 #' @export
 build <- function(packages,
-                  remotes = NULL,
                   out_dir = ".",
+                  remotes = NULL,
                   dependencies = FALSE) {
   tmp_dir <- tempfile()
   on.exit(unlink(tmp_dir, recursive = TRUE))
