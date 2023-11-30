@@ -6,8 +6,9 @@
 #'
 #' @param packages A character vector of one or more package references.
 #' @param remotes A character vector of package references to prefer as a remote
-#'   source. If `NULL`, use a built-in list of references to packages
-#'   pre-modified for use with webR.
+#'   source. If `NA`, use a built-in list of references to packages pre-modified
+#'   for use with webR. Defaults to `NULL`, meaning no preference over the usual
+#'   remote sources.
 #' @param out_dir The output directory. Defaults to `"."`.
 #' @param dependencies Dependency specification for packages to additionally
 #' build. Defaults to `FALSE`, meaning no additional packages. See

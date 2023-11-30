@@ -72,8 +72,8 @@ add_list <- function(list_file, ...) {
 #'
 #' @param packages A character vector of one or more package references.
 #' @param remotes A character vector of package references to prefer as a remote
-#'   source. If `NULL`, use a built-in list of references to packages
-#'   pre-modified for use with webR.
+#'   source. Defaults to `NA`, meaning prefer a built-in list of references to
+#'   packages pre-modified for use with webR.
 #' @param repo_dir The package repository directory. Defaults to `"./repo"`.
 #' @param dependencies Dependency specification for packages to additionally
 #' add to the repository. Defaults to `NA`, meaning add only the required
@@ -84,7 +84,7 @@ add_list <- function(list_file, ...) {
 #' @importFrom pkgdepends new_pkg_download_proposal
 #' @export
 add_pkg <- function(packages,
-                    remotes = NULL,
+                    remotes = NA,
                     repo_dir = "./repo",
                     dependencies = NA) {
   # Set up pkgdepends configuration
@@ -143,8 +143,12 @@ write_packages <- function(repo_dir = "./repo") {
 # override some packages so that they are downloaded from r-wasm/[...] by
 # default, rather than CRAN.
 #' @importFrom rlang .data
-prefer_remotes <- function(package_info, remotes = NULL) {
+prefer_remotes <- function(package_info, remotes = NA) {
   if (is.null(remotes)) {
+    return(package_info)
+  }
+
+  if (is.na(remotes)) {
     remotes <- system.file("webr-remotes", package = "rwasm") |>
       readLines() |>
       unique()
@@ -176,7 +180,7 @@ prefer_remotes <- function(package_info, remotes = NULL) {
 
 # Build packages and update a CRAN-like repo on disk
 update_repo <- function(package_info,
-                        remotes = NULL,
+                        remotes = NA,
                         repo_dir = "./repo") {
   r_version <- R_system_version(getOption("rwasm.webr_version"))
 
