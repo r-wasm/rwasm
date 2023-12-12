@@ -1,5 +1,5 @@
 #!/bin/sh
 
 # TODO: Handle non-Autoconf configure scripts that might not support --host
-# Bash is needed for scripts without shebang
-emconfigure bash -c './configure.orig --host=wasm32-unknown-emscripten'
+# sh is needed for scripts without shebang
+emconfigure sh -c './configure.orig --host=wasm32-unknown-emscripten'
