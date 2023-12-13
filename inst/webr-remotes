@@ -11,8 +11,7 @@ r-wasm/mvtnorm@webr
 r-wasm/openssl@webr
 r-wasm/rsample@webr
 r-wasm/shiny@webr-safari
-r-wasm/svglite@webr
 r-wasm/systemfonts@webr
+r-wasm/ragg@webr
 r-wasm/testthat@webr
 r-wasm/xml2@webr
-r-lib/vctrs
