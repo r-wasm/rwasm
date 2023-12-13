@@ -1,0 +1,21 @@
+#!/bin/sh
+
+# pkg-config wrapper script
+# Based on r-universe-org/macos-cross/R-4.3-x86_64/pkg-config-x86_64.sh
+# Outputs library link flags suitable for static linking with Emscripten
+
+if [ -z "$EM_PKG_CONFIG" ]; then
+    echo "Error: Can't find pkg-config. Set the EM_PKG_CONFIG environment variable when using this wrapper."
+    exit 1
+fi
+
+# Invoke the true `pkg-config` expected by Emscripten's `emconfigure` script
+# Include the `--static` argument to ensure all libraries are included
+PKG_CONFIG_LIBS=$("$EM_PKG_CONFIG" --static "$@")
+
+# With Emscripten, static libraries must be linked only once
+# https://emscripten.org/docs/compiling/Building-Projects.html#troubleshooting
+#
+# Remove duplicates in `pkg-config` output, maintaining the original order,
+# and working from right to left.
+echo "$PKG_CONFIG_LIBS" | xargs -n1 | tail -r | awk '!x[$0]++' | tail -r | xargs
