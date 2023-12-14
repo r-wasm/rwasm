@@ -156,6 +156,7 @@ wasm_build <- function(pkg, tarball_path, contrib_bin) {
   webr_profile <- system.file("webr-profile", package = "rwasm")
   sys_bin <- system.file("bin", package = "rwasm")
   webr_env <- c(
+    paste0("BUILD_PLATFORM=", R.Version()$platform),
     paste0("R_PROFILE_USER=", webr_profile),
     paste0("R_MAKEVARS_USER=", webr_vars),
     paste0("WEBR_VERSION=", webr_version),

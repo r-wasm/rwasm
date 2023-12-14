@@ -1,5 +1,10 @@
 #!/bin/sh
 
+# autoconf-style configure wrapper script
+# Wraps R package configure scripts with Emscripten's `emconfigure` and sets
+# flags necessary to configure for cross-compilation to WebAssembly.
+#
 # TODO: Handle non-Autoconf configure scripts that might not support --host
+
 # sh is needed for scripts without shebang
-emconfigure sh -c './configure.orig --host=wasm32-unknown-emscripten'
+emconfigure sh -c "./configure.orig --build=$BUILD_PLATFORM --host=wasm32-unknown-emscripten"
