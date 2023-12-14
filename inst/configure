@@ -6,5 +6,8 @@
 #
 # TODO: Handle non-Autoconf configure scripts that might not support --host
 
+# Additional specific R package fixes
+export STRINGI_CPPFLAGS=-DU_HAVE_MMAP=0
+
 # sh is needed for scripts without shebang
 emconfigure sh -c "./configure.orig --build=$BUILD_PLATFORM --host=wasm32-unknown-emscripten"
