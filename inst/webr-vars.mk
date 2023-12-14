@@ -39,6 +39,9 @@ WASM_CPPFLAGS += -I$(R_SOURCE)/build/include
 WASM_CPPFLAGS += -I$(R_SOURCE)/src/include
 WASM_CPPFLAGS += $(EM_LIBS)
 
+WASM_FFLAGS := $(WASM_FFLAGS)
+WASM_FFLAGS += -O2
+
 WASM_LDFLAGS := $(WASM_LDFLAGS)
 WASM_LDFLAGS += -s SIDE_MODULE=1
 WASM_LDFLAGS += -s WASM_BIGINT
@@ -73,15 +76,20 @@ CXX14FLAGS = -std=gnu++14 $(WASM_CXXFLAGS)
 CXX17FLAGS = -std=gnu++17 $(WASM_CXXFLAGS)
 CXX20FLAGS = -std=gnu++20 $(WASM_CXXFLAGS)
 LDFLAGS = $(WASM_LDFLAGS)
+
+FFLAGS = $(WASM_FFLAGS)
+FPICFLAGS = -fPIC
 FLIBS = $(FORTRAN_WASM_LDADD)
 
 AR = emar
-
+RANLIB = emranlib
 
 # Uncomment to show emscripten calls to clang for debugging
 # CFLAGS += -v
 # LDFLAGS += -v
 
+# Filter out any flags in SHLIB_LIBADD that are already given in PKG_LIBS
+SHLIB_LIBADD_FILTER = $(filter-out $(PKG_LIBS),$(SHLIB_LIBADD))
 
 # Clear up flags from $(R_HOME)/etc/Makeconf
 override DYLIB_LD = $(CC)
@@ -95,14 +103,14 @@ override FOUNDATION_LIBS =
 override LIBINTL =
 
 override LIBR =
-override ALL_LIBS = $(PKG_LIBS) $(SHLIB_LIBADD) $(LIBR) $(LIBINTL)
+override ALL_LIBS = $(PKG_LIBS) $(SHLIB_LIBADD_FILTER) $(LIBR) $(LIBINTL)
 
 override BLAS_LIBS = -L$(WEBR_LOCAL)/lib/R/lib -lRblas
 override LAPACK_LIBS = -L$(WEBR_LOCAL)/lib/R/lib -lRlapack
 
 override ALL_CPPFLAGS = -DNDEBUG $(PKG_CPPFLAGS) $(CLINK_CPPFLAGS) $(CPPFLAGS)
-override ALL_FFLAGS =
-override ALL_FCFLAGS =
+override ALL_FFLAGS = $(PKG_FFLAGS) $(FPICFLAGS) $(SHLIB_FFLAGS) $(FFLAGS)
+override ALL_FCFLAGS = $(P_FCFLAGS) $(FPICFLAGS) $(SHLIB_FFLAGS) $(FCFLAGS)
 
 
 # Print Makefile variable
