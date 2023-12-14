@@ -9,9 +9,10 @@ r-wasm/httpuv@webr
 r-wasm/later@webr
 r-wasm/mvtnorm@webr
 r-wasm/openssl@webr
+r-wasm/ragg@webr
+r-wasm/rgl@webr
 r-wasm/rsample@webr
 r-wasm/shiny@webr-safari
 r-wasm/systemfonts@webr
-r-wasm/ragg@webr
 r-wasm/testthat@webr
 r-wasm/xml2@webr
