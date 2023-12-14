@@ -18,4 +18,5 @@ PKG_CONFIG_LIBS=$("$EM_PKG_CONFIG" --static "$@")
 #
 # Remove duplicates in `pkg-config` output, maintaining the original order,
 # and working from right to left.
-echo "$PKG_CONFIG_LIBS" | xargs -n1 | tail -r | awk '!x[$0]++' | tail -r | xargs
+tac() { awk '{ buf[NR]=$0 } END { for (i=NR; i>=1; i--) print buf[i] }'; }
+echo "$PKG_CONFIG_LIBS" | xargs -n1 | tac | awk '!x[$0]++' | tac | xargs
