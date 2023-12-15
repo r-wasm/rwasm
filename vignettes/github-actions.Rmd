@@ -13,7 +13,7 @@ Using the set of GitHub Actions provided by [r-wasm/actions](https://github.com/
 
 ## Setting up the GitHub repository
 
-First, create a new GitHub repository [following GitHub's instructions](https://docs.github.com/en/get-started/quickstart/create-a-repo#) to intialise a new empty git repo.
+First, create a new GitHub repository [following GitHub's instructions](https://docs.github.com/en/get-started/quickstart/create-a-repo#) to initialise a new empty git repo.
 
 Create a file named `packages`, containing a list of [R package references](https://r-lib.github.io/pkgdepends/reference/pkg_refs.html). Add one R package per line, and custom R packages hosted on GitHub may also be included here. For example:
 
@@ -75,7 +75,7 @@ webr::install("cli", repos = "http://username.github.io/my-wasm-repo/")
 #> Downloading webR package: cli
 ```
 
-Further usage details for `r-wasm/actions/build-wasm-packages` can be found in the [GitHub documentation](https://github.com/r-wasm/actions/tree/v1/build-wasm-packages).
+Further usage details can be found in the [r-wasm/actions GitHub documentation](https://github.com/r-wasm/actions/tree/v1/.github/workflows/README.md).
 
 ## Using an R package library image
 
