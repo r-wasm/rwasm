@@ -87,12 +87,14 @@ usethis::use_github_action(
 )
 ```
 
-Commit the new GitHub Actions file, then make a release through the GitHub web interface. GitHub Actions will build a Wasm filesystem image for your package and its dependencies and upload it as an asset file for that specific package release.
+Commit the new GitHub Actions file, then make a release through the GitHub web interface. GitHub Actions will build a Wasm filesystem image for your package and its dependencies and upload it as asset files for that specific package release.
 
-Once the Github Action has finished, copy the link to the `library.data` asset file from the GitHub releases page. Then, in webR, mount the filesystem image and set the `.libPaths()` to load a package from the package library:
+Once the Github Action has finished, the `library.data` and `library.js.metadata` assets files can be downloaded from the GitHub releases page. The filesystem image files should then be made available through static hosting in some way, for example though further GitHub Actions steps to upload the filesystem image files as part of a custom GitHub Pages website.^[In principle, it is possible to directly mount the filesystem image from the release asset URL using `webr::mount()`. However, in web browsers this will likely be blocked due to the [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) mechanism.]
+
+Finally, in webR, mount the statically hosted filesystem image and set the `.libPaths()` to load a package from the package library:
 
 ```{r eval=FALSE}
-webr::mount("/my-library", "https://github.com/org/repo/releases/download/v0.0.0/library.data")
+webr::mount("/my-library", "https://org.github.io/repo/download/library.data")
 .libPaths(c(.libPaths(), "/my-library"))
 library(dplyr)
 #> Attaching package: ‘dplyr’
