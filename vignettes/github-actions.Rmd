@@ -27,7 +27,7 @@ Next, create a new GitHub Actions workflow file at `.github/workflows/deploy.yml
 
 ```r
 usethis::use_github_action(
-  url = "https://raw.githubusercontent.com/r-wasm/actions/v1/examples/deploy-wasm-repo.yml",
+  url = "https://raw.githubusercontent.com/r-wasm/actions/v1/examples/deploy-cran-repo.yml",
   save_as = "deploy.yml"
 )
 ```
@@ -37,39 +37,28 @@ The workflow contents will have two workflow jobs. The first job builds the list
 The workflow file should look like this:
 
 ```yaml
+# Workflow derived from https://github.com/r-wasm/actions/tree/v1/examples
+# Need help debugging build failures? Start at https://github.com/r-lib/actions#where-to-find-help
 on:
   push:
+    # Only build on main or master branch
     branches: [main, master]
-  pull_request:
-    branches: [main, master]
+  # Or when triggered manually
   workflow_dispatch:
 
-name: Build wasm R package repository
+name: Build and deploy wasm R package repository
 
 jobs:
-  build:
-    uses: r-wasm/actions/.github/workflows/build.yml@v1
-  deploy:
-    name: Deploy to GitHub pages
-    needs: build
-    runs-on: ubuntu-latest
+  # Reads `./packages` for package references to put
+  # into a CRAN-like repository hosted on GitHub pages
+  deploy-cran-repo:
+    uses: r-wasm/actions/.github/workflows/deploy-cran-repo.yml@v1
     permissions:
+      # To download GitHub Packages within action
+      repository-projects: read
+      # For publishing to pages environment
       pages: write
       id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - uses: actions/checkout@v3
-      - name: Download wasm artifacts
-        uses: r-wasm/actions/download-wasm-artifacts@v1
-        with:
-          repo-path: _site
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v2
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v2
 ```
 
 Commit the new GitHub Actions file changes, then push the commit to GitHub.
@@ -90,19 +79,20 @@ Further usage details for `r-wasm/actions/build-wasm-packages` can be found in t
 
 ## Using an R package library image
 
-An Emscripten filesystem image containing an R package library may also be built and uploaded to GitHub Pages. If you'd prefer to mount an R package library, rather than install packages from a CRAN-like repo, use the `image-path` parameter to prepare the Emscripten filesystem image for upload to your GitHub Pages site:
+An Emscripten filesystem image containing an R package library may also be built and attached to a GitHub package release. If you'd prefer to mount an R package library, rather than install packages from a CRAN-like repo, use the `release-file-system-image.yml` workflow.
 
-```yaml
-- name: Download wasm artifacts
-  uses: r-wasm/actions/download-wasm-artifacts@v1
-  with:
-    image-path: _site
+```r
+usethis::use_github_action(
+  url = "https://raw.githubusercontent.com/r-wasm/actions/v1/examples/release-file-system-image.yml"
+)
 ```
 
-Then, in webR, mount the filesystem image and set the `.libPaths()` to load a package from the package library:
+Commit the new GitHub Actions file, then make a release through the GitHub web interface. GitHub Actions will build a Wasm filesystem image for your package and its dependencies and upload it as an asset file for that specific package release.
+
+Once the Github Action has finished, copy the link to the `library.data` asset file from the GitHub releases page. Then, in webR, mount the filesystem image and set the `.libPaths()` to load a package from the package library:
 
 ```{r eval=FALSE}
-webr::mount("/my-library", "http://username.github.io/my-wasm-repo/library.data")
+webr::mount("/my-library", "https://github.com/org/repo/releases/download/v0.0.0/library.data")
 .libPaths(c(.libPaths(), "/my-library"))
 library(dplyr)
 #> Attaching package: ‘dplyr’
