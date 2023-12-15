@@ -102,6 +102,7 @@ override SHLIB_LINK = $(SHLIB_LD) $(SHLIB_LDFLAGS) $(LDFLAGS)
 override FOUNDATION_LIBS =
 override LIBINTL =
 
+override LIBS =
 override LIBR =
 override ALL_LIBS = $(PKG_LIBS) $(SHLIB_LIBADD_FILTER) $(LIBR) $(LIBINTL)
 
