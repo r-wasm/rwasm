@@ -9,6 +9,7 @@ r-wasm/httpuv@webr
 r-wasm/later@webr
 r-wasm/mvtnorm@webr
 r-wasm/openssl@webr
+r-wasm/png@webr
 r-wasm/ragg@webr
 r-wasm/rgl@webr
 r-wasm/rsample@webr
