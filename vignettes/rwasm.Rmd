@@ -32,7 +32,7 @@ mkdir -p output
 Then start R in the Docker container, mounting the new `output` directory into place and setting it as the working directory^[If you see an error along the lines of `The path [...]/output is not shared from the host and is not known to Docker`, follow the instructions given in the rest of the error output to ensure that the `output` directory is shared with Docker.]:
 
 ```console
-docker run -it --rm -v $(PWD)/output:/output -w /output ghcr.io/r-wasm/webr:main R
+docker run -it --rm -v ${PWD}/output:/output -w /output ghcr.io/r-wasm/webr:main R
 ```
 
 You may now continue by working in this R session. The Docker container will provide the required development environment and tools for building binary R packages for Wasm. R packages and repositories built in this way will be written in the directory `output`.
