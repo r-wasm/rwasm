@@ -64,12 +64,12 @@ CXX14 = em++
 CXX17 = em++
 CXX20 = em++
 CC = emcc
-CXX = em++
+CXX = em++ -std=gnu++17
 FC = $(EMFC)
 
 CFLAGS = $(WASM_CFLAGS)
 CPPFLAGS = $(WASM_CPPFLAGS)
-CXXFLAGS = -std=gnu++11 $(WASM_CXXFLAGS)
+CXXFLAGS = $(WASM_CXXFLAGS)
 CXX98FLAGS = -std=gnu++98 $(WASM_CXXFLAGS)
 CXX11FLAGS = -std=gnu++11 $(WASM_CXXFLAGS)
 CXX14FLAGS = -std=gnu++14 $(WASM_CXXFLAGS)
