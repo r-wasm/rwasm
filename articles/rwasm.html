@@ -134,7 +134,7 @@ directory<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-c
 &lt;code&gt;The path [...]/output is not shared from the host and is not known to Docker&lt;/code&gt;,
 follow the instructions given in the rest of the error output to ensure
 that the &lt;code&gt;output&lt;/code&gt; directory is shared with Docker.&lt;/p&gt;"><sup>2</sup></a>:</p>
-<pre class="console"><code>docker run -it --rm -v $(PWD)/output:/output -w /output ghcr.io/r-wasm/webr:main R</code></pre>
+<pre class="console"><code>docker run -it --rm -v ${PWD}/output:/output -w /output ghcr.io/r-wasm/webr:main R</code></pre>
 <p>You may now continue by working in this R session. The Docker
 container will provide the required development environment and tools
 for building binary R packages for Wasm. R packages and repositories
