@@ -1,5 +1,4 @@
 r-wasm/LiblineaR@webr
-r-wasm/Matrix@webr
 r-wasm/data.table@webr
 r-wasm/fs@webr
 r-wasm/glue@webr
@@ -15,5 +14,4 @@ r-wasm/rgl@webr
 r-wasm/rsample@webr
 r-wasm/shiny@webr-safari
 r-wasm/systemfonts@webr
-r-wasm/testthat@webr
 r-wasm/xml2@webr
