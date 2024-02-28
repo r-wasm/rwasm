@@ -1,4 +1,4 @@
-pandoc: 2.19.2
+pandoc: 3.1.11
 pkgdown: 2.0.7
 pkgdown_sha: ~
 articles:
@@ -6,7 +6,7 @@ articles:
   mount-fs-image: mount-fs-image.html
   mount-host-dir: mount-host-dir.html
   rwasm: rwasm.html
-last_built: 2024-02-02T13:56Z
+last_built: 2024-02-28T16:47Z
 urls:
   reference: https://r-wasm.github.io/rwasm/reference
   article: https://r-wasm.github.io/rwasm/articles
