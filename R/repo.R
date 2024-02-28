@@ -76,9 +76,8 @@ add_list <- function(list_file, ...) {
 #'   source. Defaults to `NA`, meaning prefer a built-in list of references to
 #'   packages pre-modified for use with webR.
 #' @param dependencies Dependency specification for packages to additionally
-#' add to the repository. Defaults to `NA`, meaning add only the required
-#' dependencies. If `FALSE`, adds no additional packages. See
-#' [pkgdepends::as_pkg_dependencies] for details.
+#' add to the repository. Defaults to `FALSE`, meaning no additional packages.
+#' See [pkgdepends::as_pkg_dependencies] for details.
 #'
 #' @importFrom dplyr rows_update select
 #' @importFrom pkgdepends new_pkg_download_proposal
@@ -86,7 +85,7 @@ add_list <- function(list_file, ...) {
 add_pkg <- function(packages,
                     repo_dir = "./repo",
                     remotes = NA,
-                    dependencies = NA) {
+                    dependencies = FALSE) {
   # Set up pkgdepends configuration
   config <- ppm_config
   config$dependencies <- dependencies
