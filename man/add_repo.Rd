@@ -21,9 +21,8 @@ of packages to skip. Defaults to \code{FALSE}, meaning keep all packages.}
 source. Defaults to \code{NA}, meaning prefer a built-in list of references to
 packages pre-modified for use with webR.}
     \item{\code{dependencies}}{Dependency specification for packages to additionally
-add to the repository. Defaults to \code{NA}, meaning add only the required
-dependencies. If \code{FALSE}, adds no additional packages. See
-\link[pkgdepends:as_pkg_dependencies]{pkgdepends::as_pkg_dependencies} for details.}
+add to the repository. Defaults to \code{FALSE}, meaning no additional packages.
+See \link[pkgdepends:as_pkg_dependencies]{pkgdepends::as_pkg_dependencies} for details.}
   }}
 }
 \description{

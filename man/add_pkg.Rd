@@ -4,7 +4,7 @@
 \alias{add_pkg}
 \title{Add R package reference(s) to a package repository}
 \usage{
-add_pkg(packages, repo_dir = "./repo", remotes = NA, dependencies = NA)
+add_pkg(packages, repo_dir = "./repo", remotes = NA, dependencies = FALSE)
 }
 \arguments{
 \item{packages}{A character vector of one or more package references.}
@@ -16,9 +16,8 @@ source. Defaults to \code{NA}, meaning prefer a built-in list of references to
 packages pre-modified for use with webR.}
 
 \item{dependencies}{Dependency specification for packages to additionally
-add to the repository. Defaults to \code{NA}, meaning add only the required
-dependencies. If \code{FALSE}, adds no additional packages. See
-\link[pkgdepends:as_pkg_dependencies]{pkgdepends::as_pkg_dependencies} for details.}
+add to the repository. Defaults to \code{FALSE}, meaning no additional packages.
+See \link[pkgdepends:as_pkg_dependencies]{pkgdepends::as_pkg_dependencies} for details.}
 }
 \description{
 Downloads and builds the \link[pkgdepends:pkg_refs]{R package references} given
