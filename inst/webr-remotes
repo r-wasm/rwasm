@@ -1,6 +1,6 @@
 r-wasm/LiblineaR@webr
 r-wasm/data.table@webr
-r-lib/fs@main
+r-wasm/fs@webr
 r-wasm/glue@webr
 r-wasm/gt@webr
 r-wasm/htmlwidgets@webr
