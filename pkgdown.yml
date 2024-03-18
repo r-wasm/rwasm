@@ -6,7 +6,7 @@ articles:
   mount-fs-image: mount-fs-image.html
   mount-host-dir: mount-host-dir.html
   rwasm: rwasm.html
-last_built: 2024-02-28T17:00Z
+last_built: 2024-03-18T10:48Z
 urls:
   reference: https://r-wasm.github.io/rwasm/reference
   article: https://r-wasm.github.io/rwasm/articles
