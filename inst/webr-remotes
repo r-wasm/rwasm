@@ -4,11 +4,11 @@ r-wasm/fs@webr
 r-wasm/gt@webr
 r-wasm/htmlwidgets@webr
 r-wasm/httpuv@webr
-r-wasm/igraph@webr
 r-wasm/later@webr
 r-wasm/mvtnorm@webr
 r-wasm/png@webr
 r-wasm/rgl@webr
+r-wasm/rigraph@webr
 r-wasm/rsample@webr
 r-wasm/shiny@webr-safari
 r-wasm/xml2@webr
