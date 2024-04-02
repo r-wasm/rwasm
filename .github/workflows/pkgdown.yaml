@@ -9,6 +9,8 @@ on:
     types: [published]
   workflow_dispatch:
 
+name: R Wasm & pkgdown deploy
+
 jobs:
   build-site:
     runs-on: ubuntu-latest
