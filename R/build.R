@@ -10,9 +10,7 @@
 #'   source. If `NA`, use a built-in list of references to packages pre-modified
 #'   for use with webR. Defaults to `NULL`, meaning no preference over the usual
 #'   remote sources.
-#' @param dependencies Dependency specification for packages to additionally
-#' build. Defaults to `FALSE`, meaning no additional packages. See
-#' [pkgdepends::as_pkg_dependencies] for details.
+#' @inheritParams add_pkg
 #'
 #' @importFrom pkgdepends new_pkg_download_proposal
 #' @export
