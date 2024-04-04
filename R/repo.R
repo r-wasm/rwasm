@@ -77,6 +77,8 @@ add_list <- function(list_file, ...) {
 #'   packages pre-modified for use with webR.
 #' @param dependencies Dependency specification for packages to additionally
 #' add to the repository. Defaults to `FALSE`, meaning no additional packages.
+#' Use `NA` to install only hard dependencies whereas `TRUE` installs all
+#' optional dependencies as well.
 #' See [pkgdepends::as_pkg_dependencies] for details.
 #'
 #' @importFrom dplyr rows_update select
