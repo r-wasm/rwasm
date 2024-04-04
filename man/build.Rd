@@ -17,8 +17,10 @@ for use with webR. Defaults to \code{NULL}, meaning no preference over the usual
 remote sources.}
 
 \item{dependencies}{Dependency specification for packages to additionally
-build. Defaults to \code{FALSE}, meaning no additional packages. See
-\link[pkgdepends:as_pkg_dependencies]{pkgdepends::as_pkg_dependencies} for details.}
+add to the repository. Defaults to \code{FALSE}, meaning no additional packages.
+Use \code{NA} to install only hard dependencies whereas \code{TRUE} installs all
+optional dependencies as well. See \link[pkgdepends:as_pkg_dependencies]{pkgdepends::as_pkg_dependencies}
+for details.}
 }
 \description{
 Downloads and builds the \link[pkgdepends:pkg_refs]{R package references} given
