@@ -9,5 +9,8 @@
 # Additional specific R package fixes
 export STRINGI_CPPFLAGS=-DU_HAVE_MMAP=0
 
+# Override specific Autoconf results for Emscripten environment
+AC_FUNC_OVERRIDES='ac_cv_func_getrandom=no'
+
 # sh is needed for scripts without shebang
-emconfigure sh -c "./configure.orig --build=$BUILD_PLATFORM --host=wasm32-unknown-emscripten"
+emconfigure sh -c "./configure.orig --build=$BUILD_PLATFORM --host=wasm32-unknown-emscripten $AC_FUNC_OVERRIDES"
