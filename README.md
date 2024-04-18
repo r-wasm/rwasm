@@ -1,5 +1,4 @@
-
-# rwasm <img src="man/figures/logo.png" align="right" alt="rwasm logo" />
+# rwasm <a href="https://r-wasm.github.io/rwasm/"><img src="man/figures/logo.png" align="right" height="138" alt="rwasm website" /></a>
 
 <!-- badges: start -->
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
