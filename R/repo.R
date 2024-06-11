@@ -121,7 +121,7 @@ rm_pkg <- function(packages, repo_dir = "./repo") {
     bin <- fs::dir_ls(contrib_bin, glob = paste0(contrib_bin, "/", pkg, "_*"))
     fs::file_delete(c(src, bin))
   }
-
+  message("Reconstructing PACKAGES")
   update_packages(contrib_src, contrib_bin)
 }
 
