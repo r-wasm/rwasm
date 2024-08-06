@@ -33,3 +33,4 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 SystemRequirements: webR development installation
     (https://webr.r-wasm.org/)
+BugReports: https://github.com/r-wasm/rwasm/issues
