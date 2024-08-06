@@ -35,7 +35,7 @@ build <- function(packages,
 
   packages <- prefer_remotes(package_info, remotes)
 
-  for (n in 1:nrow(packages)) {
+  for (n in seq_len(nrow(packages))) {
     pkg_row <- packages[n, ]
     pkg <- pkg_row$package
 

@@ -211,7 +211,7 @@ update_repo <- function(package_info,
   packages <- prefer_remotes(package_info, remotes)
 
   need_update <- FALSE
-  for (n in 1:nrow(packages)) {
+  for (n in seq_len(nrow(packages))) {
     pkg_row <- packages[n, ]
     pkg <- pkg_row$package
 

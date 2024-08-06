@@ -66,9 +66,9 @@ Once mounted, the contents of the filesystem image are available at `/my-library
 
 ```{r eval=FALSE}
 list.files("/my-library")
-#>  [1] "R6"         "cli"        "dplyr"      "fansi"      "generics"   "glue"
-#>  [7] "lifecycle"  "magrittr"   "pillar"     "pkgconfig"  "rlang"      "tibble"
-#> [13] "tidyselect" "utf8"       "vctrs"      "withr"
+#>  [1] "R6"         "cli"        "dplyr"     "fansi"      "generics"   "glue"
+#>  [7] "lifecycle"  "magrittr"   "pillar"    "pkgconfig"  "rlang"      "tibble"
+#> [13] "tidyselect" "utf8"       "vctrs"     "withr"
 ```
 
 This new directory should be added to R's `.libPaths()`, so that R packages may be loaded from the new library.

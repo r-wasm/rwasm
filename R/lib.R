@@ -144,7 +144,6 @@ file_packager <- function(in_dir, out_dir = "./vfs", out_name = NULL) {
   }
 
   data_file <- fs::path_ext_set(out_name, ".data")
-  meta_file <- fs::path_ext_set(out_name, ".js.metadata")
   js_file <- fs::path_ext_set(out_name, ".js")
   message(paste("Packaging:", data_file))
 
