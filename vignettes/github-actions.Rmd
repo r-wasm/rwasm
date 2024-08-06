@@ -75,7 +75,7 @@ webr::install("cli", repos = "http://username.github.io/my-wasm-repo/")
 #> Downloading webR package: cli
 ```
 
-Further usage details can be found in the [r-wasm/actions GitHub documentation](https://github.com/r-wasm/actions/tree/v1/.github/workflows/README.md).
+Further usage details can be found in the [r-wasm/actions GitHub documentation](https://github.com/r-wasm/actions/blob/v1/.github/workflows/README.md).
 
 ## Using an R package library image
 

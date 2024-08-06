@@ -15,6 +15,7 @@ Useful links:
 \itemize{
   \item \url{https://r-wasm.github.io/rwasm/}
   \item \url{https://github.com/r-wasm/rwasm}
+  \item Report bugs at \url{https://github.com/r-wasm/rwasm/issues}
 }
 
 }

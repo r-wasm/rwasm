@@ -1,7 +1,7 @@
 # rwasm <a href="https://r-wasm.github.io/rwasm/"><img src="man/figures/logo.png" align="right" height="138" alt="rwasm website" /></a>
 
 <!-- badges: start -->
-[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
+[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html)
 [![R-CMD-check](https://github.com/r-wasm/rwasm/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/r-wasm/rwasm/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
