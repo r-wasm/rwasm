@@ -21,6 +21,8 @@ add to the repository. Defaults to \code{FALSE}, meaning no additional packages.
 Use \code{NA} to install only hard dependencies whereas \code{TRUE} installs all
 optional dependencies as well. See \link[pkgdepends:as_pkg_dependencies]{pkgdepends::as_pkg_dependencies}
 for details.}
+    \item{\code{compress}}{Logical. If \code{TRUE}, a compressed version of the filesystem
+data is included in the output. Defaults to \code{FALSE}.}
   }}
 }
 \description{

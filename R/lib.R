@@ -59,7 +59,7 @@ make_library <- function(repo_dir = "./repo", lib_dir = "./lib", strip = NULL) {
 #' @inheritParams add_pkg
 #'
 #' @export
-make_vfs_repo <- function(repo_dir = "./repo") {
+make_vfs_repo <- function(repo_dir = "./repo", compress = FALSE) {
   r_version <- R_system_version(getOption("rwasm.webr_version"))
   contrib_bin <- fs::path(
     repo_dir, "bin", "emscripten", "contrib",
@@ -78,7 +78,12 @@ make_vfs_repo <- function(repo_dir = "./repo") {
   lapply(pkgs, function(pkg) {
     tmp_dir <- fs::path(tempfile())
     untar(pkg, exdir = tmp_dir)
-    file_packager(fs::dir_ls(tmp_dir)[[1]], contrib_bin, fs::path_file(pkg))
+    file_packager(
+      fs::dir_ls(tmp_dir)[[1]],
+      contrib_bin,
+      fs::path_file(pkg),
+      compress
+    )
     unlink(tmp_dir, recursive = TRUE)
   })
 
@@ -108,13 +113,14 @@ make_vfs_repo <- function(repo_dir = "./repo") {
 make_vfs_library <- function(out_dir = "./vfs",
                              out_name = "library.data",
                              repo_dir = "./repo",
+                             compress = FALSE,
                              ...) {
   lib_dir <- fs::path(tempfile())
   lib_abs <- fs::path_abs(lib_dir)
   on.exit(unlink(lib_dir, recursive = TRUE), add = TRUE)
 
   make_library(repo_dir, lib_dir = lib_dir, ...)
-  file_packager(lib_abs, out_dir, out_name = out_name)
+  file_packager(lib_abs, out_dir, out_name = out_name, compress)
 }
 
 
@@ -125,18 +131,28 @@ make_vfs_library <- function(out_dir = "./vfs",
 #' data that will be made available for use by the WebAssembly R process once
 #' mounted.
 #'
-#' Outputs two files (named by `out_name`) in the `out_dir` directory: a data
-#' file with extension `".data"`, and a metadata file with extension
+#' Outputs at least two files (named by `out_name`) in the `out_dir` directory:
+#' a data file with extension `".data"`, and a metadata file with extension
 #' `".js.metadata"`. Both files should be hosted online so that their URL can be
 #' provided to webR for mounting on the Emscripten virtual filesystem.
+#'
+#' When `compress` is `TRUE`, an additional file with extension `".data.gz"` is
+#' also output containing a compressed version of the filesystem data. The
+#' metadata file is also changed to reflect the availability of a compressed
+#' version of the data.
 #'
 #' @param in_dir Directory to be packaged into the filesystem image.
 #' @param out_dir Directory in which to write the output image files. Defaults
 #'   to `"./vfs"`.
 #' @param out_name A character string for the output image base filename. If
 #'   `NULL`, defaults to the final component of the input directory path.
+#' @param compress Logical. If `TRUE`, a compressed version of the filesystem
+#' data is included in the output. Defaults to `FALSE`.
 #' @export
-file_packager <- function(in_dir, out_dir = "./vfs", out_name = NULL) {
+file_packager <- function(in_dir,
+                          out_dir = "./vfs",
+                          out_name = NULL,
+                          compress = FALSE) {
   fs::dir_create(out_dir)
 
   if (is.null(out_name)) {
@@ -175,7 +191,36 @@ file_packager <- function(in_dir, out_dir = "./vfs", out_name = NULL) {
     )
   }
 
+  if (compress) {
+    compress_vfs_image(out_dir, out_name)
+  }
+
   # Remove the .js file, we don't need it when using Emscripten's FS.mount()
   unlink(fs::path(out_dir, js_file))
+  invisible(NULL)
+}
+
+compress_vfs_image <- function(vfs_dir, vfs_name) {
+  data_path <- fs::path(vfs_dir, fs::path_ext_set(vfs_name, ".data"))
+  gz_path <- fs::path(vfs_dir, fs::path_ext_set(vfs_name, ".data.gz"))
+  meta_path <- fs::path(vfs_dir, fs::path_ext_set(vfs_name, ".js.metadata"))
+
+  # gzip compress .data file
+  message(paste("Compressing:", fs::path_file(gz_path)))
+  data_size <- fs::file_size(data_path)
+  data_raw <- readBin(data_path, "raw", data_size)
+  gz_con <- gzfile(gz_path, "wb")
+  writeBin(data_raw, gz_con, useBytes = TRUE)
+  close(gz_con)
+
+  # Remove the original .data file
+  unlink(data_path)
+
+  # Add `gzip: true` to metadata
+  meta_json <- readLines(meta_path, warn = FALSE)
+  metadata <- jsonlite::fromJSON(meta_json)
+  metadata$gzip <- TRUE
+  writeLines(jsonlite::toJSON(metadata, auto_unbox = TRUE), meta_path)
+
   invisible(NULL)
 }

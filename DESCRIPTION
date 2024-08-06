@@ -16,6 +16,7 @@ URL: https://r-wasm.github.io/rwasm/, https://github.com/r-wasm/rwasm
 Imports:
     dplyr,
     fs,
+    jsonlite,
     pak,
     pkgdepends,
     rlang,

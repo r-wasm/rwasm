@@ -8,6 +8,7 @@ make_vfs_library(
   out_dir = "./vfs",
   out_name = "library.data",
   repo_dir = "./repo",
+  compress = FALSE,
   ...
 )
 }
@@ -18,6 +19,9 @@ to \code{"./vfs"}.}
 \item{out_name}{A character string for the output library image filename.}
 
 \item{repo_dir}{The package repository directory. Defaults to \code{"./repo"}.}
+
+\item{compress}{Logical. If \code{TRUE}, a compressed version of the filesystem
+data is included in the output. Defaults to \code{FALSE}.}
 
 \item{...}{
   Arguments passed on to \code{\link[=make_library]{make_library}}
