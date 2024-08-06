@@ -17,7 +17,8 @@
 build <- function(packages,
                   out_dir = ".",
                   remotes = NULL,
-                  dependencies = FALSE) {
+                  dependencies = FALSE,
+                  compress = FALSE) {
   tmp_dir <- tempfile()
   on.exit(unlink(tmp_dir, recursive = TRUE))
   dir.create(tmp_dir)
@@ -48,7 +49,7 @@ build <- function(packages,
       tarball_path
     )
 
-    wasm_build(pkg, tarball_path, out_dir)
+    wasm_build(pkg, tarball_path, out_dir, compress)
   }
 }
 
@@ -98,7 +99,7 @@ make_remote_tarball <- function(pkg, src, target) {
 }
 
 # Build the given R package for WebAssembly
-wasm_build <- function(pkg, tarball_path, contrib_bin) {
+wasm_build <- function(pkg, tarball_path, contrib_bin, compress) {
   # Extract package source to a tempdir
   tmp_dir <- fs::path(tempfile())
   on.exit(unlink(tmp_dir, recursive = TRUE), add = TRUE)
@@ -221,7 +222,8 @@ wasm_build <- function(pkg, tarball_path, contrib_bin) {
   file_packager(
     fs::dir_ls(tmp_bin_dir)[[1]],
     contrib_bin,
-    fs::path_file(bin_dest)
+    fs::path_file(bin_dest),
+    compress
   )
 
   invisible(NULL)

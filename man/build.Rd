@@ -4,7 +4,13 @@
 \alias{build}
 \title{Build one or more R packages for WebAssembly}
 \usage{
-build(packages, out_dir = ".", remotes = NULL, dependencies = FALSE)
+build(
+  packages,
+  out_dir = ".",
+  remotes = NULL,
+  dependencies = FALSE,
+  compress = FALSE
+)
 }
 \arguments{
 \item{packages}{A character vector of one or more package references.}
@@ -21,6 +27,9 @@ add to the repository. Defaults to \code{FALSE}, meaning no additional packages.
 Use \code{NA} to install only hard dependencies whereas \code{TRUE} installs all
 optional dependencies as well. See \link[pkgdepends:as_pkg_dependencies]{pkgdepends::as_pkg_dependencies}
 for details.}
+
+\item{compress}{Logical. If \code{TRUE}, a compressed version of the filesystem
+data is included in the output. Defaults to \code{FALSE}.}
 }
 \description{
 Downloads and builds the \link[pkgdepends:pkg_refs]{R package references} given

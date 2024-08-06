@@ -80,6 +80,7 @@ add_list <- function(list_file, ...) {
 #' Use `NA` to install only hard dependencies whereas `TRUE` installs all
 #' optional dependencies as well. See [pkgdepends::as_pkg_dependencies]
 #' for details.
+#' @inheritParams file_packager
 #'
 #' @importFrom dplyr rows_update select
 #' @importFrom pkgdepends new_pkg_download_proposal
@@ -87,7 +88,8 @@ add_list <- function(list_file, ...) {
 add_pkg <- function(packages,
                     repo_dir = "./repo",
                     remotes = NA,
-                    dependencies = FALSE) {
+                    dependencies = FALSE,
+                    compress = FALSE) {
   # Set up pkgdepends configuration
   config <- ppm_config
   config$dependencies <- dependencies
@@ -99,7 +101,7 @@ add_pkg <- function(packages,
   package_info <- package_info[!grepl("/Recommended/", package_info$target), ]
   package_info <- package_info[grepl("^source$", package_info$platform), ]
 
-  update_repo(package_info, remotes, repo_dir)
+  update_repo(package_info, remotes, repo_dir, compress)
 }
 
 #' Remove R package(s) from a package repository
@@ -182,7 +184,8 @@ prefer_remotes <- function(package_info, remotes = NA) {
 # Build packages and update a CRAN-like repo on disk
 update_repo <- function(package_info,
                         remotes = NA,
-                        repo_dir = "./repo") {
+                        repo_dir = "./repo",
+                        compress = FALSE) {
   r_version <- R_system_version(getOption("rwasm.webr_version"))
 
   writeLines(sprintf("Processing %d package(s).", nrow(package_info)))
@@ -259,7 +262,7 @@ update_repo <- function(package_info,
     # Build the package
     status <- tryCatch(
       {
-        wasm_build(pkg, tarball_path, contrib_bin)
+        wasm_build(pkg, tarball_path, contrib_bin, compress)
       },
       error = function(cnd) cnd
     )

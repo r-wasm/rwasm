@@ -4,7 +4,7 @@
 \alias{file_packager}
 \title{Create an Emscripten filesystem image}
 \usage{
-file_packager(in_dir, out_dir = "./vfs", out_name = NULL)
+file_packager(in_dir, out_dir = "./vfs", out_name = NULL, compress = FALSE)
 }
 \arguments{
 \item{in_dir}{Directory to be packaged into the filesystem image.}
@@ -14,6 +14,9 @@ to \code{"./vfs"}.}
 
 \item{out_name}{A character string for the output image base filename. If
 \code{NULL}, defaults to the final component of the input directory path.}
+
+\item{compress}{Logical. If \code{TRUE}, a compressed version of the filesystem
+data is included in the output. Defaults to \code{FALSE}.}
 }
 \description{
 Uses Emscripten's \code{file_packager} tool to build an Emscripten filesystem
@@ -22,8 +25,13 @@ data that will be made available for use by the WebAssembly R process once
 mounted.
 }
 \details{
-Outputs two files (named by \code{out_name}) in the \code{out_dir} directory: a data
-file with extension \code{".data"}, and a metadata file with extension
+Outputs at least two files (named by \code{out_name}) in the \code{out_dir} directory:
+a data file with extension \code{".data"}, and a metadata file with extension
 \code{".js.metadata"}. Both files should be hosted online so that their URL can be
 provided to webR for mounting on the Emscripten virtual filesystem.
+
+When \code{compress} is \code{TRUE}, an additional file with extension \code{".data.gz"} is
+also output containing a compressed version of the filesystem data. The
+metadata file is also changed to reflect the availability of a compressed
+version of the data.
 }

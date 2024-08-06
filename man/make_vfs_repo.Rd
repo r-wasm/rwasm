@@ -4,10 +4,13 @@
 \alias{make_vfs_repo}
 \title{Add Emscripten filesystem images to an R package repository}
 \usage{
-make_vfs_repo(repo_dir = "./repo")
+make_vfs_repo(repo_dir = "./repo", compress = FALSE)
 }
 \arguments{
 \item{repo_dir}{The package repository directory. Defaults to \code{"./repo"}.}
+
+\item{compress}{Logical. If \code{TRUE}, a compressed version of the filesystem
+data is included in the output. Defaults to \code{FALSE}.}
 }
 \description{
 Creates an Emscripten filesystem image for each R package that exists in the
