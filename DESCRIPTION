@@ -4,6 +4,7 @@ Version: 0.0.1.9000
 Authors@R: c(
     person("George", "Stagg", , "george.stagg@posit.co", role = c("aut", "cre")),
     person("Lionel", "Henry", , "lionel@posit.co", role = "ctb"),
+    person("Jeroen", "Ooms", , "jeroen@berkeley.edu", role = "ctb"),
     person("Posit Software, PBC", role = c("cph", "fnd"))
   )
 Description: Utility functions to help build R packages compiled for
