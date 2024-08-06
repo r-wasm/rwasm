@@ -278,7 +278,17 @@ update_repo <- function(package_info,
 }
 
 update_packages <- function(contrib_src, contrib_bin) {
-  tools::write_PACKAGES(contrib_src, verbose = TRUE)
-  tools::write_PACKAGES(contrib_bin, verbose = TRUE, type = "mac.binary")
-  invisible(NULL)
+  if (any(c(
+    grepl(".tar.gz", fs::dir_ls(contrib_src)),
+    grepl(".tgz", fs::dir_ls(contrib_bin))
+  ))) {
+    tools::write_PACKAGES(contrib_src, verbose = TRUE)
+    tools::write_PACKAGES(contrib_bin, verbose = TRUE, type = "mac.binary")
+    invisible(TRUE)
+  } else {
+    # If the repo is empty, just wipe PACKAGES
+    fs::dir_delete(contrib_src)
+    fs::dir_delete(contrib_bin)
+    invisible(FALSE)
+  }
 }
