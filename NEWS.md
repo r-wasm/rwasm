@@ -1,5 +1,7 @@
 # rwasm (development version)
 
+* Support for a new `compression` argument in `build()`, `add_pkg()`, `make_vfs_library()`, and other related functions. When enabled, VFS images will be compressed using `gzip`. Note: Loading compressed VFS images requires at least version 0.4.1 of webR (#39).
+
 # rwasm 0.1.0
 
 ## New features
