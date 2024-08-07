@@ -39,6 +39,12 @@ rwasm::file_packager("./some/data/directory", out_name = "output_image.data")
 
 Again, this function writes output filesystem images to the `vfs` directory by default.
 
+### Compression
+
+The `add_pkg()`, `make_vfs_library()`, `file_packager()` and other related functions support the `compression` argument. The default value is `FALSE`, but when `TRUE` VFS images will be `gzip` compressed for deployment. For some types of package content, the savings in file size with compression can be significant.
+
+**NOTE**: Loading compressed VFS images requires at least version 0.4.1 of webR.
+
 ## Mounting filesystem images
 
 The filesystem image(s) should now be hosted by a web server so that it is available at some URL. Such a URL can then be passed to `webr::mount()` to be made available on the virtual filesystem for the Wasm R process.
