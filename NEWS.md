@@ -1,6 +1,12 @@
 # rwasm (development version)
 
-* Support for a new `compression` argument in `build()`, `add_pkg()`, `make_vfs_library()`, and other related functions. When enabled, VFS images will be compressed using `gzip`. Note: Loading compressed VFS images requires at least version 0.4.1 of webR (#39).
+## New features
+
+* When building R packages with `compress` set to `TRUE`, use the binary R package `.tgz` file for the Emscripten filesystem image data and generate custom metadata rather than using Emscripten's `file_packager` tool.
+
+* Support for a new `compress` argument in `file_packager()`, `make_vfs_library()`, and other related functions. When enabled, VFS images will be compressed using `gzip` (#39).
+
+Note: Mounting processed `.tgz` archives or compressed VFS images requires at least version 0.4.2 of webR.
 
 # rwasm 0.1.0
 
