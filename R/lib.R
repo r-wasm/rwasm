@@ -48,13 +48,14 @@ make_library <- function(repo_dir = "./repo", lib_dir = "./lib", strip = NULL) {
 #'
 #' Each filesystem image is generated using Emscripten's [file_packager()] tool
 #' and the output `.data` and `.js.metadata` filesystem image files are written
-#' to the repository in the same directory as the package binary `.tar.gz`
-#' files.
+#' to the repository in the same directory as the package binary `.tgz` files.
 #'
 #' The resulting filesystem images may then be used by webR to download and
-#' install R packages faster by mounting the `.data` images to the Emscripten
-#' virtual filesystem, rather than decompressing and extracting the equivalent
-#' `.tar.gz` files.
+#' install R packages by mounting the `.data` images to the Emscripten virtual
+#' filesystem.
+#'
+#' When `compress` is `TRUE`, an additional file with extension `".data.gz"` is
+#' also output containing a compressed version of the filesystem data.
 #'
 #' @inheritParams add_pkg
 #'
@@ -99,6 +100,9 @@ make_vfs_repo <- function(repo_dir = "./repo", compress = FALSE) {
 #' A single filesystem image is generated using Emscripten's [file_packager()]
 #' tool and the output `.data` and `.js.metadata` filesystem image files are
 #' written to the directory `out_dir`.
+#'
+#' When `compress` is `TRUE`, an additional file with extension `".data.gz"` is
+#' also output containing a compressed version of the filesystem data.
 #'
 #' The resulting image can be downloaded by webR and mounted on the Emscripten
 #' virtual filesystem as an efficient way to provide a pre-configured R library,

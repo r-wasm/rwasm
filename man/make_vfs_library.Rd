@@ -20,8 +20,10 @@ to \code{"./vfs"}.}
 
 \item{repo_dir}{The package repository directory. Defaults to \code{"./repo"}.}
 
-\item{compress}{Logical. If \code{TRUE}, a compressed version of the filesystem
-data is included in the output. Defaults to \code{FALSE}.}
+\item{compress}{If \code{TRUE}, use R binary \code{.tgz} files when creating Emscripten
+filesystem image metadata. Otherwise, an additional \code{.data} filesystem image
+file is created by \code{\link[=file_packager]{file_packager()}} and included in the output repository
+binary directory. Defaults to \code{TRUE}.}
 
 \item{...}{
   Arguments passed on to \code{\link[=make_library]{make_library}}
@@ -38,6 +40,9 @@ resulting package library.
 A single filesystem image is generated using Emscripten's \code{\link[=file_packager]{file_packager()}}
 tool and the output \code{.data} and \code{.js.metadata} filesystem image files are
 written to the directory \code{out_dir}.
+
+When \code{compress} is \code{TRUE}, an additional file with extension \code{".data.gz"} is
+also output containing a compressed version of the filesystem data.
 
 The resulting image can be downloaded by webR and mounted on the Emscripten
 virtual filesystem as an efficient way to provide a pre-configured R library,

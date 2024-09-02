@@ -14,8 +14,11 @@
 #'   with fewer elements are skipped. Defaults to `0`, meaning none.
 #' @export
 make_tar_index <- function(file, strip = 0) {
+  file <- fs::path_norm(file)
   file_ext <- tolower(fs::path_ext(file))
   file_base <- fs::path_ext_remove(file)
+
+  message(paste("Building metadata index for:", file))
 
   # Check if our tar is compatible
   if (!any(file_ext == c("tgz", "gz", "tar"))) {

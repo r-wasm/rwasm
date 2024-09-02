@@ -80,7 +80,10 @@ add_list <- function(list_file, ...) {
 #' Use `NA` to install only hard dependencies whereas `TRUE` installs all
 #' optional dependencies as well. See [pkgdepends::as_pkg_dependencies]
 #' for details.
-#' @inheritParams file_packager
+#' @param compress If `TRUE`, use R binary `.tgz` files when creating Emscripten
+#' filesystem image metadata. Otherwise, an additional `.data` filesystem image
+#' file is created by [file_packager()] and included in the output repository
+#' binary directory. Defaults to `TRUE`.
 #'
 #' @importFrom dplyr rows_update select
 #' @importFrom pkgdepends new_pkg_download_proposal
@@ -89,7 +92,7 @@ add_pkg <- function(packages,
                     repo_dir = "./repo",
                     remotes = NA,
                     dependencies = FALSE,
-                    compress = FALSE) {
+                    compress = TRUE) {
   # Set up pkgdepends configuration
   config <- ppm_config
   config$dependencies <- dependencies
@@ -185,7 +188,7 @@ prefer_remotes <- function(package_info, remotes = NA) {
 update_repo <- function(package_info,
                         remotes = NA,
                         repo_dir = "./repo",
-                        compress = FALSE) {
+                        compress = TRUE) {
   r_version <- R_system_version(getOption("rwasm.webr_version"))
 
   writeLines(sprintf("Processing %d package(s).", nrow(package_info)))

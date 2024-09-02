@@ -25,8 +25,10 @@ add to the repository. Defaults to \code{FALSE}, meaning no additional packages.
 Use \code{NA} to install only hard dependencies whereas \code{TRUE} installs all
 optional dependencies as well. See \link[pkgdepends:as_pkg_dependencies]{pkgdepends::as_pkg_dependencies}
 for details.}
-    \item{\code{compress}}{Logical. If \code{TRUE}, a compressed version of the filesystem
-data is included in the output. Defaults to \code{FALSE}.}
+    \item{\code{compress}}{If \code{TRUE}, use R binary \code{.tgz} files when creating Emscripten
+filesystem image metadata. Otherwise, an additional \code{.data} filesystem image
+file is created by \code{\link[=file_packager]{file_packager()}} and included in the output repository
+binary directory. Defaults to \code{TRUE}.}
   }}
 }
 \description{
