@@ -1,7 +1,6 @@
 cran/mmrm@0.2.2
 r-wasm/LiblineaR@webr
 r-wasm/TMB@webr
-r-wasm/data.table@webr
 r-wasm/fs@webr
 r-wasm/gt@webr
 r-wasm/htmlwidgets@webr
