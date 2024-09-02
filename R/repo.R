@@ -76,15 +76,14 @@ add_list <- function(list_file, ...) {
 #'   source. Defaults to `NA`, meaning prefer a built-in list of references to
 #'   packages pre-modified for use with webR.
 #' @param dependencies Dependency specification for packages to additionally
-#' add to the repository. Defaults to `FALSE`, meaning no additional packages.
-#' Use `NA` to install only hard dependencies whereas `TRUE` installs all
-#' optional dependencies as well. See [pkgdepends::as_pkg_dependencies]
-#' for details.
-#' @param compress If `TRUE`, use R binary `.tgz` files when creating Emscripten
-#' filesystem image metadata. Otherwise, an additional `.data` filesystem image
-#' file is created by [file_packager()] and included in the output repository
-#' binary directory. Defaults to `TRUE`.
-#'
+#'   add to the repository. Defaults to `FALSE`, meaning no additional packages.
+#'   Use `NA` to install only hard dependencies whereas `TRUE` installs all
+#'   optional dependencies as well. See [pkgdepends::as_pkg_dependencies]
+#'   for details.
+#' @param compress When `TRUE`, add and compress Emscripten virtual filesystem
+#'   metadata in the resulting R package binary `.tgz` files. Otherwise,
+#'   [file_packager()] is used to create uncompressed virtual filesystem images
+#'   included in the output binary package repository. Defaults to `TRUE`.
 #' @importFrom dplyr rows_update select
 #' @importFrom pkgdepends new_pkg_download_proposal
 #' @export

@@ -1,24 +1,31 @@
-#' Create an Emscripten metadata file for a given `tar` archive
+#' Add Emscripten virtual filesystem metadata to a given `tar` archive
 #'
 #' Calculates file offsets and other metadata for content stored in an
-#' (optionally gzip compressed) `tar` archive. Together the `tar` archive and
-#' resulting metadata file can be mounted as an Emscripten filesystem image,
-#' making the content of the archive available to the WebAssembly R process.
+#' (optionally gzip compressed) `tar` archive. Once added, the `tar` archive
+#' with metadata can be mounted as an Emscripten filesystem image, making the
+#' contents of the archive available to the WebAssembly R process.
 #'
-#' Outputs a metadata file named by the base name of the `tar` archive with new
-#' extension `".js.metadata"`. Both files should be hosted online so that their
-#' URL can be provided to webR for mounting on the virtual filesystem.
+#' The virtual filesystem metadata is appended to the end of the `tar` archive,
+#' with the output replacing the original file. The resulting archive should be
+#' hosted online so that its URL can be provided to webR for mounting on the
+#' virtual filesystem.
 #'
-#' @param file Filename of the `tar` archive to be used as input.
-#' @param strip Remove the specified number of leading path elements. Pathnames
-#'   with fewer elements are skipped. Defaults to `0`, meaning none.
+#' If `strip` is greater than `0` the virtual filesystem metadata is generated
+#' such that when mounted by webR the specified number of leading path elements
+#' are removed. Useful for R package binaries where data files are stored in the
+#' original `.tgz` file under a subdirectory. Files with fewer path name
+#' elements than the specified amount are skipped.
+#'
+#' @param file Filename of the `tar` archive for which metadata is to be added.
+#' @param strip Remove the specified number of leading path elements when
+#'   mounting with webR. Defaults to `0`.
 #' @export
 make_tar_index <- function(file, strip = 0) {
   file <- fs::path_norm(file)
   file_ext <- tolower(fs::path_ext(file))
   file_base <- fs::path_ext_remove(file)
 
-  message(paste("Building metadata index for:", file))
+  message(paste("Appending virtual filesystem metadata for:", file))
 
   # Check if our tar is compatible
   if (!any(file_ext == c("tgz", "gz", "tar"))) {
@@ -31,27 +38,41 @@ make_tar_index <- function(file, strip = 0) {
     file_base <- fs::path_ext_remove(file_base)
   }
 
-  # Should we decompress?
+  # Read archive contents, decompressing if necessary
   gzip <- any(file_ext == c("tgz", "gz"))
-
-  # R seems to choke when seeking on a gzfile() connection, so we buffer it
   data <- readBin(file, "raw", n = file.size(file))
   if (gzip) {
     data <- memDecompress(data)
   }
-  con <- rawConnection(data, open = "rb")
-  on.exit(close(con))
 
-  # Build metadata and write to .js.metadata file
+  # Build metadata from source .tar file
+  con <- rawConnection(data, open = "rb")
+  on.exit(close(con), add = TRUE)
   entries <- read_tar_offsets(con, strip)
+  tar_end <- seek(con)
+
   metadata <- list(
     files = entries,
     gzip = gzip,
-    ext = gsub(file_base, "", file, ignore.case = TRUE),
     remote_package_size = length(data)
   )
-  metadata_file <- paste0(file_base, ".js.metadata")
-  jsonlite::write_json(metadata, metadata_file, auto_unbox = TRUE)
+
+  # Append metadata to .tar data
+  json <- charToRaw(jsonlite::toJSON(metadata, auto_unbox = TRUE))
+  length(json) <- 4 * ceiling(length(json) / 4) # pad to 4 byte boundary
+  marker <- writeBin(as.integer(tar_end / 512), raw(), size = 4, endian = "big")
+  data <- c(data[1:tar_end], json, marker)
+
+  # Write output and move into place
+  out <- tempfile()
+  out_con <- if (gzip) {
+    gzfile(out, open = "wb")
+  } else {
+    file(out, open = "wb")
+  }
+  writeBin(data, out_con, size = 1L)
+  close(out_con)
+  fs::file_copy(out, file, overwrite = TRUE)
 }
 
 read_tar_offsets <- function(con, strip) {
@@ -63,7 +84,10 @@ read_tar_offsets <- function(con, strip) {
     header <- readBin(con, "raw", n = 512)
 
     # Empty header indicates end of archive
-    if (all(header == 0)) break
+    if (all(header == 0)) {
+      seek(con, 512, origin = "current")
+      break
+    }
 
     # Entry size and offset
     offset <- seek(con)

@@ -9,10 +9,10 @@ make_vfs_repo(repo_dir = "./repo", compress = FALSE)
 \arguments{
 \item{repo_dir}{The package repository directory. Defaults to \code{"./repo"}.}
 
-\item{compress}{If \code{TRUE}, use R binary \code{.tgz} files when creating Emscripten
-filesystem image metadata. Otherwise, an additional \code{.data} filesystem image
-file is created by \code{\link[=file_packager]{file_packager()}} and included in the output repository
-binary directory. Defaults to \code{TRUE}.}
+\item{compress}{When \code{TRUE}, add and compress Emscripten virtual filesystem
+metadata in the resulting R package binary \code{.tgz} files. Otherwise,
+\code{\link[=file_packager]{file_packager()}} is used to create uncompressed virtual filesystem images
+included in the output binary package repository. Defaults to \code{TRUE}.}
 }
 \description{
 Creates an Emscripten filesystem image for each R package that exists in the

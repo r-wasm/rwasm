@@ -2,24 +2,31 @@
 % Please edit documentation in R/tar.R
 \name{make_tar_index}
 \alias{make_tar_index}
-\title{Create an Emscripten metadata file for a given \code{tar} archive}
+\title{Add Emscripten virtual filesystem metadata to a given \code{tar} archive}
 \usage{
 make_tar_index(file, strip = 0)
 }
 \arguments{
-\item{file}{Filename of the \code{tar} archive to be used as input.}
+\item{file}{Filename of the \code{tar} archive for which metadata is to be added.}
 
-\item{strip}{Remove the specified number of leading path elements. Pathnames
-with fewer elements are skipped. Defaults to \code{0}, meaning none.}
+\item{strip}{Remove the specified number of leading path elements when
+mounting with webR. Defaults to \code{0}.}
 }
 \description{
 Calculates file offsets and other metadata for content stored in an
-(optionally gzip compressed) \code{tar} archive. Together the \code{tar} archive and
-resulting metadata file can be mounted as an Emscripten filesystem image,
-making the content of the archive available to the WebAssembly R process.
+(optionally gzip compressed) \code{tar} archive. Once added, the \code{tar} archive
+with metadata can be mounted as an Emscripten filesystem image, making the
+contents of the archive available to the WebAssembly R process.
 }
 \details{
-Outputs a metadata file named by the base name of the \code{tar} archive with new
-extension \code{".js.metadata"}. Both files should be hosted online so that their
-URL can be provided to webR for mounting on the virtual filesystem.
+The virtual filesystem metadata is appended to the end of the \code{tar} archive,
+with the output replacing the original file. The resulting archive should be
+hosted online so that its URL can be provided to webR for mounting on the
+virtual filesystem.
+
+If \code{strip} is greater than \code{0} the virtual filesystem metadata is generated
+such that when mounted by webR the specified number of leading path elements
+are removed. Useful for R package binaries where data files are stored in the
+original \code{.tgz} file under a subdirectory. Files with fewer path name
+elements than the specified amount are skipped.
 }
