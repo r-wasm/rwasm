@@ -217,7 +217,7 @@ wasm_build <- function(pkg, tarball_path, contrib_bin, compress) {
 
   if (compress) {
     # Use binary .tgz file to build Emscripten filesystem image metadata
-    make_tar_index(bin_dest, strip = 1)
+    add_tar_index(bin_dest, strip = 1)
   } else {
     # Build an uncompressed Emscripten filesystem image for the package
     tmp_bin_dir <- fs::path(tempfile())

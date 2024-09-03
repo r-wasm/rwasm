@@ -20,7 +20,7 @@
 #' @param strip Remove the specified number of leading path elements when
 #'   mounting with webR. Defaults to `0`.
 #' @export
-make_tar_index <- function(file, strip = 0) {
+add_tar_index <- function(file, strip = 0) {
   file <- fs::path_norm(file)
   file_ext <- tolower(fs::path_ext(file))
   file_base <- fs::path_ext_remove(file)
