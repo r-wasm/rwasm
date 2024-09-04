@@ -1,0 +1,27 @@
+---
+title: "Technical details for .tar archive metadata"
+output: rmarkdown::html_document
+vignette: >
+  %\VignetteIndexEntry{Technical details for .tar archive metadata}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+The `rwasm::add_tar_index()` function appends Emscripten filesystem metadata to an (optionally gzip compressed) `.tar` archive.
+The resulting output can be directly mounted by webR to the virtual filesystem, making the content of the archive available to the WebAssembly R process.
+
+See the [Mounting filesystem images](mount-fs-image.html) article for more information about mounting filesystem images.
+
+## Archive data layout
+
+A `.tar` archive that includes Emscripten filesystem metadata has the data layout given below. The resulting `.tar` file may be gzip compressed, with file extension `.tar.gz` or `.tgz`.
+
+| Field | Size | Description |
+|-|---|-------------|
+| 0 | Variable | Standard `.tar` data, including end-of-archive marker. |
+| 1 | Variable | JSON metadata, UTF8 encoded, padded with `0x00` to 4 byte boundary. |
+| 2 | 4 bytes | Magic bytes: The string `"webR"`, UTF8 encoded (`0x77656252`). |
+| 3 | 4 bytes | Reserved, currently `0x00000000`. |
+| 4 | 4 bytes | Offset of JSON metadata (field 1), in units of 512-byte blocks. Signed integer, big endian. |
+| 5 | 4 bytes | Length of JSON metadata, in bytes. Signed integer, big endian. |
+Table: Data layout for a `.tar` archive with filesystem metadata.

@@ -1,0 +1,13 @@
+pandoc: '3.2'
+pkgdown: 2.0.9.9000
+pkgdown_sha: 34ee692e4ce10c8abfb863cc782da771838558f7
+articles:
+  github-actions: github-actions.html
+  mount-fs-image: mount-fs-image.html
+  mount-host-dir: mount-host-dir.html
+  rwasm: rwasm.html
+  tar-metadata: tar-metadata.html
+last_built: 2024-09-04T08:58Z
+urls:
+  reference: https://r-wasm.github.io/rwasm/reference
+  article: https://r-wasm.github.io/rwasm/articles

@@ -7,11 +7,66 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-## Introduction
+The Emscripten WebAssembly (Wasm) environment provides a virtual filesystem (VFS) which supports the concept of *mounting*. With this, an entire file and directory structure can be packaged into a filesystem image, efficiently making individual files or entire R package libraries available for use in webR.
 
-The Emscripten WebAssembly environment provides a virtual filesystem (VFS) which supports the concept of *mounting*. With this, an entire file and directory structure can be packaged into a filesystem image to be loaded and mounted at runtime by WebAssembly (Wasm) applications. We can take advantage of this interface to efficiently mount R package libraries, pre-packaged and containing potentially many related R packages, in the VFS accessible to webR.
+## Create filesystem images
 
-## Building an R package library
+### Emscripten's `file_packager` tool
+
+The [`file_packager`](https://emscripten.org/docs/porting/files/packaging_files.html#packaging-using-the-file-packager-tool) tool, provided by Emscripten, takes in a directory structure as input and produces a webR compatible filesystem image as output. The [`file_packager`](https://emscripten.org/docs/porting/files/packaging_files.html#packaging-using-the-file-packager-tool) tool may be invoked from the [rwasm](https://r-wasm.github.io/rwasm/) package:
+
+```{r eval=FALSE}
+> rwasm::file_packager("./input", out_dir = ".", out_name = "output")
+```
+
+It can also be invoked directly using its CLI^[See the [`file_packager`](https://emscripten.org/docs/porting/files/packaging_files.html#packaging-using-the-file-packager-tool) Emscripten documentation for details.], if you prefer:
+
+```bash
+$ file_packager output.data --preload ./input@/ \
+    --separate-metadata --js-output=output.js
+```
+
+In the above examples, the files in the directory `./input` are packaged and an output filesystem image is created^[When using the `file_packager` CLI, a third file named `output.js` will also be created. If you only plan to mount the image using webR, this file may be discarded.] consisting of a data file, `output.data`, and a metadata file, `output.js.metadata`.
+
+To prepare for mounting the filesystem image with webR, ensure that both files have the same basename (in this example, `output`). The resulting URLs or relative paths for the two files should differ only by the file extension.
+
+#### Compression
+
+Filesystem image `.data` files may optionally be `gzip` compressed prior to deployment. The file extension for compressed filesystem images should be `.data.gz`, and compression should be indicated by setting the property `gzip: true` on the metadata JSON stored in the `.js.metadata` file.
+
+**NOTE**: Loading compressed VFS images requires at least version 0.4.1 of webR.
+
+### Mount `.tar` archives as a filesystem image
+
+Archives in `.tar` format, optionally gzip compressed as `.tar.gz` or `.tgz` files, can also be used as filesystem images by pre-processing the `.tar` archive using the `rwasm::add_tar_index()` function. The function reads archive contents and appends the required filesystem metadata to the end of the `.tar` archive data in a way that is understood by webR. For further information about the format see the [Technical details for .tar archive metadata](tar-metadata.html) article.
+
+```{r eval=FALSE}
+> rwasm::add_tar_index("./path/to/archive.tar.gz")
+# Appending virtual filesystem metadata for: ./path/to/archive.tar.gz
+```
+
+Once processed by `rwasm::add_tar_index()`, the `.tar` archive can be deployed and used directly as a filesystem image.
+
+## Mounting filesystem images
+
+When running in a web browser, the [`webr::mount()`](https://docs.r-wasm.org/webr/latest/api/r.qmd#mount) function downloads and mounts a filesystem image from a URL source, using the `WORKERFS` filesystem type.
+
+```{r eval=FALSE}
+webr::mount(
+  mountpoint = "/data",
+  source = "https://example.com/output.data"
+)
+```
+
+Filesystem images should be deployed to static file hosting^[e.g. GitHub Pages, Netlify, AWS S3, etc.] and the resulting URL provided as the source argument. The image will be mounted in the virtual filesystem under the path given by the `mountpoint` argument. If the `mountpoint` directory does not exist, it will be created prior to mounting.
+
+When running under Node.js, the source may also be provided as a relative path to a filesystem image on disk.
+
+To test filesystem images before deployment, serve them using a local static webserver. See the Local Testing section below for an example using `httpuv::runStaticServer()` in R.
+
+## Building an R package library image
+
+A collection of R packages can be collected and bundled into a single filesystem image for mounting. 
 
 To build an R package library image we must first build one or more Wasm R packages using `add_pkg()`. As an example, let's build a package with a few hard dependencies. Ensure that you are running R in an environment with access to Wasm development tools^[See the "Setting up the WebAssembly toolchain" section in `vignette("rwasm")` for further details.], then run:
 
@@ -28,26 +83,6 @@ rwasm::make_vfs_library()
 ```
 
 By default, this function will create a new directory named `vfs` if it does not exist. The files `vfs/library.data` and `vfs/library.js.metadata` together form an Emscripten filesystem image containing an R package library consisting of all the packages previously added to the CRAN-like repository in `repo` using `add_pkg()`.
-
-### Packaging arbitrary data
-
-It is also possible to package an arbitrary data directory as an Emscripten filesystem image using the `file_packager()` function:
-
-```{r eval=FALSE}
-rwasm::file_packager("./some/data/directory", out_name = "output_image.data")
-```
-
-Again, this function writes output filesystem images to the `vfs` directory by default.
-
-### Compression
-
-The `add_pkg()`, `make_vfs_library()`, `file_packager()` and other related functions support the `compression` argument. The default value is `FALSE`, but when `TRUE` VFS images will be `gzip` compressed for deployment. For some types of package content, the savings in file size with compression can be significant.
-
-**NOTE**: Loading compressed VFS images requires at least version 0.4.1 of webR.
-
-## Mounting filesystem images
-
-The filesystem image(s) should now be hosted by a web server so that it is available at some URL. Such a URL can then be passed to `webr::mount()` to be made available on the virtual filesystem for the Wasm R process.
 
 ### Local testing
 
@@ -92,7 +127,3 @@ library(dplyr)
 #>
 #>     intersect, setdiff, setequal, union
 ```
-
-### Deployment
-
-The filesystem image files should be deployed to the static file hosting service of your choice, so that they are available for download anywhere. See the "Deployment to static hosting" section in `vignette("rwasm")` for an example of how to host static files with GitHub pages, substituting the `repo` directory for the `vfs` directory containing Emscripten filesystem images.
