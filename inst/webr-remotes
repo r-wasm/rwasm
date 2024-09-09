@@ -12,4 +12,5 @@ r-wasm/rgl@webr
 r-wasm/rigraph@webr
 r-wasm/rsample@webr
 r-wasm/shiny@webr-safari
+r-wasm/vroom@webr
 r-wasm/xml2@webr
