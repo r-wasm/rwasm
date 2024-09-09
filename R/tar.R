@@ -61,8 +61,8 @@ add_tar_index <- function(file, strip = 0) {
   json <- charToRaw(jsonlite::toJSON(metadata, auto_unbox = TRUE))
   magic <- charToRaw('webR')
   reserved <- raw(4) # reserved for future use
-  block <- writeBin(as.integer(tar_end / 512), raw(), size = 4, endian = "big")
-  len <- writeBin(length(json), raw(), size = 4, endian = "big")
+  block <- writeBin(tar_end / 512, "integer", size = 4, endian = "big")
+  len <- writeBin(length(json), "integer", size = 4, endian = "big")
   length(json) <- 4 * ceiling(length(json) / 4) # pad to 4 byte boundary
   data <- c(data[1:tar_end], json, magic, reserved, block, len)
 
