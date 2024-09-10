@@ -12,16 +12,31 @@ The resulting output can be directly mounted by webR to the virtual filesystem, 
 
 See the [Mounting filesystem images](mount-fs-image.html) article for more information about mounting filesystem images.
 
+## Filesystem metadata
+
+Virtual filesystem metadata is a JavaScript object, encoded as a JSON string. The format is defined and output by Emscripten's `file_packager` tool and understood by [webR's mounting API](mount-fs-image.html). The metadata object gives the location of each file in the archive to be mounted, and takes the following format:
+
+```javascript
+{
+  files: {
+    filename: string;
+    start: number;
+    end: number;
+  }[],
+};
+```
+
 ## Archive data layout
 
-A `.tar` archive that includes Emscripten filesystem metadata has the data layout given below. The resulting `.tar` file may be gzip compressed, with file extension `.tar.gz` or `.tgz`.
+A `.tar` archive that can be directly mounted by webR includes filesystem metadata as a file named `.vfs-index.json` at the top level of the archive. The `.tar` archive may also include a "metadata hint" at the very end of the file, after the end-of-archive marker. Appending additional hint data is optional, but allows for more efficient mounting of archive contents to the virtual filesystem.
+
+The resulting `.tar` file may be gzip compressed, with file extension `.tar.gz` or `.tgz`.
 
 | Field | Size | Description |
 |-|---|-------------|
-| 0 | Variable | Standard `.tar` data, including end-of-archive marker. |
-| 1 | Variable | JSON metadata, UTF8 encoded, padded with `0x00` to 4 byte boundary. |
-| 2 | 4 bytes | Magic bytes: The string `"webR"`, UTF8 encoded (`0x77656252`). |
-| 3 | 4 bytes | Reserved, currently `0x00000000`. |
-| 4 | 4 bytes | Offset of JSON metadata, in units of 512-byte blocks. Signed integer, big endian. |
-| 5 | 4 bytes | Length of JSON metadata, not including trailing null characters, in bytes. Signed integer, big endian. |
-Table: Data layout for a `.tar` archive with filesystem metadata.
+| 0 | Variable | Standard `.tar` data, including the end-of-archive marker. |
+| 1 | 4 bytes | Magic bytes: The string `"webR"`, UTF8 encoded (`0x77656252`). |
+| 2 | 4 bytes | Reserved, currently `0x00000000`. |
+| 3 | 4 bytes | Offset of `.vfs-index.json`, in units of 512-byte blocks. Signed integer, big endian. |
+| 4 | 4 bytes | Length of `.vfs-index.json`, in bytes. Signed integer, big endian. |
+Table: Data layout for a `.tar` archive containing filesystem metadata.

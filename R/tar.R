@@ -57,14 +57,19 @@ add_tar_index <- function(file, strip = 0) {
     remote_package_size = length(data)
   )
 
-  # Append metadata to .tar data
-  json <- charToRaw(jsonlite::toJSON(metadata, auto_unbox = TRUE))
+  # Add metadata as additional .tar entry
+  entry <- create_metadata_entry(metadata)
+  json_block <- as.integer(tar_end / 512) + 1L
+
+  # Append additional metadata hint for webR
   magic <- charToRaw('webR')
   reserved <- raw(4) # reserved for future use
-  block <- writeBin(tar_end / 512, "integer", size = 4, endian = "big")
-  len <- writeBin(length(json), "integer", size = 4, endian = "big")
-  length(json) <- 4 * ceiling(length(json) / 4) # pad to 4 byte boundary
-  data <- c(data[1:tar_end], json, magic, reserved, block, len)
+  block <- writeBin(json_block, raw(), size = 4, endian = "big")
+  len <- writeBin(entry$length, raw(), size = 4, endian = "big")
+  hint <- c(magic, reserved, block, len)
+
+  # Build new .tar archive data
+  data <- c(data[1:tar_end], entry$data, raw(1024), hint)
 
   # Write output and move into place
   out <- tempfile()
@@ -78,6 +83,38 @@ add_tar_index <- function(file, strip = 0) {
   fs::file_copy(out, file, overwrite = TRUE)
 }
 
+create_metadata_entry <- function(metadata) {
+  # metadata contents
+  json <- charToRaw(jsonlite::toJSON(metadata, auto_unbox = TRUE))
+  len <- length(json)
+  blocks <- ceiling(len/512)
+  length(json) <- 512 * blocks
+
+  # entry header
+  timestamp <- as.integer(Sys.time())
+  header <- raw(512)
+  header[1:15] <- charToRaw('.vfs-index.json')               # filename
+  header[101:108] <- charToRaw('0000644 ')                   # mode
+  header[109:116] <- charToRaw('0000000 ')                   # uid
+  header[117:124] <- charToRaw('0000000 ')                   # gid
+  header[125:136] <- charToRaw(sprintf("%011o ", len))       # length
+  header[137:148] <- charToRaw(sprintf("%011o ", timestamp)) # timestamp
+  header[149:156] <- charToRaw('        ')                   # placeholder
+  header[157:157] <- charToRaw('0')                          # type
+  header[258:262] <- charToRaw('ustar')                      # ustar magic
+  header[264:265] <- charToRaw('00')                         # ustar version
+  header[266:269] <- charToRaw('root')                       # user
+  header[298:302] <- charToRaw('wheel')                      # group
+
+  # populate checksum field
+  checksum <- raw(8)
+  checksum[1:6] <- charToRaw(sprintf("%06o", sum(as.integer(header))))
+  checksum[8] <- charToRaw(' ')
+  header[149:156] <- checksum
+
+  list(data = c(header, json), length = len)
+}
+
 read_tar_offsets <- function(con, strip) {
   entries <- list()
   next_filename <- NULL
@@ -88,7 +125,8 @@ read_tar_offsets <- function(con, strip) {
 
     # Empty header indicates end of archive
     if (all(header == 0)) {
-      seek(con, 512, origin = "current")
+      # Return connection position to just before this header
+      seek(con, -512, origin = "current")
       break
     }
 
