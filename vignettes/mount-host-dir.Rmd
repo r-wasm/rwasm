@@ -11,6 +11,8 @@ vignette: >
 
 When running under Node.js, the Emscripten WebAssembly environment can make available the contents of a directory on the host filesystem. In addition to providing webR access to external data files, a pre-prepared R package library can be mounted from the host filesystem. This avoids the need to download potentially large R packages or filesystem images over the network.
 
+See the [webR documentation for more details](https://docs.r-wasm.org/webr/latest/mounting.html#mount-an-existing-host-directory) on mounting host directories under Node.js.
+
 ## Building an R package library
 
 To build an R package library, we must first build one or more Wasm R packages using `add_pkg()`. As an example, let's build a package with a few hard dependencies. Ensure that you are running R in an environment with access to Wasm development tools^[See the "Setting up the WebAssembly toolchain" section in `vignette("rwasm")` for further details.], then run:

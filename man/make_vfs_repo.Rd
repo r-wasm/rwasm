@@ -9,8 +9,10 @@ make_vfs_repo(repo_dir = "./repo", compress = FALSE)
 \arguments{
 \item{repo_dir}{The package repository directory. Defaults to \code{"./repo"}.}
 
-\item{compress}{Logical. If \code{TRUE}, a compressed version of the filesystem
-data is included in the output. Defaults to \code{FALSE}.}
+\item{compress}{When \code{TRUE}, add and compress Emscripten virtual filesystem
+metadata in the resulting R package binary \code{.tgz} files. Otherwise,
+\code{\link[=file_packager]{file_packager()}} is used to create uncompressed virtual filesystem images
+included in the output binary package repository. Defaults to \code{TRUE}.}
 }
 \description{
 Creates an Emscripten filesystem image for each R package that exists in the
@@ -19,11 +21,12 @@ package repository directory \code{repo_dir}.
 \details{
 Each filesystem image is generated using Emscripten's \code{\link[=file_packager]{file_packager()}} tool
 and the output \code{.data} and \code{.js.metadata} filesystem image files are written
-to the repository in the same directory as the package binary \code{.tar.gz}
-files.
+to the repository in the same directory as the package binary \code{.tgz} files.
 
 The resulting filesystem images may then be used by webR to download and
-install R packages faster by mounting the \code{.data} images to the Emscripten
-virtual filesystem, rather than decompressing and extracting the equivalent
-\code{.tar.gz} files.
+install R packages by mounting the \code{.data} images to the Emscripten virtual
+filesystem.
+
+When \code{compress} is \code{TRUE}, an additional file with extension \code{".data.gz"} is
+also output containing a compressed version of the filesystem data.
 }

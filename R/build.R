@@ -18,7 +18,7 @@ build <- function(packages,
                   out_dir = ".",
                   remotes = NULL,
                   dependencies = FALSE,
-                  compress = FALSE) {
+                  compress = TRUE) {
   tmp_dir <- tempfile()
   on.exit(unlink(tmp_dir, recursive = TRUE))
   dir.create(tmp_dir)
@@ -215,16 +215,21 @@ wasm_build <- function(pkg, tarball_path, contrib_bin, compress) {
   bin_dest <- fs::path(contrib_bin, paste0(pkg, "_", bin_ver, ".tgz"))
   fs::file_copy(bin_path, bin_dest, overwrite = TRUE)
 
-  # Build an Emscripten filesystem image for the package
-  tmp_bin_dir <- fs::path(tempfile())
-  on.exit(unlink(tmp_bin_dir, recursive = TRUE), add = TRUE)
-  untar(bin_dest, exdir = tmp_bin_dir)
-  file_packager(
-    fs::dir_ls(tmp_bin_dir)[[1]],
-    contrib_bin,
-    fs::path_file(bin_dest),
-    compress
-  )
+  if (compress) {
+    # Use binary .tgz file to build Emscripten filesystem image metadata
+    add_tar_index(bin_dest, strip = 1)
+  } else {
+    # Build an uncompressed Emscripten filesystem image for the package
+    tmp_bin_dir <- fs::path(tempfile())
+    on.exit(unlink(tmp_bin_dir, recursive = TRUE), add = TRUE)
+    untar(bin_dest, exdir = tmp_bin_dir)
+    file_packager(
+      fs::dir_ls(tmp_bin_dir)[[1]],
+      contrib_bin,
+      fs::path_file(bin_dest),
+      compress = FALSE
+    )
+  }
 
   invisible(NULL)
 }

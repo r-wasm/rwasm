@@ -9,7 +9,7 @@ add_pkg(
   repo_dir = "./repo",
   remotes = NA,
   dependencies = FALSE,
-  compress = FALSE
+  compress = TRUE
 )
 }
 \arguments{
@@ -27,8 +27,10 @@ Use \code{NA} to install only hard dependencies whereas \code{TRUE} installs all
 optional dependencies as well. See \link[pkgdepends:as_pkg_dependencies]{pkgdepends::as_pkg_dependencies}
 for details.}
 
-\item{compress}{Logical. If \code{TRUE}, a compressed version of the filesystem
-data is included in the output. Defaults to \code{FALSE}.}
+\item{compress}{When \code{TRUE}, add and compress Emscripten virtual filesystem
+metadata in the resulting R package binary \code{.tgz} files. Otherwise,
+\code{\link[=file_packager]{file_packager()}} is used to create uncompressed virtual filesystem images
+included in the output binary package repository. Defaults to \code{TRUE}.}
 }
 \description{
 Downloads and builds the \link[pkgdepends:pkg_refs]{R package references} given

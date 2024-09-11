@@ -3,6 +3,7 @@
 export(add_list)
 export(add_pkg)
 export(add_repo)
+export(add_tar_index)
 export(build)
 export(file_packager)
 export(make_library)

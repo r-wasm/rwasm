@@ -76,12 +76,14 @@ add_list <- function(list_file, ...) {
 #'   source. Defaults to `NA`, meaning prefer a built-in list of references to
 #'   packages pre-modified for use with webR.
 #' @param dependencies Dependency specification for packages to additionally
-#' add to the repository. Defaults to `FALSE`, meaning no additional packages.
-#' Use `NA` to install only hard dependencies whereas `TRUE` installs all
-#' optional dependencies as well. See [pkgdepends::as_pkg_dependencies]
-#' for details.
-#' @inheritParams file_packager
-#'
+#'   add to the repository. Defaults to `FALSE`, meaning no additional packages.
+#'   Use `NA` to install only hard dependencies whereas `TRUE` installs all
+#'   optional dependencies as well. See [pkgdepends::as_pkg_dependencies]
+#'   for details.
+#' @param compress When `TRUE`, add and compress Emscripten virtual filesystem
+#'   metadata in the resulting R package binary `.tgz` files. Otherwise,
+#'   [file_packager()] is used to create uncompressed virtual filesystem images
+#'   included in the output binary package repository. Defaults to `TRUE`.
 #' @importFrom dplyr rows_update select
 #' @importFrom pkgdepends new_pkg_download_proposal
 #' @export
@@ -89,7 +91,7 @@ add_pkg <- function(packages,
                     repo_dir = "./repo",
                     remotes = NA,
                     dependencies = FALSE,
-                    compress = FALSE) {
+                    compress = TRUE) {
   # Set up pkgdepends configuration
   config <- ppm_config
   config$dependencies <- dependencies
@@ -185,7 +187,7 @@ prefer_remotes <- function(package_info, remotes = NA) {
 update_repo <- function(package_info,
                         remotes = NA,
                         repo_dir = "./repo",
-                        compress = FALSE) {
+                        compress = TRUE) {
   r_version <- R_system_version(getOption("rwasm.webr_version"))
 
   writeLines(sprintf("Processing %d package(s).", nrow(package_info)))
