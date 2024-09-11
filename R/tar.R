@@ -123,8 +123,11 @@ read_tar_offsets <- function(con, strip) {
     # Read tar entry header block
     header <- readBin(con, "raw", n = 512)
 
-    # Empty header indicates end of archive
-    if (all(header == 0)) {
+    # Basic tar filename
+    filename <- rawToChar(header[1:100])
+
+    # Empty header indicates end of archive, early exit for existing metadata
+    if (all(header == 0) || filename == ".vfs-index.json") {
       # Return connection position to just before this header
       seek(con, -512, origin = "current")
       break
@@ -156,9 +159,6 @@ read_tar_offsets <- function(con, strip) {
       }
       next
     }
-
-    # Basic tar filename
-    filename <- rawToChar(header[1:100])
 
     # Apply ustar formatted extended filename
     magic <- rawToChar(header[258:263])
