@@ -187,6 +187,19 @@ read_tar_offsets <- function(con, strip) {
 
     # Calculate file offsets
     entry <- list(filename = filename, start = offset, end = offset + size)
+
+    # Deal with hard and symbolic links
+    if (grepl("1|2", type)) {
+      link_name <- rawToChar(header[158:257])
+      if (type == "2") {
+        link_name <- fs::path_norm(fs::path(fs::path_dir(filename), link_name))
+      }
+      link_entry <- Find(\(e) e$filename == link_name, entries)
+      entry$start = link_entry$start
+      entry$end = link_entry$end
+      file_blocks <- 0
+    }
+
     entries <- append(entries, list(entry))
 
     # Skip to next entry header
