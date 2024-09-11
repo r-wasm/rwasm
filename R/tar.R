@@ -74,7 +74,7 @@ add_tar_index <- function(file, strip = 0) {
   # Write output and move into place
   out <- tempfile()
   out_con <- if (gzip) {
-    gzfile(out, open = "wb")
+    gzfile(out, open = "wb", compression = 9)
   } else {
     file(out, open = "wb")
   }
