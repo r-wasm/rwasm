@@ -1,6 +1,6 @@
 Package: rwasm
 Title: Build R Packages for WebAssembly
-Version: 0.1.0.9000
+Version: 0.2.0
 Authors@R: c(
     person("George", "Stagg", , "george.stagg@posit.co", role = c("aut", "cre")),
     person("Lionel", "Henry", , "lionel@posit.co", role = "ctb"),
