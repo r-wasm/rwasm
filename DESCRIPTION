@@ -20,7 +20,7 @@ Imports:
     lifecycle,
     pak,
     pkgdepends,
-    rlang,
+    rlang (>= 1.1.0),
     utils,
     withr,
     zip
