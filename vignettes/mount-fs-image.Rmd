@@ -16,7 +16,7 @@ The Emscripten WebAssembly (Wasm) environment provides a virtual filesystem (VFS
 The [`file_packager`](https://emscripten.org/docs/porting/files/packaging_files.html#packaging-using-the-file-packager-tool) tool, provided by Emscripten, takes in a directory structure as input and produces a webR compatible filesystem image as output. The [`file_packager`](https://emscripten.org/docs/porting/files/packaging_files.html#packaging-using-the-file-packager-tool) tool may be invoked from the [rwasm](https://r-wasm.github.io/rwasm/) package:
 
 ```{r eval=FALSE}
-> rwasm::file_packager("./input", out_dir = ".", out_name = "output")
+rwasm::file_packager("./input", out_dir = ".", out_name = "output")
 ```
 
 It can also be invoked directly using its CLI^[See the [`file_packager`](https://emscripten.org/docs/porting/files/packaging_files.html#packaging-using-the-file-packager-tool) Emscripten documentation for details.], if you prefer:
@@ -41,7 +41,7 @@ Filesystem image `.data` files may optionally be `gzip` compressed prior to depl
 Archives in `.tar` format, optionally gzip compressed as `.tar.gz` or `.tgz` files, can also be used as filesystem images by pre-processing the `.tar` archive using the `rwasm::add_tar_index()` function. The function reads archive contents and appends the required filesystem metadata to the end of the `.tar` archive data in a way that is understood by webR. For further information about the format see the [Technical details for .tar archive metadata](tar-metadata.html) article.
 
 ```{r eval=FALSE}
-> rwasm::add_tar_index("./path/to/archive.tar.gz")
+rwasm::add_tar_index("./path/to/archive.tar.gz")
 # Appending virtual filesystem metadata for: ./path/to/archive.tar.gz
 ```
 
