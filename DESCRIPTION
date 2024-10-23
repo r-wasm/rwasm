@@ -35,3 +35,4 @@ RoxygenNote: 7.3.2
 SystemRequirements: webR development installation
     (https://webr.r-wasm.org/)
 BugReports: https://github.com/r-wasm/rwasm/issues
+Config/usethis/last-upkeep: 2024-10-23
