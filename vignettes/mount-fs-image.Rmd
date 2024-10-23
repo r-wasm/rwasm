@@ -49,7 +49,7 @@ Once processed by `rwasm::add_tar_index()`, the `.tar` archive can be deployed a
 
 ## Mounting filesystem images
 
-When running in a web browser, the [`webr::mount()`](https://docs.r-wasm.org/webr/latest/api/r.qmd#mount) function downloads and mounts a filesystem image from a URL source, using the `WORKERFS` filesystem type.
+When running in a web browser, the [`webr::mount()`](https://docs.r-wasm.org/webr/latest/api/r.html#mount) function downloads and mounts a filesystem image from a URL source, using the `WORKERFS` filesystem type.
 
 ```{r eval=FALSE}
 webr::mount(
