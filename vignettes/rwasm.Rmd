@@ -145,7 +145,9 @@ git push -u origin main
 
 Now, in your web browser, refresh your GitHub project and click **Settings**. If you cannot see the "Settings" tab, click the dropdown menu, then click **Settings**.
 
-![](images/settings.png)
+```{r, echo = FALSE, out.width="100%", fig.alt = "Screenshot of the GitHub repository heading bar, with the Settings link highlighted.", }
+knitr::include_graphics("images/settings.png")
+```
 
 In the "Code and automation" section of the sidebar, click **Pages**.
 
@@ -153,7 +155,9 @@ Under "Build and deployment", under "Source", select **Deploy from a branch**.
 
 Under "Branch", use the branch dropdown menu and select **main** as the publishing source, then click **Save**.
 
-![](images/deploy.png)
+```{r, echo = FALSE, out.width="100%", fig.alt = "Screenshot of the GitHub settings page for a repository. Under Code and automation, the Pages link is highlighted. Under Build and deployment, the Deploy from a branch setting is selected for the Source setting and highlighted. Under branch, main is selected as the publishing source and highlighted."}
+knitr::include_graphics("images/deploy.png")
+```
 
 GitHub will then start to prepare your GitHub Pages site to contain your CRAN-like Wasm package repository.
 
