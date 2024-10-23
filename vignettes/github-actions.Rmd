@@ -37,7 +37,8 @@ An example GitHub action that uploads release assets to GitHub pages, in additio
 
 Once the files have been hosted on GitHub Pages, or otherwise, mount the filesystem image in webR and set the `.libPaths()` to load R packages from the package library:
 
-```{r eval=FALSE}
+```{r}
+#| eval: false
 webr::mount("/my-library", "https://org.github.io/repo/download/library.data")
 .libPaths(c(.libPaths(), "/my-library"))
 library(dplyr)
@@ -114,7 +115,8 @@ The GitHub Actions workflow should automatically start to run and build your lis
 
 After a little while, your GitHub Pages website will be ready and webR should be able to install your package from a GitHub Pages URL:
 
-```{r eval=FALSE}
+```{r}
+#| eval: false
 webr::install("cli", repos = "http://username.github.io/my-wasm-repo/")
 #> Downloading webR package: cli
 ```

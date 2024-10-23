@@ -59,14 +59,16 @@ The settings above can also be made available to R by exporting them as environm
 
 The `rwasm` package builds R binary packages for WebAssembly, organising the output into CRAN-like repositories. The [pak](https://pak.r-lib.org) package can be used to install `rwasm` from GitHub.
 
-```{r eval=FALSE}
+```{r}
+#| eval: false
 install.packages("pak")
 pak::pak("r-wasm/rwasm")
 ```
 
 Once installed, load the `rwasm` package. If `rwasm` is able to find the Wasm development environment, it will print the directories it discovered and the version of webR that it is targeting. This might be different to the version of R installed on your native system.
 
-```{r eval=FALSE}
+```{r}
+#| eval: false
 library(rwasm)
 #> Targeting Wasm packages for R 4.3.0
 #> With `WEBR_ROOT` directory: /opt/webr
@@ -77,7 +79,8 @@ library(rwasm)
 
 R package binaries can be built for WebAssembly using the `build()` function. The resulting Wasm R package binary and an Emscripten filesystem image containing the R package are written to the directory given by the `out_dir` argument, defaulting to the current working directory.
 
-```{r eval=FALSE}
+```{r}
+#| eval: false
 build("cli")
 ```
 
@@ -87,7 +90,8 @@ Wasm R package binaries must be made available to the webR filesystem in some wa
 
 Use `add_pkg()` to build an R package (along with its dependencies) for Wasm and add it to an R package repository. A new directory named `repo` will be created for the repository if it does not already exist, otherwise the existing repository will be updated to include the new package. By default, hard package dependencies will also be built for Wasm and added to the repository.
 
-```{r eval=FALSE}
+```{r}
+#| eval: false
 add_pkg("cli")
 ```
  
@@ -115,7 +119,8 @@ httpuv::runStaticServer(
 Once the web server is running start a webR session in your browser, such as the console at <https://webr.r-wasm.org/latest/>. Install a package from your local repository using your test server URL as the `repos` argument^[You might need to adjust the path portion of the URL, depending on your set-up. If it does not work, you could also try `"http://127.0.0.1:9090"` or `"http://127.0.0.1:9090/output/repo"`]:
 
 
-```{r eval=FALSE}
+```{r}
+#| eval: false
 webr::install("cli", repos = "http://127.0.0.1:9090/repo")
 #> Downloading webR package: cli
 ```
@@ -145,7 +150,12 @@ git push -u origin main
 
 Now, in your web browser, refresh your GitHub project and click **Settings**. If you cannot see the "Settings" tab, click the dropdown menu, then click **Settings**.
 
-![](images/settings.png)
+```{r}
+#| echo: false
+#| out.width: 100%
+#| fig.alt: "Screenshot of the GitHub repository heading bar, with the Settings link highlighted."
+knitr::include_graphics("images/settings.png")
+```
 
 In the "Code and automation" section of the sidebar, click **Pages**.
 
@@ -153,13 +163,19 @@ Under "Build and deployment", under "Source", select **Deploy from a branch**.
 
 Under "Branch", use the branch dropdown menu and select **main** as the publishing source, then click **Save**.
 
-![](images/deploy.png)
+```{r}
+#| echo: false
+#| out.width: 100%
+#| fig.alt: "Screenshot of the GitHub settings page for a repository. Under Code and automation, the Pages link is highlighted. Under Build and deployment, the Deploy from a branch setting is selected for the Source setting and highlighted. Under branch, main is selected as the publishing source and highlighted."
+knitr::include_graphics("images/deploy.png")
+```
 
 GitHub will then start to prepare your GitHub Pages site to contain your CRAN-like Wasm package repository.
 
 After a little while^[You should be able to see progress of the website build step in the **Actions** section of your GitHub project.], your GitHub Pages website will be ready and webR should be able to install your package from the GitHub Pages repo URL.
 
-```{r eval=FALSE}
+```{r}
+#| eval: false
 webr::install("cli", repos = "http://username.github.io/my-wasm-repo/repo")
 #> Downloading webR package: cli
 ```

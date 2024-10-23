@@ -17,7 +17,8 @@ See the [webR documentation for more details](https://docs.r-wasm.org/webr/lates
 
 To build an R package library, we must first build one or more Wasm R packages using `add_pkg()`. As an example, let's build a package with a few hard dependencies. Ensure that you are running R in an environment with access to Wasm development tools^[See the "Setting up the WebAssembly toolchain" section in `vignette("rwasm")` for further details.], then run:
 
-```{r eval=FALSE}
+```{r}
+#| eval: false
 rwasm::add_pkg("dplyr")
 ```
 
@@ -25,7 +26,8 @@ After the build process has completed, the new `repo` directory contains a CRAN-
 
 Next, run the following to build an R package library:
 
-```{r eval=FALSE}
+```{r}
+#| eval: false
 rwasm::make_library()
 ```
 
@@ -43,7 +45,8 @@ await webR.FS.mount('NODEFS', { root: '/path/to/lib' }, "/my-library");
 
 Once mounted, the contents of your host R library directory are available at `/my-library` in the virtual filesystem.
 
-```{r eval=FALSE}
+```{r}
+#| eval: false
 list.files("/my-library")
 #>  [1] "R6"         "cli"        "dplyr"     "fansi"      "generics"   "glue"
 #>  [7] "lifecycle"  "magrittr"   "pillar"    "pkgconfig"  "rlang"      "tibble"
@@ -52,7 +55,8 @@ list.files("/my-library")
 
 This new directory should be added to R's `.libPaths()`, so that R packages may be loaded from the new library.
 
-```{r eval=FALSE}
+```{r}
+#| eval: false
 .libPaths(c(.libPaths(), "/my-library"))
 library(dplyr)
 #> Attaching package: ‘dplyr’
