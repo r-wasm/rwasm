@@ -15,7 +15,8 @@ The Emscripten WebAssembly (Wasm) environment provides a virtual filesystem (VFS
 
 The [`file_packager`](https://emscripten.org/docs/porting/files/packaging_files.html#packaging-using-the-file-packager-tool) tool, provided by Emscripten, takes in a directory structure as input and produces a webR compatible filesystem image as output. The [`file_packager`](https://emscripten.org/docs/porting/files/packaging_files.html#packaging-using-the-file-packager-tool) tool may be invoked from the [rwasm](https://r-wasm.github.io/rwasm/) package:
 
-```{r eval=FALSE}
+```{r}
+#| eval: false
 rwasm::file_packager("./input", out_dir = ".", out_name = "output")
 ```
 
@@ -40,7 +41,8 @@ Filesystem image `.data` files may optionally be `gzip` compressed prior to depl
 
 Archives in `.tar` format, optionally gzip compressed as `.tar.gz` or `.tgz` files, can also be used as filesystem images by pre-processing the `.tar` archive using the `rwasm::add_tar_index()` function. The function reads archive contents and appends the required filesystem metadata to the end of the `.tar` archive data in a way that is understood by webR. For further information about the format see the [Technical details for .tar archive metadata](tar-metadata.html) article.
 
-```{r eval=FALSE}
+```{r}
+#| eval: false
 rwasm::add_tar_index("./path/to/archive.tar.gz")
 # Appending virtual filesystem metadata for: ./path/to/archive.tar.gz
 ```
@@ -70,7 +72,8 @@ A collection of R packages can be collected and bundled into a single filesystem
 
 To build an R package library image we must first build one or more Wasm R packages using `add_pkg()`. As an example, let's build a package with a few hard dependencies. Ensure that you are running R in an environment with access to Wasm development tools^[See the "Setting up the WebAssembly toolchain" section in `vignette("rwasm")` for further details.], then run:
 
-```{r eval=FALSE}
+```{r}
+#| eval: false
 rwasm::add_pkg("dplyr")
 ```
 
@@ -78,7 +81,8 @@ After the build process has completed, the new `repo` directory contains a CRAN-
 
 Next, run the following to build an Emscripten VFS image:
 
-```{r eval=FALSE}
+```{r}
+#| eval: false
 rwasm::make_vfs_library()
 ```
 
@@ -99,13 +103,15 @@ httpuv::runStaticServer(
 
 Once the web server is running start a webR session in your browser, such as the console at <https://webr.r-wasm.org/latest/>. Use `webr::mount()` to make the R library image available somewhere on the VFS^[You might need to adjust the path portion of the URL, depending on your set-up. If it does not work, you could also try `"http://127.0.0.1:9090"` or `"http://127.0.0.1:9090/output/vfs"`]:
 
-```{r eval=FALSE}
+```{r}
+#| eval: false
 webr::mount("/my-library", "http://127.0.0.1:9090/vfs/library.data")
 ```
 
 Once mounted, the contents of the filesystem image are available at `/my-library` in the virtual filesystem.
 
-```{r eval=FALSE}
+```{r}
+#| eval: false
 list.files("/my-library")
 #>  [1] "R6"         "cli"        "dplyr"     "fansi"      "generics"   "glue"
 #>  [7] "lifecycle"  "magrittr"   "pillar"    "pkgconfig"  "rlang"      "tibble"
@@ -114,7 +120,8 @@ list.files("/my-library")
 
 This new directory should be added to R's `.libPaths()`, so that R packages may be loaded from the new library.
 
-```{r eval=FALSE}
+```{r}
+#| eval: false
 .libPaths(c(.libPaths(), "/my-library"))
 library(dplyr)
 #> Attaching package: ‘dplyr’
