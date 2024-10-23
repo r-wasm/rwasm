@@ -1,5 +1,4 @@
 url: https://r-wasm.github.io/rwasm/
 template:
   bootstrap: 5
-deploy:
-  install_metadata: true
+
