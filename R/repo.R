@@ -31,10 +31,14 @@ add_repo <- function(repos = ppm_config$cran_mirror, skip = FALSE, ...) {
     mutate(
       sources = as.list(sprintf(
         "%s/%s_%s.tar.gz",
-        .data$Repository, .data$package, .data$version
+        .data$Repository,
+        .data$package,
+        .data$version
       )),
       target = sprintf(
-        "src/contrib/%s_%s.tar.gz", .data$package, .data$version
+        "src/contrib/%s_%s.tar.gz",
+        .data$package,
+        .data$version
       ),
       ref = .data$package,
       status = "OK"
@@ -87,11 +91,13 @@ add_list <- function(list_file, ...) {
 #' @importFrom dplyr rows_update select
 #' @importFrom pkgdepends new_pkg_download_proposal
 #' @export
-add_pkg <- function(packages,
-                    repo_dir = "./repo",
-                    remotes = NA,
-                    dependencies = FALSE,
-                    compress = TRUE) {
+add_pkg <- function(
+  packages,
+  repo_dir = "./repo",
+  remotes = NA,
+  dependencies = FALSE,
+  compress = TRUE
+) {
   # Set up pkgdepends configuration
   config <- ppm_config
   config$dependencies <- dependencies
@@ -116,7 +122,10 @@ rm_pkg <- function(packages, repo_dir = "./repo") {
   r_version <- R_system_version(getOption("rwasm.webr_version"))
   contrib_src <- fs::path(repo_dir, "src", "contrib")
   contrib_bin <- fs::path(
-    repo_dir, "bin", "emscripten", "contrib",
+    repo_dir,
+    "bin",
+    "emscripten",
+    "contrib",
     paste0(r_version$major, ".", r_version$minor)
   )
 
@@ -137,7 +146,10 @@ write_packages <- function(repo_dir = "./repo") {
   r_version <- R_system_version(getOption("rwasm.webr_version"))
   contrib_src <- fs::path(repo_dir, "src", "contrib")
   contrib_bin <- fs::path(
-    repo_dir, "bin", "emscripten", "contrib",
+    repo_dir,
+    "bin",
+    "emscripten",
+    "contrib",
     paste0(r_version$major, ".", r_version$minor)
   )
   update_packages(contrib_src, contrib_bin)
@@ -184,10 +196,12 @@ prefer_remotes <- function(package_info, remotes = NA) {
 }
 
 # Build packages and update a CRAN-like repo on disk
-update_repo <- function(package_info,
-                        remotes = NA,
-                        repo_dir = "./repo",
-                        compress = TRUE) {
+update_repo <- function(
+  package_info,
+  remotes = NA,
+  repo_dir = "./repo",
+  compress = TRUE
+) {
   r_version <- R_system_version(getOption("rwasm.webr_version"))
 
   writeLines(sprintf("Processing %d package(s).", nrow(package_info)))
@@ -195,7 +209,10 @@ update_repo <- function(package_info,
   # Create contrib paths
   contrib_src <- fs::path(repo_dir, "src", "contrib")
   contrib_bin <- fs::path(
-    repo_dir, "bin", "emscripten", "contrib",
+    repo_dir,
+    "bin",
+    "emscripten",
+    "contrib",
     paste0(r_version$major, ".", r_version$minor)
   )
   fs::dir_create(contrib_src)
@@ -283,10 +300,12 @@ update_repo <- function(package_info,
 }
 
 update_packages <- function(contrib_src, contrib_bin) {
-  if (any(c(
-    grepl(".tar.gz", fs::dir_ls(contrib_src)),
-    grepl(".tgz", fs::dir_ls(contrib_bin))
-  ))) {
+  if (
+    any(c(
+      grepl(".tar.gz", fs::dir_ls(contrib_src)),
+      grepl(".tgz", fs::dir_ls(contrib_bin))
+    ))
+  ) {
     tools::write_PACKAGES(contrib_src, verbose = TRUE)
     tools::write_PACKAGES(contrib_bin, verbose = TRUE, type = "mac.binary")
     invisible(TRUE)

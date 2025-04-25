@@ -14,11 +14,13 @@
 #'
 #' @importFrom pkgdepends new_pkg_download_proposal
 #' @export
-build <- function(packages,
-                  out_dir = ".",
-                  remotes = NULL,
-                  dependencies = FALSE,
-                  compress = TRUE) {
+build <- function(
+  packages,
+  out_dir = ".",
+  remotes = NULL,
+  dependencies = FALSE,
+  compress = TRUE
+) {
   tmp_dir <- tempfile()
   on.exit(unlink(tmp_dir, recursive = TRUE))
   dir.create(tmp_dir)
@@ -110,8 +112,11 @@ wasm_build <- function(pkg, tarball_path, contrib_bin, compress) {
   desc <- packageDescription(pkg, lib.loc = tmp_dir, fields = "Built")
   if (!is.na(desc)) {
     stop(paste0(
-      "Unable to build Wasm package: '", pkg,
-      "'. Source tarball at '", tarball_path, "' is a binary."
+      "Unable to build Wasm package: '",
+      pkg,
+      "'. Source tarball at '",
+      tarball_path,
+      "' is a binary."
     ))
   }
 
@@ -193,11 +198,20 @@ wasm_build <- function(pkg, tarball_path, contrib_bin, compress) {
   # Build the package
   status <- withr::with_dir(
     tmp_dir,
-    system2(host_r_bin,
+    system2(
+      host_r_bin,
       args = c(
-        "CMD", "INSTALL", "--build", paste0("--library=", lib_dir), pkg,
-        "--no-docs", "--no-html", "--no-test-load", "--no-staged-install",
-        "--no-byte-compile", configure_flag
+        "CMD",
+        "INSTALL",
+        "--build",
+        paste0("--library=", lib_dir),
+        pkg,
+        "--no-docs",
+        "--no-html",
+        "--no-test-load",
+        "--no-staged-install",
+        "--no-byte-compile",
+        configure_flag
       ),
       env = webr_env
     )

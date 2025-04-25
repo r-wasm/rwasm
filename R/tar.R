@@ -30,7 +30,8 @@ add_tar_index <- function(file, strip = 0) {
   # Check if our tar is compatible
   if (!any(file_ext == c("tgz", "gz", "tar"))) {
     stop(paste0(
-      "Can't make index for \"", file,
+      "Can't make index for \"",
+      file,
       "\". Only uncompressed or `gzip` compressed tar files can be indexed."
     ))
   }

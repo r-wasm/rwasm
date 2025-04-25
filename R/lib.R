@@ -20,7 +20,10 @@ make_library <- function(repo_dir = "./repo", lib_dir = "./lib", strip = NULL) {
   fs::dir_create(lib_dir)
   r_version <- R_system_version(getOption("rwasm.webr_version"))
   contrib_bin <- fs::path(
-    repo_dir, "bin", "emscripten", "contrib",
+    repo_dir,
+    "bin",
+    "emscripten",
+    "contrib",
     paste0(r_version$major, ".", r_version$minor)
   )
 
@@ -63,7 +66,10 @@ make_library <- function(repo_dir = "./repo", lib_dir = "./lib", strip = NULL) {
 make_vfs_repo <- function(repo_dir = "./repo", compress = FALSE) {
   r_version <- R_system_version(getOption("rwasm.webr_version"))
   contrib_bin <- fs::path(
-    repo_dir, "bin", "emscripten", "contrib",
+    repo_dir,
+    "bin",
+    "emscripten",
+    "contrib",
     paste0(r_version$major, ".", r_version$minor)
   )
 
@@ -114,11 +120,13 @@ make_vfs_repo <- function(repo_dir = "./repo", compress = FALSE) {
 #' @inheritDotParams make_library strip
 #'
 #' @export
-make_vfs_library <- function(out_dir = "./vfs",
-                             out_name = "library.data",
-                             repo_dir = "./repo",
-                             compress = FALSE,
-                             ...) {
+make_vfs_library <- function(
+  out_dir = "./vfs",
+  out_name = "library.data",
+  repo_dir = "./repo",
+  compress = FALSE,
+  ...
+) {
   lib_dir <- fs::path(tempfile())
   lib_abs <- fs::path_abs(lib_dir)
   on.exit(unlink(lib_dir, recursive = TRUE), add = TRUE)
@@ -153,10 +161,12 @@ make_vfs_library <- function(out_dir = "./vfs",
 #' @param compress Logical. If `TRUE`, a compressed version of the filesystem
 #' data is included in the output. Defaults to `FALSE`.
 #' @export
-file_packager <- function(in_dir,
-                          out_dir = "./vfs",
-                          out_name = NULL,
-                          compress = FALSE) {
+file_packager <- function(
+  in_dir,
+  out_dir = "./vfs",
+  out_name = NULL,
+  compress = FALSE
+) {
   fs::dir_create(out_dir)
 
   if (is.null(out_name)) {
@@ -168,7 +178,9 @@ file_packager <- function(in_dir,
   message(paste("Packaging:", data_file))
 
   file_packager <- fs::path(
-    getOption("rwasm.emscripten_root"), "tools", "file_packager"
+    getOption("rwasm.emscripten_root"),
+    "tools",
+    "file_packager"
   )
 
   # Pack the contents of in_dir with Emscripten's `file_packager`
@@ -178,8 +190,11 @@ file_packager <- function(in_dir,
     system2(
       file_packager,
       args = c(
-        data_file, "--preload", sprintf("'%s@/'", in_dir),
-        "--separate-metadata", sprintf("--js-output='%s'", js_file)
+        data_file,
+        "--preload",
+        sprintf("'%s@/'", in_dir),
+        "--separate-metadata",
+        sprintf("--js-output='%s'", js_file)
       ),
       stdout = TRUE,
       stderr = TRUE
