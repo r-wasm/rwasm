@@ -109,6 +109,9 @@ override LIBS =
 override LIBR =
 override ALL_LIBS = $(PKG_LIBS) $(SHLIB_LIBADD_FILTER) $(LIBR) $(LIBINTL)
 
+override STRIP_STATIC_LIB = touch
+override STRIP_SHARED_LIB = touch
+
 override BLAS_LIBS = -L$(WEBR_LOCAL)/lib/R/lib -lRblas
 override LAPACK_LIBS = -L$(WEBR_LOCAL)/lib/R/lib -lRlapack
 
