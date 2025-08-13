@@ -136,7 +136,8 @@ wasm_build <- function(pkg, tarball_path, contrib_bin, compress) {
     system.file("Makevars", paste0(pkg, ".mk"), package = "rwasm"),
     system.file("Makevars", paste0(pkg, ".in.mk"), package = "rwasm"),
     fs::path(tmp_dir, pkg, "src", "Makevars.webr"),
-    fs::path(tmp_dir, pkg, "src", "Makevars.in.webr")
+    fs::path(tmp_dir, pkg, "src", "Makevars.in.webr"),
+    fs::path(tmp_dir, pkg, "src", "Makevars.wasm.in")
   )
   for (mk in mkvars_src) {
     if (fs::is_file(mk)) {
