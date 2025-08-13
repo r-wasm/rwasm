@@ -1,5 +1,15 @@
 # rwasm (development version)
 
+# rwasm 0.3.0
+
+## Breaking changes
+
+* Updated the build system for webR 0.5.0 and later.
+
+## Bug fixes
+
+* Include `Makevars.wasm.in` when searching for `Makevars` overrides in R packages.
+
 # rwasm 0.2.0
 
 ## New features
