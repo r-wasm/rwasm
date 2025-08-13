@@ -26,7 +26,7 @@ Other contributors:
 \itemize{
   \item Lionel Henry \email{lionel@posit.co} [contributor]
   \item Jeroen Ooms \email{jeroen@berkeley.edu} [contributor]
-  \item Posit Software, PBC [copyright holder, funder]
+  \item Posit Software, PBC (03wc8by49) [copyright holder, funder]
 }
 
 }
