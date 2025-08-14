@@ -7,7 +7,7 @@ articles:
   mount-host-dir: mount-host-dir.html
   rwasm: rwasm.html
   tar-metadata: tar-metadata.html
-last_built: 2025-08-13T09:35Z
+last_built: 2025-08-14T09:58Z
 urls:
   reference: https://r-wasm.github.io/rwasm/reference
   article: https://r-wasm.github.io/rwasm/articles
