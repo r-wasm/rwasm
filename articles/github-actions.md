@@ -1,0 +1,157 @@
+# Build R packages using GitHub Actions
+
+## Introduction
+
+Using the set of GitHub Actions provided by
+[r-wasm/actions](https://github.com/r-wasm/actions), it is possible to
+automatically build and deploy WebAssembly binary versions of R
+packages. This workflow simplifies the process of deploying R packages
+for use with webR, and facilitates continuous integration.
+
+## Deploying an R package on release
+
+It is possible to build an R package for WebAssembly, optionally
+including other R package dependencies in the output, using the
+`release-file-system-image.yml` GitHub Actions workflow.
+
+First, add the GitHub action to your R package repository:
+
+``` r
+usethis::use_github_action(
+  url = "https://raw.githubusercontent.com/r-wasm/actions/v1/examples/release-file-system-image.yml"
+)
+```
+
+Commit the new GitHub Actions file, then make a package release through
+the GitHub web interface. GitHub Actions will build a Wasm filesystem
+image for your package and its dependencies and upload it as asset files
+for that specific package release.
+
+Once the Github Action has finished running, the asset files
+`library.data` and `library.js.metadata` can be downloaded from the
+GitHub releases page.
+
+If you are using your Wasm R package in a Shiny app with
+`shinylive::export()`, it will now be downloaded automatically as part
+of the app export. Otherwise, read on for details on how to make the
+resulting R package binaries available to a webR application.
+
+### Hosting the resulting package
+
+In principle, it is possible to directly mount the filesystem image from
+the release asset URL using `webr::mount()`. However, in web browsers
+this will likely be blocked due to the
+[CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS)
+mechanism. Instead, the files should be uploaded to static hosting in
+some way, for example by additional GitHub Actions steps that uploads
+the release assets to GitHub Pages.
+
+An example GitHub action that uploads release assets to GitHub pages, in
+addition to pkgdown documentation, can be found
+[here](https://github.com/r-wasm/actions/blob/main/examples/rwasm-binary-and-pkgdown-site.yml).
+
+Once the files have been hosted on GitHub Pages, or otherwise, mount the
+filesystem image in webR and set the
+[`.libPaths()`](https://rdrr.io/r/base/libPaths.html) to load R packages
+from the package library:
+
+``` r
+webr::mount("/my-library", "https://org.github.io/repo/download/library.data")
+.libPaths(c(.libPaths(), "/my-library"))
+library(dplyr)
+#> Attaching package: ‘dplyr’
+#>
+#> The following objects are masked from ‘package:stats’:
+#>
+#>     filter, lag
+#>
+#> The following objects are masked from ‘package:base’:
+#>
+#>     intersect, setdiff, setequal, union
+```
+
+Further information about Emscripten filesystem images can be found in
+the `vignette("mount-fs-image.Rmd")` article.
+
+## Creating a WebAssembly CRAN-like repository
+
+Alternatively, if you have multiple R packages you may want to build a
+custom WebAssembly CRAN-like repository on GitHub Pages. This workflow
+is useful if you want to manage several packages and do not mind
+creating a new repository, separate from your R package source, to do
+so.
+
+First, create a new GitHub repository [following GitHub’s
+instructions](https://docs.github.com/en/get-started/quickstart/create-a-repo#)
+to initialise a new empty git repo.
+
+Create a file named `packages`, containing a list of [R package
+references](https://r-lib.github.io/pkgdepends/reference/pkg_refs.html).
+Add one R package per line, and custom R packages hosted on GitHub may
+also be included here. For example:
+
+    cli
+    dplyr
+    tidyverse/ggplot2@v3.4.4
+
+Next, create a new GitHub Actions workflow file at
+`.github/workflows/deploy.yml`, by running
+
+``` r
+usethis::use_github_action(
+  url = "https://raw.githubusercontent.com/r-wasm/actions/v1/examples/deploy-cran-repo.yml",
+  save_as = "deploy.yml"
+)
+```
+
+The workflow contents will have two workflow jobs. The first job builds
+the list of R packages into a package repository and uploads it as an
+artifact file. The second job downloads and deploys the package
+repository to GitHub Pages.
+
+The workflow file should look like this:
+
+``` yaml
+# Workflow derived from https://github.com/r-wasm/actions/tree/v1/examples
+# Need help debugging build failures? Start at https://github.com/r-lib/actions#where-to-find-help
+on:
+  push:
+    # Only build on main or master branch
+    branches: [main, master]
+  # Or when triggered manually
+  workflow_dispatch:
+
+name: Build and deploy wasm R package repository
+
+jobs:
+  # Reads `./packages` for package references to put
+  # into a CRAN-like repository hosted on GitHub pages
+  deploy-cran-repo:
+    uses: r-wasm/actions/.github/workflows/deploy-cran-repo.yml@v1
+    permissions:
+      # To download GitHub Packages within action
+      repository-projects: read
+      # For publishing to pages environment
+      pages: write
+      id-token: write
+```
+
+Commit the new GitHub Actions file changes, then push the commit to
+GitHub.
+
+### The GitHub Actions build process
+
+The GitHub Actions workflow should automatically start to run and build
+your list of packages. You should be able to see progress of the website
+build step in the **Actions** section of your GitHub project.
+
+After a little while, your GitHub Pages website will be ready and webR
+should be able to install your package from a GitHub Pages URL:
+
+``` r
+webr::install("cli", repos = "http://username.github.io/my-wasm-repo/")
+#> Downloading webR package: cli
+```
+
+Further usage details can be found in the [r-wasm/actions GitHub
+documentation](https://github.com/r-wasm/actions/blob/v1/.github/workflows/README.md).
