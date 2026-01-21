@@ -153,6 +153,7 @@ wasm_build <- function(pkg, tarball_path, contrib_bin, compress) {
       break
     }
   }
+ 
 
   # Setup environment for wasm compilation
   webr_root <- getOption("rwasm.webr_root")
@@ -171,6 +172,26 @@ wasm_build <- function(pkg, tarball_path, contrib_bin, compress) {
     sprintf("EM_PKG_CONFIG=%s", Sys.which("pkg-config")),
     sprintf("EM_PKG_CONFIG_PATH=%s/wasm/lib/pkgconfig", webr_root)
   )
+ 
+  # If package requires linking against RcppParallel & the TBB, download
+  #   a version of RcppParallel compiled for WASM and set include/lib paths
+  #   for the build
+  if ("RcppParallel" %in% pak::pkg_deps(paste0("local::", tarball_path))$package) {
+    if (!dir.exists(file.path(tmp_dir, "RcppParallel"))) {
+      rcppparallel_tar <- file.path(tmp_dir, "rcppparallel.tgz")
+      download.file(
+        "https://rcppcore.r-universe.dev/bin/emscripten/contrib/4.5/RcppParallel_5.1.10.9000.tgz",
+        rcppparallel_tar,
+        mode = "wb"
+      )
+      untar(rcppparallel_tar, exdir = tmp_dir)
+    }
+    webr_env <- c(
+      webr_env,
+      paste0("TBB_INC=", file.path(tmp_dir, "RcppParallel", "include")),
+      paste0("TBB_LIB=", file.path(tmp_dir, "RcppParallel", "lib"))
+    )
+  }
 
   # Need to use an empty library otherwise R might try to load wasm packages
   # from the library and fail
