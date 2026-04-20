@@ -3,7 +3,6 @@ cran/s2@1.1.7
 rstudio/sass@a8d149b
 r-wasm/LiblineaR@webr
 r-wasm/TMB@webr
-r-wasm/fs@webr
 r-wasm/gt@webr
 r-wasm/htmlwidgets@webr
 r-wasm/httpuv@webr
@@ -16,4 +15,3 @@ r-wasm/rigraph@webr
 r-wasm/rsample@webr
 r-wasm/shiny@webr-safari
 r-wasm/vroom@webr
-r-wasm/xml2@webr
