@@ -16,13 +16,13 @@
 Source:
 [`DESCRIPTION`](https://github.com/r-wasm/rwasm/blob/main/DESCRIPTION)
 
-Stagg G (2025). *rwasm: Build R Packages for WebAssembly*. R package
+Stagg G (2026). *rwasm: Build R Packages for WebAssembly*. R package
 version 0.3.0.9000, <https://r-wasm.github.io/rwasm/>.
 
     @Manual{,
       title = {rwasm: Build R Packages for WebAssembly},
       author = {George Stagg},
-      year = {2025},
+      year = {2026},
       note = {R package version 0.3.0.9000},
       url = {https://r-wasm.github.io/rwasm/},
     }
