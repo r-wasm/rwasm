@@ -17,6 +17,7 @@ including other R package dependencies in the output, using the
 First, add the GitHub action to your R package repository:
 
 ``` r
+
 usethis::use_github_action(
   url = "https://raw.githubusercontent.com/r-wasm/actions/v1/examples/release-file-system-image.yml"
 )
@@ -56,6 +57,7 @@ filesystem image in webR and set the
 from the package library:
 
 ``` r
+
 webr::mount("/my-library", "https://org.github.io/repo/download/library.data")
 .libPaths(c(.libPaths(), "/my-library"))
 library(dplyr)
@@ -98,6 +100,7 @@ Next, create a new GitHub Actions workflow file at
 `.github/workflows/deploy.yml`, by running
 
 ``` r
+
 usethis::use_github_action(
   url = "https://raw.githubusercontent.com/r-wasm/actions/v1/examples/deploy-cran-repo.yml",
   save_as = "deploy.yml"
@@ -149,6 +152,7 @@ After a little while, your GitHub Pages website will be ready and webR
 should be able to install your package from a GitHub Pages URL:
 
 ``` r
+
 webr::install("cli", repos = "http://username.github.io/my-wasm-repo/")
 #> Downloading webR package: cli
 ```

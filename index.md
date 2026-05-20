@@ -27,6 +27,7 @@ The `rwasm` package is not yet on CRAN. You can install the development
 version from GitHub via:
 
 ``` r
+
 # install.packages("pak")
 pak::pak("r-wasm/rwasm")
 ```

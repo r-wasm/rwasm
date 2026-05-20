@@ -42,12 +42,13 @@ of archive contents to the virtual filesystem.
 The resulting `.tar` file may be gzip compressed, with file extension
 `.tar.gz` or `.tgz`.
 
-| Field | Size     | Description                                                                           |
-|-------|----------|---------------------------------------------------------------------------------------|
-| 0     | Variable | Standard `.tar` data, including the end-of-archive marker.                            |
-| 1     | 4 bytes  | Magic bytes: The string `"webR"`, UTF8 encoded (`0x77656252`).                        |
-| 2     | 4 bytes  | Reserved, currently `0x00000000`.                                                     |
-| 3     | 4 bytes  | Offset of `.vfs-index.json`, in units of 512-byte blocks. Signed integer, big endian. |
-| 4     | 4 bytes  | Length of `.vfs-index.json`, in bytes. Signed integer, big endian.                    |
+| Field | Size | Description |
+|----|----|----|
+| 0 | Variable | Standard `.tar` data, including the end-of-archive marker. |
+| 1 | 4 bytes | Magic bytes: The string `"webR"`, UTF8 encoded (`0x77656252`). |
+| 2 | 4 bytes | Reserved, currently `0x00000000`. |
+| 3 | 4 bytes | Offset of `.vfs-index.json`, in units of 512-byte blocks. Signed integer, big endian. |
+| 4 | 4 bytes | Length of `.vfs-index.json`, in bytes. Signed integer, big endian. |
 
 Data layout for a `.tar` archive containing filesystem metadata.
+{.table}

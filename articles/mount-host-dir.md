@@ -20,9 +20,10 @@ packages using
 [`add_pkg()`](https://r-wasm.github.io/rwasm/reference/add_pkg.md). As
 an example, let’s build a package with a few hard dependencies. Ensure
 that you are running R in an environment with access to Wasm development
-tools[¹](#fn1), then run:
+tools[^1], then run:
 
 ``` r
+
 rwasm::add_pkg("dplyr")
 ```
 
@@ -32,6 +33,7 @@ a CRAN-like package repository with R packages build for Wasm.
 Next, run the following to build an R package library:
 
 ``` r
+
 rwasm::make_library()
 ```
 
@@ -56,6 +58,7 @@ Once mounted, the contents of your host R library directory are
 available at `/my-library` in the virtual filesystem.
 
 ``` r
+
 list.files("/my-library")
 #>  [1] "R6"         "cli"        "dplyr"     "fansi"      "generics"   "glue"
 #>  [7] "lifecycle"  "magrittr"   "pillar"    "pkgconfig"  "rlang"      "tibble"
@@ -67,6 +70,7 @@ This new directory should be added to R’s
 packages may be loaded from the new library.
 
 ``` r
+
 .libPaths(c(.libPaths(), "/my-library"))
 library(dplyr)
 #> Attaching package: ‘dplyr’
@@ -80,8 +84,6 @@ library(dplyr)
 #>     intersect, setdiff, setequal, union
 ```
 
-------------------------------------------------------------------------
-
-1.  See the “Setting up the WebAssembly toolchain” section in
+[^1]: See the “Setting up the WebAssembly toolchain” section in
     [`vignette("rwasm")`](https://r-wasm.github.io/rwasm/articles/rwasm.md)
     for further details.

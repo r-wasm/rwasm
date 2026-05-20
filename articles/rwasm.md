@@ -21,8 +21,8 @@ package inside a pre-prepared Docker container to build Wasm R packages.
 - WebR development installation
 
 First, ensure that [Docker](https://www.docker.com) is installed on your
-machine[¹](#fn1). Then, in a terminal, pull the latest version of the
-[webR development
+machine[^1]. Then, in a terminal, pull the latest version of the [webR
+development
 container](https://github.com/r-wasm/webr/pkgs/container/webr):
 
 ``` console
@@ -37,7 +37,7 @@ mkdir -p output
 ```
 
 Then start R in the Docker container, mounting the new `output`
-directory into place and setting it as the working directory[²](#fn2):
+directory into place and setting it as the working directory[^2]:
 
 ``` console
 docker run -it --rm -v ${PWD}/output:/output -w /output ghcr.io/r-wasm/webr:main R
@@ -61,7 +61,7 @@ the optional step to additionally build all WebAssembly libraries.
 Once webR has been built, we need to configure your environment so that
 the native R process can find your webR development installation. Make a
 note of your webR development directory and your Emscripten installation
-directory[³](#fn3).
+directory[^3].
 
 Edit or create the file `~/.webr-vars.mk`, and ensure it contains the
 following lines, replacing the values with your own installation
@@ -82,6 +82,7 @@ the output into CRAN-like repositories. The [pak](https://pak.r-lib.org)
 package can be used to install `rwasm` from GitHub.
 
 ``` r
+
 install.packages("pak")
 pak::pak("r-wasm/rwasm")
 ```
@@ -92,6 +93,7 @@ discovered and the version of webR that it is targeting. This might be
 different to the version of R installed on your native system.
 
 ``` r
+
 library(rwasm)
 #> Targeting Wasm packages for R 4.3.0
 #> With `WEBR_ROOT` directory: /opt/webr
@@ -107,6 +109,7 @@ containing the R package are written to the directory given by the
 `out_dir` argument, defaulting to the current working directory.
 
 ``` r
+
 build("cli")
 ```
 
@@ -127,6 +130,7 @@ package dependencies will also be built for Wasm and added to the
 repository.
 
 ``` r
+
 add_pkg("cli")
 ```
 
@@ -145,9 +149,9 @@ to install Wasm R packages.
 ### Local testing
 
 The R command given below starts a local web server to serve your
-package repository for testing[⁴](#fn4). The
-`Access-Control-Allow-Origin: *` HTTP header is included, required for
-loading R packages from a cross-origin server through the
+package repository for testing[^4]. The `Access-Control-Allow-Origin: *`
+HTTP header is included, required for loading R packages from a
+cross-origin server through the
 [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS)
 mechanism.
 
@@ -158,6 +162,7 @@ web server is accessible to the host machine. You might also want to set
 mounted in the Docker container.
 
 ``` r
+
 httpuv::runStaticServer(
   dir = ".",
   port = 9090,
@@ -169,9 +174,10 @@ httpuv::runStaticServer(
 Once the web server is running start a webR session in your browser,
 such as the console at <https://webr.r-wasm.org/latest/>. Install a
 package from your local repository using your test server URL as the
-`repos` argument[⁵](#fn5):
+`repos` argument[^5]:
 
 ``` r
+
 webr::install("cli", repos = "http://127.0.0.1:9090/repo")
 #> Downloading webR package: cli
 ```
@@ -224,37 +230,37 @@ publishing source and highlighted.](images/deploy.png)
 GitHub will then start to prepare your GitHub Pages site to contain your
 CRAN-like Wasm package repository.
 
-After a little while[⁶](#fn6), your GitHub Pages website will be ready
-and webR should be able to install your package from the GitHub Pages
-repo URL.
+After a little while[^6], your GitHub Pages website will be ready and
+webR should be able to install your package from the GitHub Pages repo
+URL.
 
 ``` r
+
 webr::install("cli", repos = "http://username.github.io/my-wasm-repo/repo")
 #> Downloading webR package: cli
 ```
 
-------------------------------------------------------------------------
-
-1.  For macOS machines with Apple Silicon processors, ensure that “Use
+[^1]: For macOS machines with Apple Silicon processors, ensure that “Use
     Rosetta for x86/amd64 emulation on Apple Silicon” is disabled in the
     Docker Desktop settings.
 
-2.  If you see an error along the lines of
+[^2]: If you see an error along the lines of
     `The path [...]/output is not shared from the host and is not known to Docker`,
     follow the instructions given in the rest of the error output to
     ensure that the `output` directory is shared with Docker.
 
-3.  If you are using [emsdk](https://github.com/emscripten-core/emsdk)
+[^3]: If you are using [emsdk](https://github.com/emscripten-core/emsdk)
     to manage your Emscripten installation the `EMSDK` environment
     variable should already be in place. In that case you may skip
     setting `EMSCRIPTEN_ROOT`.
 
-4.  Ensure that the latest version of the `httpuv` package is installed
-    so that the `?httpuv::runStaticServer` function is available.
+[^4]: Ensure that the latest version of the `httpuv` package is
+    installed so that the `?httpuv::runStaticServer` function is
+    available.
 
-5.  You might need to adjust the path portion of the URL, depending on
+[^5]: You might need to adjust the path portion of the URL, depending on
     your set-up. If it does not work, you could also try
     `"http://127.0.0.1:9090"` or `"http://127.0.0.1:9090/output/repo"`
 
-6.  You should be able to see progress of the website build step in the
-    **Actions** section of your GitHub project.
+[^6]: You should be able to see progress of the website build step in
+    the **Actions** section of your GitHub project.
