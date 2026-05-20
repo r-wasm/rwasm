@@ -16,7 +16,7 @@ License: MIT + file LICENSE
 URL: https://r-wasm.github.io/rwasm/, https://github.com/r-wasm/rwasm
 BugReports: https://github.com/r-wasm/rwasm/issues
 Depends:
-    R (>= 4.0)
+    R (>= 4.1.0)
 Imports:
     dplyr,
     fs,
