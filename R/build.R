@@ -168,6 +168,7 @@ wasm_build <- function(pkg, tarball_path, contrib_bin, compress) {
     paste0("WEBR_ROOT=", webr_root),
     sprintf("PATH='%s:%s/host/bin:%s'", sys_bin, webr_root, Sys.getenv("PATH")),
     sprintf("PKG_CONFIG_PATH=%s/wasm/lib/pkgconfig", webr_root),
+    sprintf("EM_HOST_CARGO=%s", Sys.which("cargo")),
     sprintf("EM_PKG_CONFIG=%s", Sys.which("pkg-config")),
     sprintf("EM_PKG_CONFIG_PATH=%s/wasm/lib/pkgconfig", webr_root)
   )
