@@ -1,0 +1,38 @@
+#!/bin/sh
+set -e
+
+for arg in "$@"; do
+  case "$arg" in
+    "--manifest-path="*)
+    manifest="${arg:16}"
+    ;;
+    "--target="*)
+    target="$arg"
+    ;;
+  esac
+done
+
+# Path to real cargo is provided by R wrapper
+if [ -z "${EM_HOST_CARGO}" ]; then
+  echo "cargo not found"
+  exit 1
+fi
+
+# Make cargo cross-compile by default. Artifacts then land under target/<triple>/
+# instead of target/release where package Makevars expect them, so copy them
+# back up after the build.
+export CARGO_BUILD_TARGET="wasm32-unknown-emscripten"
+echo "Cross compiling for $CARGO_BUILD_TARGET..."
+
+# If rustup is available, ensure we have the target toolchain
+if rustup --version; then
+  rustup target add $CARGO_BUILD_TARGET
+fi
+
+${EM_HOST_CARGO} "$@"
+
+if [ "$1" = "build" ] && [ -z "$target" ]; then
+  echo "Copying $CARGO_BUILD_TARGET artifacts to target dir"
+  cd "$(dirname ${manifest:-.})/target"
+  cp -Rf "$CARGO_BUILD_TARGET"/* . || true
+fi
