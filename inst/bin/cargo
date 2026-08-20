@@ -22,6 +22,8 @@ fi
 # instead of target/release where package Makevars expect them, so copy them
 # back up after the build.
 export CARGO_BUILD_TARGET="wasm32-unknown-emscripten"
+export CFLAGS_wasm32_unknown_emscripten="-fPIC"
+export CXXFLAGS_wasm32_unknown_emscripten="-fPIC"
 echo "Cross compiling for $CARGO_BUILD_TARGET..."
 
 # If rustup is available, ensure we have the target toolchain
