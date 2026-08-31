@@ -173,6 +173,12 @@ wasm_build <- function(pkg, tarball_path, contrib_bin, compress) {
     sprintf("EM_PKG_CONFIG_PATH=%s/wasm/lib/pkgconfig", webr_root)
   )
 
+  webr_env <- c(
+    webr_env,
+    sprintf("TBB_INC=%s", system2("pkg-config", c("--variable=includedir", "tbb32"), env = webr_env, stdout = TRUE)),
+    sprintf("TBB_LIB=%s", system2("pkg-config", c("--variable=libdir", "tbb32"), env = webr_env, stdout = TRUE))
+  )
+
   # Need to use an empty library otherwise R might try to load wasm packages
   # from the library and fail
   lib_dir <- tempfile()
